@@ -53,11 +53,11 @@ public partial class OwopClient
                 if (!Connected)
                 {
                     Connected = true;
-                    ReadyEvent?.Invoke(this, EventArgs.Empty);
+                    Ready?.Invoke(this, EventArgs.Empty);
                     Task.Run(() =>
                     {
                         Thread.Sleep(2000);
-                        ChatReadyEvent?.Invoke(this, EventArgs.Empty);
+                        ChatReady?.Invoke(this, EventArgs.Empty);
                     });
                 }
                 break;
