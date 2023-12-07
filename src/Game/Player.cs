@@ -1,8 +1,7 @@
-using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Numerics;
 
-namespace Owop.Game;
+namespace Owop;
 
 public enum PlayerRank
 {

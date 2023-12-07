@@ -1,14 +1,26 @@
 using System.Buffers;
 using Microsoft.Extensions.Logging;
-using Owop.Game;
-using Owop.Network;
 using Websocket.Client;
 
 namespace Owop;
 
-public partial class Client
+public enum Opcode
 {
-    private void OnMessageReceived(ResponseMessage response)
+    SetId,
+    WorldUpdate,
+    ChunkLoad,
+    Teleport,
+    SetRank,
+    Captcha,
+    SetPixelQuota,
+    ChunkProtect,
+    MaxPlayerCount,
+    DonationTimer
+}
+
+public partial class OwopClient
+{
+    private void HandleMessage(ResponseMessage response)
     {
         if (response.Binary is not null)
         {
@@ -16,7 +28,7 @@ public partial class Client
             var reader = new SequenceReader<byte>(data);
             if (reader.TryRead(out byte opcode))
             {
-                OnOpcodeReceived((Opcode)opcode, reader);
+                HandleOpcode((Opcode)opcode, reader);
             }
         }
         else if (response.Text is not null)
@@ -27,7 +39,7 @@ public partial class Client
         }
     }
 
-    private void OnOpcodeReceived(Opcode opcode, SequenceReader<byte> reader)
+    private void HandleOpcode(Opcode opcode, SequenceReader<byte> reader)
     {
         Console.WriteLine(opcode);
         switch (opcode)

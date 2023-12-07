@@ -1,4 +1,4 @@
-namespace Owop.Game;
+namespace Owop;
 
 public record World(string Name)
 {

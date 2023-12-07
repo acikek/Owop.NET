@@ -1,22 +1,23 @@
-using Owop.Game;
-
 namespace Owop;
 
-public partial class Client
+public class ChatManager(OwopClient client)
 {
     public const string CHAT_VERIFICATION = "\u000A";
 
-    public async Task Chat(string message)
+    private readonly OwopClient Client = client;
+    public string? Nickname { get; private set; }
+
+    public async Task Send(string message)
     {
-        int length = Player.Rank.GetMaxMessageLength();
+        int length = Client.Player.Rank.GetMaxMessageLength();
         string data = message[0..Math.Min(message.Length, length)] + CHAT_VERIFICATION;
-        await Task.Run(() => Connection.Send(data));
+        await Task.Run(() => Client.Connection.Socket.Send(data));
     }
 
     public async Task RunCommand(string command, params string[] args)
     {
         string message = $"/{command} {string.Join(' ', args)}";
-        await Chat(message);
+        await Send(message);
     }
 
     public async Task SetNickname(string nickname)
