@@ -46,8 +46,9 @@ public static class PlayerRanks
         };
 }
 
-public class PlayerData()
+public class PlayerData(World world)
 {
+    public readonly World World = world;
     public int X { get; set; } = 0;
     public int Y { get; set; } = 0;
     public int WorldX { get; set; } = 0;
@@ -57,10 +58,11 @@ public class PlayerData()
     public Color Color { get; set; } = Color.Black;
 }
 
-public record struct Player
+public struct Player
 {
     private PlayerData Instance;
 
+    public readonly World World => Instance.World;
     public readonly int X => Instance.X;
     public readonly int Y => Instance.Y;
     public readonly Vector2 Pos => new(X, Y);

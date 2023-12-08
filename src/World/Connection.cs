@@ -6,42 +6,42 @@ using Websocket.Client;
 
 namespace Owop;
 
-public class ConnectionManager : IDisposable
+public partial class WorldConnection : IDisposable
 {
-    public const string URL = "wss://ourworldofpixels.com";
-    public const ushort WORLD_VERIFICATION = 25565;
-
     public readonly WebsocketClient Socket;
     private readonly ManualResetEvent ExitEvent = new(false);
 
+    private readonly WorldData World;
     private readonly OwopClient Client;
-    private readonly Action<ResponseMessage> MessageHandler;
+    private readonly Action<ResponseMessage, WorldData> MessageHandler;
 
-    // TODO: connection options (keep this constructor)
-    public ConnectionManager(OwopClient client, Action<ResponseMessage> messageHandler)
+    public WorldConnection(string name, OwopClient client, Action<ResponseMessage, WorldData> messageHandler)
     {
-        Socket = new WebsocketClient(new Uri(URL));
+        Socket = new(new Uri(client.Options.Url));
+        World = new(name, this);
         Client = client;
         MessageHandler = messageHandler;
     }
 
-    public static string GetValidWorldId(string world)
+    public static string CleanId(string world)
     {
         var span = world.Where(c => char.IsLetterOrDigit(c) || c == '_' || c == '.');
         return new(span.ToArray());
     }
 
-    public static byte[] GetConnectionMessage(string world = "main")
+    private byte[] GetConnectionMessage(string world)
     {
-        string clean = GetValidWorldId(world);
-        string fixedLength = clean[..Math.Min(world.Length, 24)];
+        string fixedLength = world[..Math.Min(world.Length, 24)];
         var bytes = Encoding.ASCII.GetBytes(fixedLength);
         var list = new List<byte>(bytes);
-        list.AddRange(BitConverter.GetBytes(WORLD_VERIFICATION));
+        list.AddRange(BitConverter.GetBytes(Client.Options.WorldVerification));
         return [.. list];
     }
 
-    public void Connect(string world = "main")
+    public async Task Send(byte[] message) => await Task.Run(() => Socket.Send(message));
+    public async Task Send(string message) => await Task.Run(() => Socket.Send(message));
+
+    public void Connect(string world)
     {
         var connectMsg = GetConnectionMessage(world);
         Socket.ReconnectionHappened.Subscribe(info =>
@@ -49,7 +49,7 @@ public class ConnectionManager : IDisposable
             Client.Logger.LogDebug($"Reconnecting to world... (type: {info.Type})");
             Socket.Send(connectMsg);
         });
-        Socket.MessageReceived.Subscribe(MessageHandler);
+        Socket.MessageReceived.Subscribe(msg => MessageHandler(msg, World));
         Socket.Start();
         Task.Run(() => Socket.Send(connectMsg));
         ExitEvent.WaitOne();

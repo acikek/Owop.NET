@@ -4,7 +4,7 @@ public record ChatPlayer(PlayerRank Rank, uint? Id, string? Nickname)
 {
     public string Display => Nickname ?? Id?.ToString() ?? string.Empty;
 
-    public static ChatPlayer Parse(string str)
+    public static ChatPlayer ParseHeader(string str)
     {
         var rank = PlayerRank.Player;
         uint? id = null;
@@ -34,13 +34,13 @@ public record ChatPlayer(PlayerRank Rank, uint? Id, string? Nickname)
     }
 };
 
-public record ChatMessage(ChatPlayer Player, string Content)
+public record ChatMessage(World World, ChatPlayer Player, string Content)
 {
-    public static ChatMessage Parse(string str)
+    public static ChatMessage Create(World world, string str)
     {
         int sep = str.IndexOf(": ");
-        var player = ChatPlayer.Parse(str[0..sep]);
+        var player = ChatPlayer.ParseHeader(str[0..sep]);
         string content = str[(sep + 2)..];
-        return new ChatMessage(player, content);
+        return new ChatMessage(world, player, content);
     }
 }

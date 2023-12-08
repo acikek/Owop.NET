@@ -21,7 +21,7 @@ public enum Opcode
 
 public partial class OwopClient
 {
-    private void HandleMessage(ResponseMessage response)
+    private void HandleMessage(ResponseMessage response, WorldData world)
     {
         if (response.Binary is not null)
         {
@@ -29,18 +29,18 @@ public partial class OwopClient
             var reader = new SequenceReader<byte>(data);
             if (reader.TryRead(out byte opcode))
             {
-                HandleOpcode((Opcode)opcode, reader);
+                HandleOpcode((Opcode)opcode, reader, world);
             }
         }
         else if (response.Text is not null)
         {
             Logger.LogDebug($"Received chat message: {response.Text}");
-            var message = ChatMessage.Parse(response.Text);
+            var message = ChatMessage.Create(world, response.Text);
             Chat?.Invoke(this, message);
         }
     }
 
-    private void HandleOpcode(Opcode opcode, SequenceReader<byte> reader)
+    private void HandleOpcode(Opcode opcode, SequenceReader<byte> reader, WorldData world)
     {
         Console.WriteLine(opcode);
         switch (opcode)
@@ -51,15 +51,15 @@ public partial class OwopClient
                     {
                         return;
                     }
-                    PlayerData.Id = (uint)id;
-                    if (!Connected)
+                    world.ClientPlayerData.Id = (uint)id;
+                    if (!world.Connected)
                     {
-                        Connected = true;
-                        Ready?.Invoke(this, EventArgs.Empty);
+                        world.Connected = true;
+                        Ready?.Invoke(this, world);
                         Task.Run(() =>
                         {
-                            Thread.Sleep(CHAT_TIMEOUT);
-                            ChatReady?.Invoke(this, EventArgs.Empty);
+                            Thread.Sleep(World.CHAT_TIMEOUT);
+                            ChatReady?.Invoke(this, world);
                         });
                     }
                     break;
@@ -83,8 +83,8 @@ public partial class OwopClient
                         {
                             return;
                         }
-                        WorldPlayerData.TryAdd((uint)id, new());
-                        var data = WorldPlayerData[(uint)id];
+                        world.PlayerData.TryAdd((uint)id, new(world));
+                        var data = world.PlayerData[(uint)id];
                         data.Id = (uint)id;
                         data.X = x;
                         data.Y = y;
