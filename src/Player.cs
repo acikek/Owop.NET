@@ -83,13 +83,23 @@ public static class PlayerRanks
 public class PlayerData(World world)
 {
     public readonly World World = world;
-    public int X { get; set; } = 0;
-    public int Y { get; set; } = 0;
-    public int WorldX { get; set; } = 0;
-    public int WorldY { get; set; } = 0;
+    public Point Pos { get; private set; } = Point.Empty;
+    public Point WorldPos { get; private set; } = Point.Empty;
     public PlayerTool Tool { get; set; } = PlayerTool.Cursor;
     public int Id { get; set; } = 0;
     public Color Color { get; set; } = Color.Black;
+
+    public void UpdatePos(int x, int y, int chunkSize)
+    {
+        Pos = new(x, y);
+        WorldPos = new(x / chunkSize, y / chunkSize);
+    }
+
+    public void UpdateWorldPos(int x, int y, int chunkSize)
+    {
+        Pos = new(x * chunkSize, y * chunkSize);
+        WorldPos = new(x, y);
+    }
 }
 
 public struct Player
@@ -97,12 +107,8 @@ public struct Player
     private PlayerData Instance;
 
     public readonly World World => Instance.World;
-    public readonly int X => Instance.X;
-    public readonly int Y => Instance.Y;
-    public readonly Vector2 Pos => new(X, Y);
-    public readonly int WorldX => Instance.WorldX;
-    public readonly int WorldY => Instance.WorldY;
-    public readonly Vector2 WorldPos => new(WorldX, WorldY);
+    public readonly Point Pos => Instance.Pos;
+    public readonly Point WorldPos => Instance.WorldPos;
     public readonly PlayerTool Tool => Instance.Tool;
     public readonly int Id => Instance.Id;
     public readonly Color Color => Instance.Color;

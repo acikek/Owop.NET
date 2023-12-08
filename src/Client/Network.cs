@@ -97,10 +97,7 @@ public partial class OwopClient
                         world.PlayerData.TryAdd(id, new(world));
                         var data = world.PlayerData[id];
                         data.Id = id;
-                        data.X = x;
-                        data.Y = y;
-                        data.WorldX = x / 16;
-                        data.WorldY = y / 16;
+                        data.UpdatePos(x, y, Options.ChunkSize);
                         data.Color = Color.FromArgb(255, r, g, b);
                         data.Tool = (PlayerTool)toolId;
                         updated.Add((uint)id);

@@ -49,6 +49,20 @@ public partial class WorldConnection : IDisposable
         ExitEvent.WaitOne();
     }
 
+    public async Task SendPlayerData()
+    {
+        var player = World.ClientPlayerData;
+        MemoryStream stream = new();
+        BinaryWriter writer = new(stream);
+        writer.Write(player.Pos.X);
+        writer.Write(player.Pos.Y);
+        writer.Write(player.Color.R);
+        writer.Write(player.Color.G);
+        writer.Write(player.Color.B);
+        writer.Write((byte)player.Tool);
+        await Send(stream.ToArray());
+    }
+
     public async Task Disconnect()
     {
         await Socket.Stop(WebSocketCloseStatus.NormalClosure, "Client.Disconnect()");
