@@ -88,7 +88,7 @@ public class PlayerData(World world)
     public int WorldX { get; set; } = 0;
     public int WorldY { get; set; } = 0;
     public PlayerTool Tool { get; set; } = PlayerTool.Cursor;
-    public uint Id { get; set; } = 0;
+    public int Id { get; set; } = 0;
     public Color Color { get; set; } = Color.Black;
 }
 
@@ -104,20 +104,20 @@ public struct Player
     public readonly int WorldY => Instance.WorldY;
     public readonly Vector2 WorldPos => new(WorldX, WorldY);
     public readonly PlayerTool Tool => Instance.Tool;
-    public readonly uint Id => Instance.Id;
+    public readonly int Id => Instance.Id;
     public readonly Color Color => Instance.Color;
 
     public static implicit operator Player(PlayerData data) => new() { Instance = data };
 }
 
-public record ChatPlayer(PlayerRank Rank, uint? Id, string? Nickname)
+public record ChatPlayer(PlayerRank Rank, int? Id, string? Nickname)
 {
     public string Display => Nickname ?? Id?.ToString() ?? string.Empty;
 
     public static ChatPlayer ParseHeader(string str)
     {
         var rank = PlayerRank.Player;
-        uint? id = null;
+        int? id = null;
         string? nickname = null;
         bool restNick = true;
         if (str.StartsWith('('))
@@ -128,10 +128,10 @@ public record ChatPlayer(PlayerRank Rank, uint? Id, string? Nickname)
         else if (str.StartsWith('['))
         {
             int end = str.IndexOf(']');
-            id = uint.Parse(str[1..end]);
+            id = int.Parse(str[1..end]);
             str = str[(end + 2)..];
         }
-        else if (uint.TryParse(str, out uint result))
+        else if (int.TryParse(str, out int result))
         {
             id = result;
             restNick = false;

@@ -2,13 +2,10 @@ namespace Owop;
 
 public partial struct World
 {
-    public const string CHAT_VERIFICATION = "\u000A";
-    public const int CHAT_TIMEOUT = 2000;
-
     public async readonly Task SendChatMessage(string message)
     {
         int length = ClientRank.GetMaxMessageLength();
-        string data = message[0..Math.Min(message.Length, length)] + CHAT_VERIFICATION;
+        string data = message[0..Math.Min(message.Length, length)] + Instance.Connection.Client.Options.ChatVerification;
         await Instance.Connection.Send(data);
     }
 
@@ -24,7 +21,7 @@ public partial struct World
         await RunCommand("nick", nickname);
     }
 
-    public async readonly Task Tell(uint id, string message)
+    public async readonly Task Tell(int id, string message)
     {
         await RunCommand("tell", id.ToString(), message);
     }

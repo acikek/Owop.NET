@@ -5,7 +5,11 @@ namespace Owop;
 public class ClientOptions()
 {
     public string Url = "wss://ourworldofpixels.com";
-    public ushort WorldVerification = 25565;
+    public short WorldVerification = 25565;
+    public int MaxWorldNameLength = 24;
+    public int ChunkSize = 16;
+    public string ChatVerification = "\u000A";
+    public int ChatTimeout = 2000;
 }
 
 public partial class OwopClient : IDisposable
@@ -22,9 +26,16 @@ public partial class OwopClient : IDisposable
         Options = options ?? new ClientOptions();
     }
 
+    private string CleanWorldId(string world)
+    {
+        string fixedLength = world[..Math.Min(world.Length, Options.MaxWorldNameLength)];
+        var span = fixedLength.Where(c => char.IsLetterOrDigit(c) || c == '_' || c == '.');
+        return new(span.ToArray());
+    }
+
     public bool Connect(string world = "main")
     {
-        string clean = WorldConnection.CleanId(world);
+        string clean = CleanWorldId(world);
         if (Connections.ContainsKey(clean))
         {
             return false;
@@ -37,7 +48,7 @@ public partial class OwopClient : IDisposable
 
     public async Task<bool> Disconnect(string world = "main")
     {
-        string clean = WorldConnection.CleanId(world);
+        string clean = CleanWorldId(world);
         if (Connections.Remove(clean, out var connection))
         {
             await connection.Disconnect();

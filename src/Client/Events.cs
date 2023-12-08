@@ -11,7 +11,7 @@ public record ChatEventArgs(World World, ChatPlayer Player, string Content)
     }
 }
 
-public record TellEventArgs(World World, uint PlayerId, string Content)
+public record TellEventArgs(World World, int PlayerId, string Content)
 {
 }
 

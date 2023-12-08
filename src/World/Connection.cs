@@ -12,7 +12,7 @@ public partial class WorldConnection : IDisposable
     private readonly ManualResetEvent ExitEvent = new(false);
 
     private readonly WorldData World;
-    private readonly OwopClient Client;
+    public readonly OwopClient Client;
     private readonly Action<ResponseMessage, WorldData> MessageHandler;
 
     public WorldConnection(string name, OwopClient client, Action<ResponseMessage, WorldData> messageHandler)
@@ -21,12 +21,6 @@ public partial class WorldConnection : IDisposable
         World = new(name, this);
         Client = client;
         MessageHandler = messageHandler;
-    }
-
-    public static string CleanId(string world)
-    {
-        var span = world.Where(c => char.IsLetterOrDigit(c) || c == '_' || c == '.');
-        return new(span.ToArray());
     }
 
     private byte[] GetConnectionMessage(string world)

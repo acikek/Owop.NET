@@ -62,14 +62,14 @@ public partial class OwopClient
                     {
                         return;
                     }
-                    world.ClientPlayerData.Id = (uint)id;
+                    world.ClientPlayerData.Id = id;
                     if (!world.Connected)
                     {
                         world.Connected = true;
                         Ready?.Invoke(this, world);
                         Task.Run(() =>
                         {
-                            Thread.Sleep(World.CHAT_TIMEOUT);
+                            Thread.Sleep(Options.ChatTimeout);
                             ChatReady?.Invoke(this, world);
                         });
                     }
@@ -94,9 +94,9 @@ public partial class OwopClient
                         {
                             return;
                         }
-                        world.PlayerData.TryAdd((uint)id, new(world));
-                        var data = world.PlayerData[(uint)id];
-                        data.Id = (uint)id;
+                        world.PlayerData.TryAdd(id, new(world));
+                        var data = world.PlayerData[id];
+                        data.Id = id;
                         data.X = x;
                         data.Y = y;
                         data.WorldX = x / 16;

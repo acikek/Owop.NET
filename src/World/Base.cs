@@ -3,8 +3,8 @@ namespace Owop;
 public class WorldData
 {
     public readonly string Name;
-    public Dictionary<uint, PlayerData> PlayerData = [];
-    public Dictionary<uint, Player> Players = [];
+    public Dictionary<int, PlayerData> PlayerData = [];
+    public Dictionary<int, Player> Players = [];
     public string? ClientNickname;
     public PlayerRank ClientRank = PlayerRank.Player;
     public PlayerData ClientPlayerData;
@@ -25,7 +25,7 @@ public partial struct World
     private WorldData Instance;
 
     public readonly string Name => Instance.Name;
-    public readonly Dictionary<uint, Player> Players => Instance.Players;
+    public readonly Dictionary<int, Player> Players => Instance.Players;
     public readonly string? ClientNickname => Instance.ClientNickname;
     public readonly PlayerRank ClientRank => Instance.ClientRank;
     public readonly Player ClientPlayer => Instance.ClientPlayerData;
