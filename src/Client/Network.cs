@@ -77,32 +77,60 @@ public partial class OwopClient
                 }
             case Opcode.WorldUpdate:
                 {
-                    if (!reader.TryRead(out byte count))
+                    if (reader.TryRead(out byte playerCount))
                     {
-                        return;
-                    }
-                    List<uint> updated = [];
-                    for (byte i = 0; i < count; i++)
-                    {
-                        if (!reader.TryReadLittleEndian(out int id) ||
-                            !reader.TryReadLittleEndian(out int x) ||
-                            !reader.TryReadLittleEndian(out int y) ||
-                            !reader.TryRead(out byte r) ||
-                            !reader.TryRead(out byte g) ||
-                            !reader.TryRead(out byte b) ||
-                            !reader.TryRead(out byte toolId))
+                        for (byte i = 0; i < playerCount; i++)
                         {
-                            return;
+                            if (!reader.TryReadLittleEndian(out int id) ||
+                                !reader.TryReadLittleEndian(out int x) ||
+                                !reader.TryReadLittleEndian(out int y) ||
+                                !reader.TryRead(out byte r) ||
+                                !reader.TryRead(out byte g) ||
+                                !reader.TryRead(out byte b) ||
+                                !reader.TryRead(out byte toolId))
+                            {
+                                return;
+                            }
+                            bool newConnection = world.PlayerData.TryAdd(id, new(world));
+                            var data = world.PlayerData[id];
+                            data.Id = id;
+                            data.UpdatePos(x, y, Options.ChunkSize);
+                            data.Color = Color.FromArgb(255, r, g, b);
+                            data.Tool = (PlayerTool)toolId;
+                            if (newConnection)
+                            {
+                                PlayerConnected?.Invoke(this, new(world, data));
+                            }
                         }
-                        world.PlayerData.TryAdd(id, new(world));
-                        var data = world.PlayerData[id];
-                        data.Id = id;
-                        data.UpdatePos(x, y, Options.ChunkSize);
-                        data.Color = Color.FromArgb(255, r, g, b);
-                        data.Tool = (PlayerTool)toolId;
-                        updated.Add((uint)id);
                     }
-
+                    if (!reader.TryReadLittleEndian(out short pixelCount))
+                    {
+                        for (short i = 0; i < pixelCount; i++)
+                        {
+                            // TODO extract into method
+                            if (!reader.TryReadLittleEndian(out int id) ||
+                                !reader.TryReadLittleEndian(out int x) ||
+                                !reader.TryReadLittleEndian(out int y) ||
+                                !reader.TryRead(out byte r) ||
+                                !reader.TryRead(out byte g) ||
+                                !reader.TryRead(out byte b))
+                            {
+                                return;
+                            }
+                            //Console.WriteLine($"WorldUpdate pixel: ({x}, {y}) = {r}, {g}, {b}");
+                        }
+                    }
+                    if (reader.TryRead(out byte dcCount))
+                    {
+                        for (byte i = 0; i < dcCount; i++)
+                        {
+                            if (reader.TryReadLittleEndian(out int id))
+                            {
+                                var player = world.PlayerData[id];
+                                PlayerDisconnected?.Invoke(this, new(world, player));
+                            }
+                        }
+                    }
                     break;
                 }
         }

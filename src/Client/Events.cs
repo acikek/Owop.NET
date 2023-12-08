@@ -15,10 +15,14 @@ public record TellEventArgs(World World, int PlayerId, string Content)
 {
 }
 
+public record ConnectionEventArgs(World World, Player Player);
+
 public partial class OwopClient
 {
     public event EventHandler<World>? Ready;
     public event EventHandler<World>? ChatReady;
     public event EventHandler<ChatEventArgs>? Chat;
     public event EventHandler<TellEventArgs>? Tell;
+    public event EventHandler<ConnectionEventArgs>? PlayerConnected;
+    public event EventHandler<ConnectionEventArgs>? PlayerDisconnected;
 }
