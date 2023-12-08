@@ -15,10 +15,6 @@ public partial class OwopClient : IDisposable
     public readonly ClientOptions Options;
     public readonly Dictionary<string, WorldConnection> Connections = [];
 
-    public event EventHandler<World>? Ready;
-    public event EventHandler<World>? ChatReady;
-    public event EventHandler<ChatMessage>? Chat;
-
     public OwopClient(ClientOptions? options = null)
     {
         using ILoggerFactory factory = LoggerFactory.Create(builder => builder.AddConsole());

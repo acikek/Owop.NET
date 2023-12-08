@@ -46,7 +46,7 @@ public partial class OwopClient
         else if (response.Text is not null)
         {
             Logger.LogDebug($"Received chat message: {response.Text}");
-            var message = ChatMessage.Create(world, response.Text);
+            var message = ChatEventArgs.Create(world, response.Text);
             Chat?.Invoke(this, message);
         }
     }
