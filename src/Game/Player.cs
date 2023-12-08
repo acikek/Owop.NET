@@ -46,26 +46,15 @@ public static class PlayerRanks
         };
 }
 
-public record PlayerData
+public class PlayerData()
 {
-    public static PlayerData Empty => new()
-    {
-        X = 0,
-        Y = 0,
-        WorldX = 0,
-        WorldY = 0,
-        Tool = PlayerTool.Cursor,
-        Id = 0,
-        Color = Color.Black
-    };
-
-    public required int X { get; set; }
-    public required int Y { get; set; }
-    public required int WorldX { get; set; }
-    public required int WorldY { get; set; }
-    public required PlayerTool Tool { get; set; }
-    public required uint Id { get; set; }
-    public required Color Color { get; set; }
+    public int X { get; set; } = 0;
+    public int Y { get; set; } = 0;
+    public int WorldX { get; set; } = 0;
+    public int WorldY { get; set; } = 0;
+    public PlayerTool Tool { get; set; } = PlayerTool.Cursor;
+    public uint Id { get; set; } = 0;
+    public Color Color { get; set; } = Color.Black;
 }
 
 public record struct Player

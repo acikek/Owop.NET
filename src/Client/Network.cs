@@ -83,7 +83,7 @@ public partial class OwopClient
                         {
                             return;
                         }
-                        WorldPlayerData.TryAdd((uint)id, PlayerData.Empty);
+                        WorldPlayerData.TryAdd((uint)id, new());
                         var data = WorldPlayerData[(uint)id];
                         data.Id = (uint)id;
                         data.X = x;

@@ -6,7 +6,7 @@ public partial class OwopClient : IDisposable
 {
     public ILogger Logger;
 
-    private PlayerData PlayerData = PlayerData.Empty;
+    private PlayerData PlayerData = new();
     public Player Player => PlayerData;
     public string? Nickname { get; private set; }
     public PlayerRank Rank { get; private set; } = PlayerRank.None;
