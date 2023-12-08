@@ -55,7 +55,6 @@ public record PlayerData
         WorldX = 0,
         WorldY = 0,
         Tool = PlayerTool.Cursor,
-        Rank = PlayerRank.None,
         Id = 0,
         Color = Color.Black
     };
@@ -65,7 +64,6 @@ public record PlayerData
     public required int WorldX { get; set; }
     public required int WorldY { get; set; }
     public required PlayerTool Tool { get; set; }
-    public required PlayerRank Rank { get; set; }
     public required uint Id { get; set; }
     public required Color Color { get; set; }
 }
@@ -81,7 +79,6 @@ public record struct Player
     public readonly int WorldY => Instance.WorldY;
     public readonly Vector2 WorldPos => new(WorldX, WorldY);
     public readonly PlayerTool Tool => Instance.Tool;
-    public readonly PlayerRank Rank => Instance.Rank;
     public readonly uint Id => Instance.Id;
     public readonly Color Color => Instance.Color;
 

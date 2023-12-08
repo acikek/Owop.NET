@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Logging;
-using Owop.Client;
 
 namespace Owop;
 
@@ -10,15 +9,18 @@ public partial class OwopClient : IDisposable
     private PlayerData PlayerData = PlayerData.Empty;
     public Player Player => PlayerData;
     public string? Nickname { get; private set; }
+    public PlayerRank Rank { get; private set; } = PlayerRank.None;
 
     public readonly ConnectionManager Connection;
     public bool Connected { get; private set; }
 
     public event EventHandler? Ready;
     public event EventHandler? ChatReady;
-    public event EventHandler<ChatMessage>? ChatEvent;
+    public event EventHandler<ChatMessage>? Chat;
 
-    public World? World { get; private set; }
+    public string? World;
+    private readonly Dictionary<uint, PlayerData> WorldPlayerData = [];
+    public readonly Dictionary<uint, Player> Players = [];
 
     public OwopClient()
     {

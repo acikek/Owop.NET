@@ -3,10 +3,11 @@ namespace Owop;
 public partial class OwopClient
 {
     public const string CHAT_VERIFICATION = "\u000A";
+    public const int CHAT_TIMEOUT = 2000;
 
     public async Task SendChatMessage(string message)
     {
-        int length = Player.Rank.GetMaxMessageLength();
+        int length = Rank.GetMaxMessageLength();
         string data = message[0..Math.Min(message.Length, length)] + CHAT_VERIFICATION;
         await Task.Run(() => Connection.Socket.Send(data));
     }
