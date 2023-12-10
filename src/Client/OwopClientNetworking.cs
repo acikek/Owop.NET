@@ -57,17 +57,22 @@ public partial class OwopClient
                     {
                         for (byte i = 0; i < playerCount; i++)
                         {
-                            if (!OwopProtocol.TryReadPlayer(reader, hasTool: true, out PlayerData data))
+                            if (!OwopProtocol.TryReadPlayer(reader, hasTool: true, out PlayerData data) ||
+                                data.Id == world.ClientPlayerData.Id)
                             {
                                 return;
                             }
-                            bool newConnection = world.PlayerData.TryAdd(data.Id, new(world));
+                            bool newConnection = !world.PlayerData.ContainsKey(data.Id);
+                            if (newConnection)
+                            {
+                                world.PlayerData[data.Id] = new(world);
+                            }
                             var player = world.PlayerData[data.Id];
                             player.Id = data.Id;
                             player.Pos = data.Pos;
                             player.Color = data.Color;
                             player.Tool = data.Tool;
-                            if (newConnection)
+                            if (world.Initialized && newConnection)
                             {
                                 PlayerConnected?.Invoke(this, player);
                             }
@@ -92,8 +97,13 @@ public partial class OwopClient
                             {
                                 var player = world.PlayerData[id];
                                 PlayerDisconnected?.Invoke(this, player);
+                                world.PlayerData.Remove(id);
                             }
                         }
+                    }
+                    if (!world.Initialized)
+                    {
+                        world.Initialized = true;
                     }
                     break;
                 }

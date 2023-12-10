@@ -9,6 +9,7 @@ public class WorldData
 
     public WorldConnection Connection;
     public bool Connected = false;
+    public bool Initialized = false;
 
     public WorldData(string name, WorldConnection connection)
     {
