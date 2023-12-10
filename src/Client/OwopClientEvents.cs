@@ -1,4 +1,4 @@
-namespace Owop;
+namespace Owop.Client;
 
 public record ChatEventArgs(World World, ChatPlayer Player, string Content)
 {
@@ -15,14 +15,12 @@ public record TellEventArgs(World World, int PlayerId, string Content)
 {
 }
 
-public record ConnectionEventArgs(World World, Player Player);
-
 public partial class OwopClient
 {
     public event EventHandler<World>? Ready;
     public event EventHandler<World>? ChatReady;
     public event EventHandler<ChatEventArgs>? Chat;
     public event EventHandler<TellEventArgs>? Tell;
-    public event EventHandler<ConnectionEventArgs>? PlayerConnected;
-    public event EventHandler<ConnectionEventArgs>? PlayerDisconnected;
+    public event EventHandler<Player>? PlayerConnected;
+    public event EventHandler<Player>? PlayerDisconnected;
 }

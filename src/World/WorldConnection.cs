@@ -2,11 +2,12 @@ using System.Buffers;
 using System.Net.WebSockets;
 using System.Text;
 using Microsoft.Extensions.Logging;
+using Owop.Client;
 using Websocket.Client;
 
 namespace Owop;
 
-public partial class WorldConnection : IDisposable
+public class WorldConnection : IDisposable
 {
     public readonly WebsocketClient Socket;
     private readonly ManualResetEvent ExitEvent = new(false);
