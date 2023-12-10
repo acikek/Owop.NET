@@ -57,25 +57,19 @@ public partial class OwopClient
                     {
                         for (byte i = 0; i < playerCount; i++)
                         {
-                            if (!reader.TryReadLittleEndian(out int id) ||
-                                !reader.TryReadLittleEndian(out int x) ||
-                                !reader.TryReadLittleEndian(out int y) ||
-                                !reader.TryRead(out byte r) ||
-                                !reader.TryRead(out byte g) ||
-                                !reader.TryRead(out byte b) ||
-                                !reader.TryRead(out byte toolId))
+                            if (!OwopProtocol.TryReadPlayer(reader, hasTool: true, out PlayerData data))
                             {
                                 return;
                             }
-                            bool newConnection = world.PlayerData.TryAdd(id, new(world));
-                            var data = world.PlayerData[id];
-                            data.Id = id;
-                            data.UpdatePos(x, y, Options.ChunkSize);
-                            data.Color = Color.FromArgb(255, r, g, b);
-                            data.Tool = (PlayerTool)toolId;
+                            bool newConnection = world.PlayerData.TryAdd(data.Id, new(world));
+                            var player = world.PlayerData[data.Id];
+                            player.Id = data.Id;
+                            player.Pos = data.Pos;
+                            player.Color = data.Color;
+                            player.Tool = data.Tool;
                             if (newConnection)
                             {
-                                PlayerConnected?.Invoke(this, data);
+                                PlayerConnected?.Invoke(this, player);
                             }
                         }
                     }
@@ -83,13 +77,7 @@ public partial class OwopClient
                     {
                         for (short i = 0; i < pixelCount; i++)
                         {
-                            // TODO extract into method
-                            if (!reader.TryReadLittleEndian(out int id) ||
-                                !reader.TryReadLittleEndian(out int x) ||
-                                !reader.TryReadLittleEndian(out int y) ||
-                                !reader.TryRead(out byte r) ||
-                                !reader.TryRead(out byte g) ||
-                                !reader.TryRead(out byte b))
+                            if (!OwopProtocol.TryReadPlayer(reader, hasTool: false, out PlayerData data))
                             {
                                 return;
                             }

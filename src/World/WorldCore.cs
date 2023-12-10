@@ -2,6 +2,8 @@ namespace Owop;
 
 public partial struct World
 {
+    public const int CHUNK_SIZE = 16;
+
     private WorldData Instance;
 
     public readonly string Name => Instance.Name;

@@ -4,7 +4,7 @@ namespace Owop;
 
 public partial struct Player
 {
-    private PlayerData Instance;
+    private WorldPlayerData Instance;
 
     public readonly World World => Instance.World;
     public readonly Point Pos => Instance.Pos;
@@ -13,5 +13,5 @@ public partial struct Player
     public readonly int Id => Instance.Id;
     public readonly Color Color => Instance.Color;
 
-    public static implicit operator Player(PlayerData data) => new() { Instance = data };
+    public static implicit operator Player(WorldPlayerData data) => new() { Instance = data };
 }

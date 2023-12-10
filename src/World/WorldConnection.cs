@@ -3,6 +3,7 @@ using System.Net.WebSockets;
 using System.Text;
 using Microsoft.Extensions.Logging;
 using Owop.Client;
+using Owop.Protocol;
 using Websocket.Client;
 
 namespace Owop;
@@ -51,18 +52,7 @@ public class WorldConnection : IDisposable
     }
 
     public async Task SendPlayerData()
-    {
-        var player = World.ClientPlayerData;
-        MemoryStream stream = new();
-        BinaryWriter writer = new(stream);
-        writer.Write(player.Pos.X);
-        writer.Write(player.Pos.Y);
-        writer.Write(player.Color.R);
-        writer.Write(player.Color.G);
-        writer.Write(player.Color.B);
-        writer.Write((byte)player.Tool);
-        await Send(stream.ToArray());
-    }
+        => await Send(OwopProtocol.EncodePlayer(World.ClientPlayerData));
 
     public async Task Disconnect()
     {

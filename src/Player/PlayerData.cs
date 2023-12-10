@@ -2,24 +2,47 @@ using System.Drawing;
 
 namespace Owop;
 
-public class PlayerData(World world)
+public class PlayerData
 {
-    public readonly World World = world;
-    public Point Pos { get; private set; } = Point.Empty;
-    public Point WorldPos { get; private set; } = Point.Empty;
     public PlayerTool Tool { get; set; } = PlayerTool.Cursor;
     public int Id { get; set; } = 0;
     public Color Color { get; set; } = Color.Black;
 
-    public void UpdatePos(int x, int y, int chunkSize)
+    private Point _pos = Point.Empty;
+    private Point _worldPos = Point.Empty;
+
+    public Point Pos
     {
-        Pos = new(x, y);
-        WorldPos = new(x / chunkSize, y / chunkSize);
+        get => _pos;
+        set
+        {
+            _pos = value;
+            _worldPos = new(value.X / World.CHUNK_SIZE, value.Y / World.CHUNK_SIZE);
+        }
     }
 
-    public void UpdateWorldPos(int x, int y, int chunkSize)
+    public Point WorldPos
     {
-        Pos = new(x * chunkSize, y * chunkSize);
+        get => _worldPos;
+        set
+        {
+            _worldPos = value;
+            _pos = new(value.X * World.CHUNK_SIZE, value.Y * World.CHUNK_SIZE);
+        }
+    }
+
+    public void SetPos(int x, int y)
+    {
+        Pos = new(x, y);
+    }
+
+    public void SetWorldPos(int x, int y)
+    {
         WorldPos = new(x, y);
     }
+}
+
+public class WorldPlayerData(World world) : PlayerData
+{
+    public readonly World World = world;
 }
