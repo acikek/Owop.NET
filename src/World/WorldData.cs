@@ -5,9 +5,7 @@ public class WorldData
     public readonly string Name;
     public Dictionary<int, WorldPlayerData> PlayerData = [];
     public Dictionary<int, Player> Players = [];
-    public string? ClientNickname;
-    public PlayerRank ClientRank = PlayerRank.Player;
-    public WorldPlayerData ClientPlayerData;
+    public ClientPlayerData ClientPlayerData;
 
     public WorldConnection Connection;
     public bool Connected = false;
@@ -15,7 +13,7 @@ public class WorldData
     public WorldData(string name, WorldConnection connection)
     {
         Name = name;
-        ClientPlayerData = new WorldPlayerData(this);
+        ClientPlayerData = new(this);
         Connection = connection;
     }
 }

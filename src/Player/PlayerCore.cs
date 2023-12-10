@@ -2,9 +2,9 @@ using System.Drawing;
 
 namespace Owop;
 
-public partial struct Player
+public readonly partial struct Player(WorldPlayerData data)
 {
-    private WorldPlayerData Instance;
+    private readonly WorldPlayerData Instance = data;
 
     public readonly World World => Instance.World;
     public readonly Point Pos => Instance.Pos;
@@ -13,5 +13,5 @@ public partial struct Player
     public readonly int Id => Instance.Id;
     public readonly Color Color => Instance.Color;
 
-    public static implicit operator Player(WorldPlayerData data) => new() { Instance = data };
+    public static implicit operator Player(WorldPlayerData data) => new(data);
 }

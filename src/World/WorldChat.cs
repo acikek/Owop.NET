@@ -4,7 +4,7 @@ public partial struct World
 {
     public async readonly Task SendChatMessage(string message)
     {
-        int length = ClientRank.GetMaxMessageLength();
+        int length = ClientPlayer.Rank.GetMaxMessageLength();
         string data = message[0..Math.Min(message.Length, length)] + Instance.Connection.Client.Options.ChatVerification;
         await Instance.Connection.Send(data);
     }
@@ -17,7 +17,7 @@ public partial struct World
 
     public async readonly Task SetNickname(string nickname)
     {
-        Instance.ClientNickname = nickname;
+        Instance.ClientPlayerData.Nickname = nickname;
         await RunCommand("nick", nickname);
     }
 

@@ -1,16 +1,14 @@
 namespace Owop;
 
-public partial struct World
+public readonly partial struct World(WorldData data)
 {
     public const int CHUNK_SIZE = 16;
 
-    private WorldData Instance;
+    private readonly WorldData Instance = data;
 
     public readonly string Name => Instance.Name;
     public readonly Dictionary<int, Player> Players => Instance.Players;
-    public readonly string? ClientNickname => Instance.ClientNickname;
-    public readonly PlayerRank ClientRank => Instance.ClientRank;
-    public readonly Player ClientPlayer => Instance.ClientPlayerData;
+    public readonly ClientPlayer ClientPlayer => Instance.ClientPlayerData;
 
-    public static implicit operator World(WorldData data) => new() { Instance = data };
+    public static implicit operator World(WorldData data) => new(data);
 }
