@@ -12,17 +12,13 @@ public partial class OwopClient
 {
     private readonly HttpClient HttpClient;
     private readonly JsonSerializerOptions JsonOptions = new() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
-    public ServerInfo ServerInfo { get; private set; } = new();
+    public ServerInfo? ServerInfo { get; private set; }
 
     public async Task<ServerInfo?> FetchServerInfo()
     {
         var json = await HttpClient.GetStringAsync(Options.ApiUrl);
-        Console.WriteLine(json);
         var serverInfo = JsonSerializer.Deserialize<ServerInfo>(json, JsonOptions);
-        if (serverInfo is not null)
-        {
-            ServerInfo = serverInfo;
-        }
+        ServerInfo = serverInfo;
         return serverInfo;
     }
 

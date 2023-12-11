@@ -2,6 +2,13 @@
 
 namespace Owop.Client;
 
+public enum ConnectResult
+{
+    LimitReached,
+    Exists,
+    Activated
+}
+
 public partial class OwopClient : IDisposable
 {
     public ILogger Logger;
@@ -24,17 +31,22 @@ public partial class OwopClient : IDisposable
         return new(span.ToArray());
     }
 
-    public bool Connect(string world = "main")
+    public async Task<ConnectResult> Connect(string world = "main")
     {
+        var serverInfo = await FetchServerInfo();
+        if (serverInfo is null || serverInfo.ClientConnections > serverInfo.MaxConnectionsPerIp)
+        {
+            return ConnectResult.LimitReached;
+        }
         string clean = CleanWorldId(world);
         if (Connections.ContainsKey(clean))
         {
-            return false;
+            return ConnectResult.Exists;
         }
         WorldConnection connection = new(clean, this, HandleMessage);
         Connections[clean] = connection;
         connection.Connect(clean);
-        return true;
+        return ConnectResult.Activated;
     }
 
     public async Task<bool> Disconnect(string world = "main")
