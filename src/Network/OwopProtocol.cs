@@ -2,7 +2,7 @@ using System.Buffers;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 
-namespace Owop.Protocol;
+namespace Owop.Network;
 
 public static class OwopProtocol
 {

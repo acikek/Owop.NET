@@ -1,13 +1,31 @@
 using System.Buffers;
 using System.Drawing;
+using System.Net;
+using System.Text.Json;
 using Microsoft.Extensions.Logging;
-using Owop.Protocol;
+using Owop.Network;
 using Websocket.Client;
 
 namespace Owop.Client;
 
 public partial class OwopClient
 {
+    private readonly HttpClient HttpClient;
+    private readonly JsonSerializerOptions JsonOptions = new() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
+    public ServerInfo ServerInfo { get; private set; } = new();
+
+    public async Task<ServerInfo?> FetchServerInfo()
+    {
+        var json = await HttpClient.GetStringAsync(Options.ApiUrl);
+        Console.WriteLine(json);
+        var serverInfo = JsonSerializer.Deserialize<ServerInfo>(json, JsonOptions);
+        if (serverInfo is not null)
+        {
+            ServerInfo = serverInfo;
+        }
+        return serverInfo;
+    }
+
     private void HandleMessage(ResponseMessage response, WorldData world)
     {
         if (response.Binary is not null)

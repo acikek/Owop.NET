@@ -1,4 +1,4 @@
-namespace Owop.Protocol;
+namespace Owop.Network;
 
 /// <summary>OWOP Websocket protocol opcode.</summary>
 public enum Opcode

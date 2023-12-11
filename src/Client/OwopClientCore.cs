@@ -14,6 +14,7 @@ public partial class OwopClient : IDisposable
         using ILoggerFactory factory = LoggerFactory.Create(builder => builder.AddConsole());
         Logger = factory.CreateLogger("OWOP.NET");
         Options = options ?? new ClientOptions();
+        HttpClient = new();
     }
 
     private string CleanWorldId(string world)
@@ -61,6 +62,7 @@ public partial class OwopClient : IDisposable
         {
             connection.Dispose();
         }
+        HttpClient.Dispose();
         GC.SuppressFinalize(this);
     }
 }

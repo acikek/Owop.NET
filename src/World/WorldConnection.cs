@@ -3,7 +3,7 @@ using System.Net.WebSockets;
 using System.Text;
 using Microsoft.Extensions.Logging;
 using Owop.Client;
-using Owop.Protocol;
+using Owop.Network;
 using Websocket.Client;
 
 namespace Owop;
@@ -19,7 +19,7 @@ public class WorldConnection : IDisposable
 
     public WorldConnection(string name, OwopClient client, Action<ResponseMessage, WorldData> messageHandler)
     {
-        Socket = new(new Uri(client.Options.Url));
+        Socket = new(new Uri(client.Options.SocketUrl));
         World = new(name, this);
         Client = client;
         MessageHandler = messageHandler;
