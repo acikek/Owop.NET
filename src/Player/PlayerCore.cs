@@ -4,14 +4,14 @@ namespace Owop;
 
 public readonly partial struct Player(WorldPlayerData data)
 {
-    private readonly WorldPlayerData Instance = data;
+    private readonly WorldPlayerData _instance = data;
 
-    public readonly World World => Instance.World;
-    public readonly Point Pos => Instance.Pos;
-    public readonly Point WorldPos => Instance.WorldPos;
-    public readonly PlayerTool Tool => Instance.Tool;
-    public readonly int Id => Instance.Id;
-    public readonly Color Color => Instance.Color;
+    public readonly World World => _instance.World;
+    public readonly Point Pos => _instance.Pos;
+    public readonly Point WorldPos => _instance.WorldPos;
+    public readonly PlayerTool Tool => _instance.Tool;
+    public readonly int Id => _instance.Id;
+    public readonly Color Color => _instance.Color;
 
     public static implicit operator Player(WorldPlayerData data) => new(data);
 }

@@ -11,18 +11,18 @@ namespace Owop;
 public class WorldConnection : IDisposable
 {
     public readonly WebsocketClient Socket;
-    private readonly ManualResetEvent ExitEvent = new(false);
+    private readonly ManualResetEvent _exitEvent = new(false);
 
-    private readonly WorldData World;
+    private readonly WorldData _world;
     public readonly OwopClient Client;
-    private readonly Action<ResponseMessage, WorldData> MessageHandler;
+    private readonly Action<ResponseMessage, WorldData> _messageHandler;
 
     public WorldConnection(string name, OwopClient client, Action<ResponseMessage, WorldData> messageHandler)
     {
         Socket = new(new Uri(client.Options.SocketUrl));
-        World = new(name, this);
+        _world = new(name, this);
         Client = client;
-        MessageHandler = messageHandler;
+        _messageHandler = messageHandler;
     }
 
     private byte[] GetConnectionMessage(string world)
@@ -45,25 +45,25 @@ public class WorldConnection : IDisposable
             Client.Logger.LogDebug($"Reconnecting to world... (type: {info.Type})");
             Socket.Send(connectMsg);
         });
-        Socket.MessageReceived.Subscribe(msg => MessageHandler(msg, World));
+        Socket.MessageReceived.Subscribe(msg => _messageHandler(msg, _world));
         Socket.Start();
         Task.Run(() => Socket.Send(connectMsg));
-        ExitEvent.WaitOne();
+        _exitEvent.WaitOne();
     }
 
     public async Task SendPlayerData()
-        => await Send(OwopProtocol.EncodePlayer(World.ClientPlayerData));
+        => await Send(OwopProtocol.EncodePlayer(_world.ClientPlayerData));
 
     public async Task Disconnect()
     {
         await Socket.Stop(WebSocketCloseStatus.NormalClosure, "Client.Disconnect()");
-        ExitEvent.Set();
+        _exitEvent.Set();
     }
 
     public void Dispose()
     {
         Socket.Dispose();
-        ExitEvent.Set();
+        _exitEvent.Set();
         GC.SuppressFinalize(this);
     }
 }

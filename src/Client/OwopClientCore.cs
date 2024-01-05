@@ -21,7 +21,7 @@ public partial class OwopClient : IDisposable
         using ILoggerFactory factory = LoggerFactory.Create(builder => builder.AddConsole());
         Logger = factory.CreateLogger("OWOP.NET");
         Options = options ?? new ClientOptions();
-        HttpClient = new();
+        _httpClient = new();
     }
 
     private string CleanWorldId(string world)
@@ -34,7 +34,7 @@ public partial class OwopClient : IDisposable
     public async Task<ConnectResult> Connect(string world = "main")
     {
         var serverInfo = await FetchServerInfo();
-        if (serverInfo is null || serverInfo.ClientConnections > serverInfo.MaxConnectionsPerIp)
+        if (serverInfo is null || serverInfo.ClientConnections >= serverInfo.MaxConnectionsPerIp)
         {
             return ConnectResult.LimitReached;
         }
@@ -74,7 +74,7 @@ public partial class OwopClient : IDisposable
         {
             connection.Dispose();
         }
-        HttpClient.Dispose();
+        _httpClient.Dispose();
         GC.SuppressFinalize(this);
     }
 }
