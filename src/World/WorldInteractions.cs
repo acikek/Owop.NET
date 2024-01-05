@@ -2,9 +2,14 @@ namespace Owop;
 
 public partial struct World
 {
-    public readonly async Task Move(int x, int y)
+    public async readonly Task Login(string password)
     {
-        _instance.ClientPlayerData.SetPos(x, y);
-        await _instance.Connection.SendPlayerData();
+        await RunCommand("pass", password);
+    }
+
+    public async readonly Task MovePlayer(int id, int x, int y)
+    {
+        _instance.Connection.CheckRank(PlayerRank.Moderator);
+        await RunCommand("tp", id.ToString(), x.ToString(), y.ToString());
     }
 }

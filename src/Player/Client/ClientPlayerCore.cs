@@ -6,7 +6,7 @@ public readonly partial struct ClientPlayer(ClientPlayerData data)
 {
     private readonly ClientPlayerData _instance = data;
 
-    public readonly World World => _instance.World;
+    public readonly World World => _instance.WorldData;
     public readonly Point Pos => _instance.Pos;
     public readonly Point WorldPos => _instance.WorldPos;
     public readonly PlayerTool Tool => _instance.Tool;

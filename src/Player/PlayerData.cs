@@ -42,7 +42,8 @@ public class PlayerData
     }
 }
 
-public class WorldPlayerData(World world) : PlayerData
+public class WorldPlayerData(WorldData worldData) : PlayerData
 {
-    public readonly World World = world;
+    public readonly WorldData WorldData = worldData;
+    public World World => WorldData;
 }

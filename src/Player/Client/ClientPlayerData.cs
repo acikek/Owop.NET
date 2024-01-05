@@ -1,6 +1,6 @@
 namespace Owop;
 
-public class ClientPlayerData(World world) : WorldPlayerData(world)
+public class ClientPlayerData(WorldData worldData) : WorldPlayerData(worldData)
 {
     public string? Nickname;
     public PlayerRank Rank;

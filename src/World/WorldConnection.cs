@@ -51,6 +51,14 @@ public class WorldConnection : IDisposable
         _exitEvent.WaitOne();
     }
 
+    public void CheckRank(PlayerRank rank)
+    {
+        if (_world.ClientPlayerData.Rank <= rank)
+        {
+            throw new InvalidOperationException($"Insufficient permissions: must be rank '{rank}' or higher (is {_world.ClientPlayerData.Rank})");
+        }
+    }
+
     public async Task SendPlayerData()
         => await Send(OwopProtocol.EncodePlayer(_world.ClientPlayerData));
 

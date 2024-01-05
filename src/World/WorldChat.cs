@@ -15,14 +15,6 @@ public partial struct World
         await SendChatMessage(message);
     }
 
-    public async readonly Task SetNickname(string nickname)
-    {
-        _instance.ClientPlayerData.Nickname = nickname;
-        await RunCommand("nick", nickname);
-    }
-
-    public async readonly Task Tell(int id, string message)
-    {
-        await RunCommand("tell", id.ToString(), message);
-    }
+    public async readonly Task TellPlayer(int id, string message)
+        => await RunCommand("tell", id.ToString(), message);
 }
