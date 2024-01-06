@@ -29,9 +29,9 @@ public partial class OwopClient
 
     private void InvokeTell(ServerMessage message, WorldData world)
     {
-        if (int.TryParse(message.Args[0], out int id) /*|| world.Players.TryGetValue(id, out Player? player) || player is null*/)
+        if (int.TryParse(message.Args[0], out int id) && world.World.GetPlayerById(id) is IPlayer player /*|| world.Players.TryGetValue(id, out Player? player) || player is null*/)
         {
-            Tell?.Invoke(this, new(world, world.Players[id], message.Args[1]));
+            Tell?.Invoke(this, new(world, player, message.Args[1]));
         }
     }
 }

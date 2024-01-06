@@ -81,9 +81,12 @@ public partial class OwopClient
                 player.Pos = data.Pos;
                 player.Color = data.Color;
                 player.Tool = data.Tool;
-                if (world.Initialized && newConnection)
+                if (!world.Players.ContainsKey(data.Id))
                 {
                     world.Players[data.Id] = player;
+                }
+                if (world.Initialized && newConnection)
+                {
                     PlayerConnected?.Invoke(this, player);
                 }
             }
