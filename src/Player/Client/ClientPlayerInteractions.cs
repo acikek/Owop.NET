@@ -20,8 +20,9 @@ public partial class ClientPlayer
         await _instance.World.RunCommand("nick", nickname);
     }
 
-    public async Task ResetNickname()
-        => await _instance.World.RunCommand("nick");
+    public async Task ResetNickname() => await _instance.World.RunCommand("nick");
+
+    public async Task TeleportTo() => await Task.CompletedTask;
 
     public async Task TeleportToPlayer(int id)
     {
@@ -33,4 +34,6 @@ public partial class ClientPlayer
         var player = _instance.World.Players[id];
         await Move(player.Pos.X, player.Pos.Y);
     }
+
+    public async Task Tell(string message) => await World.TellPlayer(Id, message);
 }

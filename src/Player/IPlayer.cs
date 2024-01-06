@@ -10,4 +10,8 @@ public interface IPlayer
     PlayerTool Tool { get; }
     int Id { get; }
     Color Color { get; }
+
+    public Task Move(int x, int y);
+    public Task TeleportTo();
+    public Task Tell(string message);
 }

@@ -10,5 +10,7 @@ public partial class World(WorldData data)
     public Dictionary<int, Player> Players => _instance.Players;
     public ClientPlayer ClientPlayer => _instance.ClientPlayerData;
 
+    public IPlayer GetPlayerById(int id) => Players.TryGetValue(id, out var player) ? player : ClientPlayer;
+
     public static implicit operator World(WorldData data) => data.World;
 }

@@ -81,9 +81,10 @@ public partial class OwopClient
         switch (message.Type)
         {
             case ServerMessageType.Chat:
-                Logger.LogDebug($"Received chat message: {message.Args[0]}");
-                var chatMessage = ChatEventArgs.Create(world, message.Args[0]);
-                Chat?.Invoke(this, chatMessage);
+                InvokeChat(message, world);
+                break;
+            case ServerMessageType.TellClient:
+                InvokeTell(message, world);
                 break;
         }
     }

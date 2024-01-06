@@ -83,8 +83,8 @@ public partial class OwopClient
                 player.Tool = data.Tool;
                 if (world.Initialized && newConnection)
                 {
-                    PlayerConnected?.Invoke(this, player);
                     world.Players[data.Id] = player;
+                    PlayerConnected?.Invoke(this, player);
                 }
             }
         }
