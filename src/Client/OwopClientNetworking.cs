@@ -74,7 +74,7 @@ public partial class OwopClient
                 bool newConnection = !world.PlayerData.ContainsKey(data.Id);
                 if (newConnection)
                 {
-                    world.PlayerData[data.Id] = new(world);
+                    world.PlayerData[data.Id] = PlayerData.Create(world);
                 }
                 var player = world.PlayerData[data.Id];
                 player.Id = data.Id;

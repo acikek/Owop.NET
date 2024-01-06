@@ -1,7 +1,12 @@
 namespace Owop;
 
-public class ClientPlayerData(WorldData worldData) : WorldPlayerData(worldData)
+public class ClientPlayerData : WorldPlayerData<ClientPlayer>
 {
     public string? Nickname;
     public PlayerRank Rank;
+
+    public ClientPlayerData(WorldData worldData) : base(worldData, null!)
+    {
+        Player = new ClientPlayer(this);
+    }
 }

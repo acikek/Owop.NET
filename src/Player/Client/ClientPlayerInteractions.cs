@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Owop;
 
-public readonly partial struct ClientPlayer
+public partial class ClientPlayer
 {
     public async Task Move(int x, int y)
     {
@@ -23,7 +23,7 @@ public readonly partial struct ClientPlayer
     public async Task ResetNickname()
         => await _instance.World.RunCommand("nick");
 
-    public async readonly Task TeleportToPlayer(int id)
+    public async Task TeleportToPlayer(int id)
     {
         if (Rank >= PlayerRank.Moderator)
         {

@@ -1,22 +1,22 @@
 namespace Owop;
 
-public partial struct World
+public partial class World
 {
-    public async readonly Task Login(string password)
+    public async Task Login(string password)
     {
         await RunCommand("pass", password);
     }
 
-    public async readonly Task MovePlayer(int id, int x, int y)
+    public async Task MovePlayer(int id, int x, int y)
     {
         _instance.Connection.CheckRank(PlayerRank.Moderator);
         await RunCommand("tp", id.ToString(), x.ToString(), y.ToString());
     }
 
-    public async readonly Task SetRestricted(bool restricted)
+    public async Task SetRestricted(bool restricted)
         => await RunCommand("restrict", restricted.ToString());
 
-    public async readonly Task Restrict() => await SetRestricted(true);
+    public async Task Restrict() => await SetRestricted(true);
 
-    public async readonly Task Unrestrict() => await SetRestricted(false);
+    public async Task Unrestrict() => await SetRestricted(false);
 }

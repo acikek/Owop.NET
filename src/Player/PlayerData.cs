@@ -40,10 +40,18 @@ public class PlayerData
     {
         WorldPos = new(x, y);
     }
+
+    public static WorldPlayerData<Player> Create(WorldData worldData)
+    {
+        var data = new WorldPlayerData<Player>(worldData, null!);
+        data.Player = new Player(data);
+        return data;
+    }
 }
 
-public class WorldPlayerData(WorldData worldData) : PlayerData
+public class WorldPlayerData<T>(WorldData worldData, T player) : PlayerData
 {
     public readonly WorldData WorldData = worldData;
     public World World => WorldData;
+    public T Player = player;
 }
