@@ -22,6 +22,7 @@ public partial class OwopClient : IDisposable
         Logger = factory.CreateLogger("OWOP.NET");
         Options = options ?? new ClientOptions();
         _httpClient = new();
+        _messageBuffer = [];
     }
 
     private string CleanWorldId(string world)

@@ -2,7 +2,7 @@ namespace Owop;
 
 public readonly partial struct World(WorldData data)
 {
-    public const int CHUNK_SIZE = 16;
+    public const int ChunkSize = 16;
 
     private readonly WorldData _instance = data;
 

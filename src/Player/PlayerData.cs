@@ -17,7 +17,7 @@ public class PlayerData
         set
         {
             _pos = value;
-            _worldPos = new(value.X / World.CHUNK_SIZE, value.Y / World.CHUNK_SIZE);
+            _worldPos = new(value.X / World.ChunkSize, value.Y / World.ChunkSize);
         }
     }
 
@@ -27,7 +27,7 @@ public class PlayerData
         set
         {
             _worldPos = value;
-            _pos = new(value.X * World.CHUNK_SIZE, value.Y * World.CHUNK_SIZE);
+            _pos = new(value.X * World.ChunkSize, value.Y * World.ChunkSize);
         }
     }
 

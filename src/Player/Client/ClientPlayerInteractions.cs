@@ -20,6 +20,9 @@ public readonly partial struct ClientPlayer
         await _instance.World.RunCommand("nick", nickname);
     }
 
+    public async Task ResetNickname()
+        => await _instance.World.RunCommand("nick");
+
     public async readonly Task TeleportToPlayer(int id)
     {
         if (Rank >= PlayerRank.Moderator)
