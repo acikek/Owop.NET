@@ -27,9 +27,17 @@ public partial class World
 
     public async Task Unrestrict() => await SetRestricted(false);
 
-    public async Task PlacePixel(Position? worldPos = null, Color? color = null, bool sneaky = false)
+    public async Task<bool> PlacePixel(Position? worldPos = null, Color? color = null, bool sneaky = false)
     {
+        if (!_instance.Connection.Socket.IsRunning)
+        {
+            return false;
+        }
         _instance.Connection.CheckRank(PlayerRank.Player);
+        if (!_instance.ClientPlayerData.BucketData.TrySpend(1))
+        {
+            return false;
+        }
         bool update = worldPos is not null || color is not null;
         var prevPos = _instance.ClientPlayerData.Pos;
         if (worldPos is Position realPos)
@@ -58,5 +66,6 @@ public partial class World
         {
             await _instance.ClientPlayerData.Player.Move(prevPos);
         }
+        return true;
     }
 }

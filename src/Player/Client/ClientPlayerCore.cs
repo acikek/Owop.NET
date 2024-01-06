@@ -15,6 +15,7 @@ public partial class ClientPlayer(ClientPlayerData data) : IPlayer
     public int Id => _instance.Id;
     public string? Nickname => _instance.Nickname;
     public Color Color => _instance.Color;
+    public PixelBucket Bucket => _instance.BucketData;
 
     public static implicit operator ClientPlayer(ClientPlayerData data) => data.Player;
 

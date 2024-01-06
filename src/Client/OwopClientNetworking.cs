@@ -134,6 +134,14 @@ public partial class OwopClient
         }
     }
 
+    private void HandlePixelQuota(SequenceReader<byte> reader, WorldData world)
+    {
+        if (OwopProtocol.TryReadBucket(reader, out PixelBucketData bucket))
+        {
+            world.ClientPlayerData.BucketData.SetValues(bucket.Capacity, bucket.Seconds);
+        }
+    }
+
     private void HandleOpcode(Opcode opcode, SequenceReader<byte> reader, WorldData world)
     {
         Console.WriteLine($"[OPCODE] {opcode}");
@@ -147,6 +155,9 @@ public partial class OwopClient
                 break;
             case Opcode.SetRank:
                 HandleSetRank(reader, world);
+                break;
+            case Opcode.SetPixelQuota:
+                HandlePixelQuota(reader, world);
                 break;
         }
     }

@@ -45,7 +45,11 @@ public class WorldConnection : IDisposable
         {
             Console.WriteLine(info.Type);
             Client.Logger.LogDebug($"Reconnecting to world... (type: {info.Type})");
-            Socket.Send(connectMsg);
+            Socket.SendInstant(connectMsg);
+            if (info.Type == ReconnectionType.Lost)
+            {
+                Socket.MessageReceived.Subscribe(msg => _messageHandler(msg, _world));
+            }
         });
         Socket.MessageReceived.Subscribe(msg => _messageHandler(msg, _world));
         Socket.Start();

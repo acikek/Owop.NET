@@ -4,6 +4,7 @@ using Owop.Util;
 
 namespace Owop.Network;
 
+// TODO: extension methods?
 public static class OwopProtocol
 {
     public static bool TryReadPos(SequenceReader<byte> reader, out Position point)
@@ -52,6 +53,18 @@ public static class OwopProtocol
             player.Tool = (PlayerTool)toolId;
             return true;
         }
+        return false;
+    }
+
+    public static bool TryReadBucket(SequenceReader<byte> reader, out PixelBucketData bucket)
+    {
+        if (reader.TryReadLittleEndian(out short capacity) &&
+            reader.TryReadLittleEndian(out short seconds))
+        {
+            bucket = new(capacity, seconds);
+            return true;
+        }
+        bucket = PixelBucketData.Empty;
         return false;
     }
 
