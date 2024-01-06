@@ -1,20 +1,20 @@
 using System.Buffers;
-using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
+using Owop.Util;
 
 namespace Owop.Network;
 
 public static class OwopProtocol
 {
-    public static bool TryReadPoint(SequenceReader<byte> reader, out Point point)
+    public static bool TryReadPos(SequenceReader<byte> reader, out Position point)
     {
         if (reader.TryReadLittleEndian(out int x) &&
             reader.TryReadLittleEndian(out int y))
         {
-            point = new(x, y);
+            point = (x, y);
             return true;
         }
-        point = new(0, 0);
+        point = Position.Origin;
         return false;
     }
 
@@ -35,13 +35,13 @@ public static class OwopProtocol
     {
         player = new();
         if (!reader.TryReadLittleEndian(out int id) ||
-            !TryReadPoint(reader, out Point point) ||
+            !TryReadPos(reader, out Position pos) ||
             !TryReadColor(reader, out Color color))
         {
             return false;
         }
         player.Id = id;
-        player.Pos = point;
+        player.Pos = pos;
         player.Color = color;
         if (!hasTool)
         {
@@ -59,12 +59,20 @@ public static class OwopProtocol
     {
         MemoryStream stream = new();
         BinaryWriter writer = new(stream);
-        writer.Write(data.Pos.X);
-        writer.Write(data.Pos.Y);
-        writer.Write(data.Color.R);
-        writer.Write(data.Color.G);
-        writer.Write(data.Color.B);
+        writer.Write(EncodePixel(data.Pos, data.Color));
         writer.Write((byte)data.Tool);
+        return stream.ToArray();
+    }
+
+    public static byte[] EncodePixel(Position pos, Color color)
+    {
+        MemoryStream stream = new();
+        BinaryWriter writer = new(stream);
+        writer.Write(pos.X);
+        writer.Write(pos.Y);
+        writer.Write(color.R);
+        writer.Write(color.G);
+        writer.Write(color.B);
         return stream.ToArray();
     }
 }

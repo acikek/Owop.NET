@@ -1,8 +1,12 @@
+using Owop.Util;
+
 namespace Owop;
 
 public partial class Player
 {
-    public async Task Move(int x, int y) => await World.MovePlayer(Id, x, y);
+    public async Task Move(Position pos) => await MoveWorld(pos / World.ChunkSize);
+
+    public async Task MoveWorld(Position worldPos) => await World.MovePlayer(Id, worldPos);
 
     public async Task TeleportTo() => await World.ClientPlayer.TeleportToPlayer(Id);
 

@@ -1,4 +1,5 @@
 using System.Drawing;
+using Owop.Util;
 
 namespace Owop;
 
@@ -8,37 +9,27 @@ public class PlayerData
     public int Id { get; set; } = 0;
     public Color Color { get; set; } = Color.Black;
 
-    private Point _pos = Point.Empty;
-    private Point _worldPos = Point.Empty;
+    private Position _pos = Position.Origin;
+    private Position _worldPos = Position.Origin;
 
-    public Point Pos
+    public Position Pos
     {
         get => _pos;
         set
         {
             _pos = value;
-            _worldPos = new(value.X / World.ChunkSize, value.Y / World.ChunkSize);
+            _worldPos = value / World.ChunkSize;
         }
     }
 
-    public Point WorldPos
+    public Position WorldPos
     {
         get => _worldPos;
         set
         {
             _worldPos = value;
-            _pos = new(value.X * World.ChunkSize, value.Y * World.ChunkSize);
+            _pos = value * World.ChunkSize;
         }
-    }
-
-    public void SetPos(int x, int y)
-    {
-        Pos = new(x, y);
-    }
-
-    public void SetWorldPos(int x, int y)
-    {
-        WorldPos = new(x, y);
     }
 
     public static WorldPlayerData<Player> Create(WorldData worldData)

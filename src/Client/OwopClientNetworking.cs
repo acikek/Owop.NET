@@ -85,11 +85,16 @@ public partial class OwopClient
                 {
                     world.Players[data.Id] = player;
                 }
-                if (world.Initialized && newConnection)
+                if (world.PlayersInitialized && newConnection)
                 {
                     PlayerConnected?.Invoke(this, player);
                 }
             }
+            // TODO: this is just a workaround for now, fix decoding below and don't use returns
+            if (!world.PlayersInitialized)
+            {
+                world.PlayersInitialized = true;
+            }    
         }
         if (!reader.TryReadLittleEndian(out short pixelCount))
         {
@@ -108,8 +113,7 @@ public partial class OwopClient
             {
                 if (reader.TryReadLittleEndian(out int id))
                 {
-                    var player = world.PlayerData[id];
-                    PlayerDisconnected?.Invoke(this, player);
+                    PlayerDisconnected?.Invoke(this, world.PlayerData[id]);
                     world.PlayerData.Remove(id);
                     world.Players.Remove(id);
                 }
@@ -118,6 +122,15 @@ public partial class OwopClient
         if (!world.Initialized)
         {
             world.Initialized = true;
+        }
+    }
+
+    private void HandleSetRank(SequenceReader<byte> reader, WorldData world)
+    {
+        if (reader.TryRead(out byte rank))
+        {
+            world.ClientPlayerData.Rank = (PlayerRank) rank;
+            // TODO: event
         }
     }
 
@@ -131,6 +144,9 @@ public partial class OwopClient
                 break;
             case Opcode.WorldUpdate:
                 HandleWorldUpdate(reader, world);
+                break;
+            case Opcode.SetRank:
+                HandleSetRank(reader, world);
                 break;
         }
     }

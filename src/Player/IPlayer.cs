@@ -1,17 +1,19 @@
 using System.Drawing;
+using Owop.Util;
 
 namespace Owop;
 
 public interface IPlayer
 {
     World World { get; }
-    Point Pos { get; }
-    Point WorldPos { get; }
+    Position Pos { get; }
+    Position WorldPos { get; }
     PlayerTool Tool { get; }
     int Id { get; }
     Color Color { get; }
 
-    public Task Move(int x, int y);
+    public Task Move(Position pos);
+    public Task MoveWorld(Position worldPos);
     public Task TeleportTo();
     public Task Tell(string message);
 }

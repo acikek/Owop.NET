@@ -11,7 +11,7 @@ namespace Owop.Client;
 
 public partial class OwopClient
 {
-    [GeneratedRegex(@"-> (\d) tells you: (.*)")]
+    [GeneratedRegex(@"-> (\d+) tells you: (.*)")]
     private static partial Regex TellClientPattern();
 
     private bool _whois = false;

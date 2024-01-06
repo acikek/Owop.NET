@@ -10,6 +10,7 @@ public class WorldData
     public WorldConnection Connection;
     public World World;
     public bool Connected = false;
+    public bool PlayersInitialized = false;
     public bool Initialized = false;
 
     public WorldData(string name, WorldConnection connection)

@@ -40,8 +40,10 @@ public class WorldConnection : IDisposable
     public void Connect(string world)
     {
         var connectMsg = GetConnectionMessage(world);
+        //Socket.ReconnectTimeout = TimeSpan.FromSeconds(5);
         Socket.ReconnectionHappened.Subscribe(info =>
         {
+            Console.WriteLine(info.Type);
             Client.Logger.LogDebug($"Reconnecting to world... (type: {info.Type})");
             Socket.Send(connectMsg);
         });
@@ -53,7 +55,7 @@ public class WorldConnection : IDisposable
 
     public void CheckRank(PlayerRank rank)
     {
-        if (_world.ClientPlayerData.Rank <= rank)
+        if (_world.ClientPlayerData.Rank < rank)
         {
             throw new InvalidOperationException($"Insufficient permissions: must be rank '{rank}' or higher (is {_world.ClientPlayerData.Rank})");
         }
