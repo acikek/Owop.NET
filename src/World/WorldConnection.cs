@@ -15,15 +15,23 @@ public class WorldConnection : IDisposable
 
     private readonly WorldData _world;
     public readonly OwopClient Client;
+    public readonly ILogger Logger;
     private readonly Action<ResponseMessage, WorldData> _messageHandler;
 
     public World World => _world;
 
-    public WorldConnection(string name, OwopClient client, Action<ResponseMessage, WorldData> messageHandler)
+    public WorldConnection(string name, OwopClient client, ILoggerFactory loggerFactory, Action<ResponseMessage, WorldData> messageHandler)
     {
-        Socket = new(new Uri(client.Options.SocketUrl));
+        Socket = new(new Uri(client.Options.SocketUrl)/*, () => new ClientWebSocket
+        {
+            Options =
+            {
+                KeepAliveInterval = TimeSpan.FromSeconds(5)
+            }
+        }*/);
         _world = new(name, this);
         Client = client;
+        Logger = loggerFactory.CreateLogger($"Owop.Net.{name}");
         _messageHandler = messageHandler;
     }
 
@@ -45,13 +53,22 @@ public class WorldConnection : IDisposable
         //Socket.ReconnectTimeout = TimeSpan.FromSeconds(5);
         Socket.ReconnectionHappened.Subscribe(info =>
         {
-            Console.WriteLine(info.Type);
-            Client.Logger.LogDebug($"Reconnecting to world... (type: {info.Type})");
+            /*if (info.Type == ReconnectionType.Lost)
+            {
+                Socket.Dispose();
+                Socket = new(new Uri(Client.Options.SocketUrl));
+                Connect(world);
+            }
+            else
+            {*/
+            Logger.LogDebug($"Reconnecting... ({info.Type})");
             Socket.SendInstant(connectMsg);
             if (info.Type == ReconnectionType.Lost)
             {
                 Socket.MessageReceived.Subscribe(msg => _messageHandler(msg, _world));
             }
+                
+            //}
         });
         Socket.MessageReceived.Subscribe(msg => _messageHandler(msg, _world));
         Socket.Start();

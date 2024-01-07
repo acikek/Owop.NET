@@ -75,7 +75,7 @@ public partial class OwopClient
                 if (!reader.TryReadPlayer(hasTool: true, out PlayerData data) ||
                     data.Id == world.ClientPlayerData.Id)
                 {
-                    return;
+                    break;
                 }
                 bool newConnection = !world.PlayerData.ContainsKey(data.Id);
                 if (newConnection)
@@ -91,16 +91,11 @@ public partial class OwopClient
                 {
                     world.Players[data.Id] = player;
                 }
-                if (world.PlayersInitialized && newConnection)
+                if (world.Initialized && newConnection)
                 {
                     PlayerConnected?.Invoke(this, player);
                 }
-            }
-            // TODO: this is just a workaround for now, fix decoding below and don't use returns
-            if (!world.PlayersInitialized)
-            {
-                world.PlayersInitialized = true;
-            }    
+            }  
         }
         if (!reader.TryReadLittleEndian(out short pixelCount))
         {
@@ -108,7 +103,7 @@ public partial class OwopClient
             {
                 if (!reader.TryReadPlayer(hasTool: false, out PlayerData data))
                 {
-                    return;
+                    break;
                 }
                 //Console.WriteLine($"WorldUpdate pixel: ({x}, {y}) = {r}, {g}, {b}");
             }
@@ -127,6 +122,7 @@ public partial class OwopClient
         }
         if (!world.Initialized)
         {
+            world.World.Logger.LogDebug("World initialized.");
             world.Initialized = true;
         }
     }
@@ -154,13 +150,13 @@ public partial class OwopClient
         {
             int s = World.ChunkSize;
             world.ClientPlayerData.Pos = pos * s + (s / 2, s / 2);
-            Teleported.Invoke(this, new(world, world.ClientPlayerData.Pos, world.ClientPlayerData.WorldPos));
+            Teleported?.Invoke(this, new(world, world.ClientPlayerData.Pos, world.ClientPlayerData.WorldPos));
         }
     }
 
     private void HandleOpcode(Opcode opcode, SequenceReader<byte> reader, WorldData world)
     {
-        Console.WriteLine($"[OPCODE] {opcode}");
+        world.World.Logger.LogDebug($"Received opcode: {opcode} ({(byte) opcode})");
         switch (opcode)
         {
             case Opcode.SetId:

@@ -11,15 +11,21 @@ public enum ConnectResult
 
 public partial class OwopClient : IDisposable
 {
+    private readonly ILoggerFactory _loggerFactory;
     public ILogger Logger;
 
     public readonly ClientOptions Options;
     public readonly Dictionary<string, WorldConnection> Connections = [];
 
-    public OwopClient(ClientOptions? options = null)
+    public OwopClient(ClientOptions? options = null, ILoggerFactory? loggerFactory = null)
     {
-        using ILoggerFactory factory = LoggerFactory.Create(builder => builder.AddConsole());
-        Logger = factory.CreateLogger("OWOP.NET");
+        if (loggerFactory is null)
+        {
+            using ILoggerFactory factory = LoggerFactory.Create(builder => builder.AddConsole());
+            loggerFactory = factory;
+        }
+        _loggerFactory = loggerFactory;
+        Logger = _loggerFactory.CreateLogger("Owop.Net");
         Options = options ?? new ClientOptions();
         _httpClient = new();
         _messageBuffer = [];
@@ -44,7 +50,8 @@ public partial class OwopClient : IDisposable
         {
             return ConnectResult.Exists;
         }
-        WorldConnection connection = new(clean, this, HandleMessage);
+        Logger.LogDebug($"Connecting to world '{clean}'...");
+        WorldConnection connection = new(clean, this, _loggerFactory, HandleMessage);
         Connections[clean] = connection;
         connection.Connect(clean);
         return ConnectResult.Activated;

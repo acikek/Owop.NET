@@ -77,7 +77,8 @@ public partial class OwopClient
 
     private void HandleServerMessage(ServerMessage message, WorldData world)
     {
-        Console.WriteLine($"[SERVERMSG] {message.Type}: \"{string.Join(", ", message.Args)}\"");
+        var dbugLines = message.Args.Select(line => $"'{line}'");
+        world.World.Logger.LogDebug($"Received server message ({message.Type}): {string.Join(", ", dbugLines)}");
         switch (message.Type)
         {
             case ServerMessageType.Chat:
