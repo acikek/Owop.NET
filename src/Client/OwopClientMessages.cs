@@ -86,6 +86,9 @@ public partial class OwopClient
             case ServerMessageType.TellClient:
                 InvokeTell(message, world);
                 break;
+            case ServerMessageType.Whois:
+                InvokeWhois(message, world);
+                break;
         }
     }
 }

@@ -86,6 +86,12 @@ public struct Position(int x, int y) : IEquatable<Position>
 
     /// <summary>Mathematical comparison.</summary>
     /// <param name="one">First position.</param>
+    /// <param name="two">Second position.</param>
+    /// <returns>Result.</returns>
+    public static Position operator -(Position one, Position two) => new(one.X - two.X, one.Y - two.Y);
+
+    /// <summary>Mathematical comparison.</summary>
+    /// <param name="one">First position.</param>
     /// <param name="two">Int scalar.</param>
     /// <returns>Result.</returns>
     public static Position operator *(Position one, int two) => new(one.X * two, one.Y * two);

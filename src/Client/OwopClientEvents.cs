@@ -1,6 +1,9 @@
 using Owop.Network;
+using Owop.Util;
 
 namespace Owop.Client;
+
+public record ConnectEventArgs(World World, bool IsReconnect);
 
 public record ChatEventArgs(World World, ChatPlayer Player, string Content)
 {
@@ -9,14 +12,19 @@ public record ChatEventArgs(World World, ChatPlayer Player, string Content)
 
 public record TellEventArgs(World World, IPlayer Player, string Content);
 
+public record TeleportEventArgs(World World, Position Pos, Position WorldPos);
+
 public partial class OwopClient
 {
+    public event EventHandler<ConnectEventArgs>? Connected;
     public event EventHandler<World>? Ready;
     public event EventHandler<World>? ChatReady;
     public event EventHandler<ChatEventArgs>? Chat;
     public event EventHandler<TellEventArgs>? Tell;
     public event EventHandler<Player>? PlayerConnected;
     public event EventHandler<Player>? PlayerDisconnected;
+    public event EventHandler<TeleportEventArgs>? Teleported;
+    public event EventHandler<WhoisData>? Whois;
 
     private void InvokeChat(ServerMessage message, WorldData world)
     {
@@ -32,6 +40,14 @@ public partial class OwopClient
         if (int.TryParse(message.Args[0], out int id) && world.World.GetPlayerById(id) is IPlayer player /*|| world.Players.TryGetValue(id, out Player? player) || player is null*/)
         {
             Tell?.Invoke(this, new(world, player, message.Args[1]));
+        }
+    }
+
+    private void InvokeWhois(ServerMessage message, WorldData world)
+    {
+        if (WhoisData.Parse(message.Args) is WhoisData data)
+        {
+            Whois?.Invoke(this, data);
         }
     }
 }

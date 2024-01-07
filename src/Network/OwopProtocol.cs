@@ -4,10 +4,9 @@ using Owop.Util;
 
 namespace Owop.Network;
 
-// TODO: extension methods?
 public static class OwopProtocol
 {
-    public static bool TryReadPos(SequenceReader<byte> reader, out Position point)
+    public static bool TryReadPos(this SequenceReader<byte> reader, out Position point)
     {
         if (reader.TryReadLittleEndian(out int x) &&
             reader.TryReadLittleEndian(out int y))
@@ -19,7 +18,7 @@ public static class OwopProtocol
         return false;
     }
 
-    public static bool TryReadColor(SequenceReader<byte> reader, out Color color)
+    public static bool TryReadColor(this SequenceReader<byte> reader, out Color color)
     {
         if (reader.TryRead(out byte r) &&
             reader.TryRead(out byte g) &&
@@ -32,12 +31,12 @@ public static class OwopProtocol
         return false;
     }
 
-    public static bool TryReadPlayer(SequenceReader<byte> reader, bool hasTool, out PlayerData player)
+    public static bool TryReadPlayer(this SequenceReader<byte> reader, bool hasTool, out PlayerData player)
     {
         player = new();
         if (!reader.TryReadLittleEndian(out int id) ||
-            !TryReadPos(reader, out Position pos) ||
-            !TryReadColor(reader, out Color color))
+            !reader.TryReadPos(out Position pos) ||
+            !reader.TryReadColor(out Color color))
         {
             return false;
         }
@@ -56,7 +55,7 @@ public static class OwopProtocol
         return false;
     }
 
-    public static bool TryReadBucket(SequenceReader<byte> reader, out PixelBucketData bucket)
+    public static bool TryReadBucket(this SequenceReader<byte> reader, out PixelBucketData bucket)
     {
         if (reader.TryReadLittleEndian(out short capacity) &&
             reader.TryReadLittleEndian(out short seconds))

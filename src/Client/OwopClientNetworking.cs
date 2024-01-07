@@ -4,6 +4,7 @@ using System.Net;
 using System.Text.Json;
 using Microsoft.Extensions.Logging;
 using Owop.Network;
+using Owop.Util;
 using Websocket.Client;
 
 namespace Owop.Client;
@@ -48,9 +49,14 @@ public partial class OwopClient
             return;
         }
         world.ClientPlayerData.Id = id;
-        if (!world.Connected)
+        bool reconnect = world.Connected;
+        if (!reconnect)
         {
             world.Connected = true;
+        }
+        Connected?.Invoke(this, new(world, reconnect));
+        if (!reconnect) 
+        {
             Ready?.Invoke(this, world);
             Task.Run(() =>
             {
@@ -66,7 +72,7 @@ public partial class OwopClient
         {
             for (byte i = 0; i < playerCount; i++)
             {
-                if (!OwopProtocol.TryReadPlayer(reader, hasTool: true, out PlayerData data) ||
+                if (!reader.TryReadPlayer(hasTool: true, out PlayerData data) ||
                     data.Id == world.ClientPlayerData.Id)
                 {
                     return;
@@ -100,7 +106,7 @@ public partial class OwopClient
         {
             for (short i = 0; i < pixelCount; i++)
             {
-                if (!OwopProtocol.TryReadPlayer(reader, hasTool: false, out PlayerData data))
+                if (!reader.TryReadPlayer(hasTool: false, out PlayerData data))
                 {
                     return;
                 }
@@ -136,9 +142,19 @@ public partial class OwopClient
 
     private void HandlePixelQuota(SequenceReader<byte> reader, WorldData world)
     {
-        if (OwopProtocol.TryReadBucket(reader, out PixelBucketData bucket))
+        if (reader.TryReadBucket(out PixelBucketData bucket))
         {
             world.ClientPlayerData.BucketData.SetValues(bucket.Capacity, bucket.Seconds);
+        }
+    }
+
+    private void HandleTeleport(SequenceReader<byte> reader, WorldData world)
+    {
+        if (reader.TryReadPos(out Position pos))
+        {
+            int s = World.ChunkSize;
+            world.ClientPlayerData.Pos = pos * s + (s / 2, s / 2);
+            Teleported.Invoke(this, new(world, world.ClientPlayerData.Pos, world.ClientPlayerData.WorldPos));
         }
     }
 
@@ -158,6 +174,9 @@ public partial class OwopClient
                 break;
             case Opcode.SetPixelQuota:
                 HandlePixelQuota(reader, world);
+                break;
+            case Opcode.Teleport:
+                HandleTeleport(reader, world);
                 break;
         }
     }

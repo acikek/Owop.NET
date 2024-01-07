@@ -17,6 +17,8 @@ public class WorldConnection : IDisposable
     public readonly OwopClient Client;
     private readonly Action<ResponseMessage, WorldData> _messageHandler;
 
+    public World World => _world;
+
     public WorldConnection(string name, OwopClient client, Action<ResponseMessage, WorldData> messageHandler)
     {
         Socket = new(new Uri(client.Options.SocketUrl));

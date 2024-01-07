@@ -25,7 +25,6 @@ public class PixelBucketData
 
     public void SetValues(int capacity, int seconds)
     {
-        Console.WriteLine($"Received PQuota: {capacity} {seconds}");
         Capacity = capacity;
         Seconds = seconds;
         Allowance = capacity;

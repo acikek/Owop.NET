@@ -14,7 +14,6 @@ public class PixelBucket(PixelBucketData data)
     public bool CanSpend(int pixels)
     {
         _instance.Update();
-        Console.WriteLine($"CanSpend pixels: {pixels} Allowance: {Allowance}");
         return pixels <= Allowance;
     }
 
