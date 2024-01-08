@@ -11,7 +11,7 @@ namespace Owop.Client;
 
 public partial class OwopClient
 {
-    private static readonly JsonSerializerOptions JsonOptions = new() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
+    private static readonly JsonSerializerOptions s_jsonOptions = new() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
 
     private readonly HttpClient _httpClient;
 
@@ -20,7 +20,7 @@ public partial class OwopClient
     public async Task<ServerInfo?> FetchServerInfo()
     {
         var json = await _httpClient.GetStringAsync(Options.ApiUrl);
-        var serverInfo = JsonSerializer.Deserialize<ServerInfo>(json, JsonOptions);
+        var serverInfo = JsonSerializer.Deserialize<ServerInfo>(json, s_jsonOptions);
         ServerInfo = serverInfo;
         return serverInfo;
     }
@@ -131,16 +131,16 @@ public partial class OwopClient
     {
         if (reader.TryRead(out byte rank))
         {
-            world.ClientPlayerData.Rank = (PlayerRank) rank;
+            world.ClientPlayerData.SetRank((PlayerRank)rank);
             // TODO: event
         }
     }
 
     private void HandlePixelQuota(SequenceReader<byte> reader, WorldData world)
     {
-        if (reader.TryReadBucket(out PixelBucketData bucket))
+        if (reader.TryReadBucket(out BucketData bucket))
         {
-            world.ClientPlayerData.BucketData.SetValues(bucket.Capacity, bucket.Seconds);
+            world.ClientPlayerData.PixelBucketData.SetValues(bucket.Capacity, bucket.Seconds);
         }
     }
 

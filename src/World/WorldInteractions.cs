@@ -34,7 +34,7 @@ public partial class World
             return false;
         }
         _instance.Connection.CheckRank(PlayerRank.Player);
-        if (!_instance.ClientPlayerData.BucketData.TrySpend(1))
+        if (!_instance.ClientPlayerData.PixelBucketData.TrySpend(1))
         {
             return false;
         }
