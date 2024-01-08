@@ -2,13 +2,6 @@
 
 namespace Owop.Client;
 
-public enum ConnectResult
-{
-    LimitReached,
-    Exists,
-    Activated
-}
-
 public partial class OwopClient : IDisposable
 {
     private readonly ILoggerFactory _loggerFactory;

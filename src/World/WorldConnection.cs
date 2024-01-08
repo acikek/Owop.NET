@@ -1,4 +1,5 @@
 using System.Buffers;
+using System.Collections.Concurrent;
 using System.Net.WebSockets;
 using System.Text;
 using Microsoft.Extensions.Logging;
@@ -13,9 +14,10 @@ public class WorldConnection : IDisposable
     public WebsocketClient Socket { get; private set; }
     private readonly ManualResetEvent _exitEvent = new(false);
 
-    private readonly WorldData _world;
     public readonly OwopClient Client;
     public readonly ILogger Logger;
+
+    private readonly WorldData _world;
     private readonly Action<ResponseMessage, WorldData> _messageHandler;
     private readonly Action<World> _disconnectHandler;
 
@@ -24,9 +26,9 @@ public class WorldConnection : IDisposable
     public WorldConnection(string name, OwopClient client, ILoggerFactory loggerFactory, Action<ResponseMessage, WorldData> messageHandler, Action<World> disconnectHandler)
     {
         Socket = new(new Uri(client.Options.SocketUrl));
-        _world = new(name, this);
         Client = client;
         Logger = loggerFactory.CreateLogger($"Owop.Net.{name}");
+        _world = new(name, this);
         _messageHandler = messageHandler;
         _disconnectHandler = disconnectHandler;
     }

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace Owop.Util;
 
+// TODO: multiplier
 public class BucketData
 {
     public static BucketData Empty => new(0, 0, false);
@@ -18,18 +19,21 @@ public class BucketData
 
     public Bucket Bucket;
 
-    public BucketData(int capacity, int interval, bool infinite)
+    public BucketData(int capacity, int interval, bool infinite, bool fill = true)
     {
-        SetValues(capacity, interval);
+        SetValues(capacity, interval, fill);
         Infinite = infinite;
         Bucket = new Bucket(this);
     }
 
-    public void SetValues(int capacity, int interval)
+    public void SetValues(int capacity, int interval, bool fill = true)
     {
         Capacity = capacity;
         Interval = interval;
-        Allowance = capacity;
+        if (fill)
+        {
+            Allowance = capacity;
+        }
         _lastUpdate = DateTime.Now;
     }
 

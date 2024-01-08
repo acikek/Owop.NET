@@ -131,8 +131,7 @@ public partial class OwopClient
     {
         if (reader.TryRead(out byte rank))
         {
-            world.ClientPlayerData.SetRank((PlayerRank)rank);
-            // TODO: event
+            world.ClientPlayerData.Rank = (PlayerRank)rank;
         }
     }
 
