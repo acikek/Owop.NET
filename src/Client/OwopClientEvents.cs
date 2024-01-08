@@ -25,6 +25,8 @@ public partial class OwopClient
     public event EventHandler<Player>? PlayerDisconnected;
     public event EventHandler<TeleportEventArgs>? Teleported;
     public event EventHandler<WhoisData>? Whois;
+    public event EventHandler<World>? Disconnecting;
+    public event EventHandler? Destroying;
 
     private void InvokeChat(ServerMessage message, WorldData world)
     {

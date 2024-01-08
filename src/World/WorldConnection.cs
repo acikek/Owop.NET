@@ -10,29 +10,25 @@ namespace Owop;
 
 public class WorldConnection : IDisposable
 {
-    public readonly WebsocketClient Socket;
+    public WebsocketClient Socket { get; private set; }
     private readonly ManualResetEvent _exitEvent = new(false);
 
     private readonly WorldData _world;
     public readonly OwopClient Client;
     public readonly ILogger Logger;
     private readonly Action<ResponseMessage, WorldData> _messageHandler;
+    private readonly Action<World> _disconnectHandler;
 
     public World World => _world;
 
-    public WorldConnection(string name, OwopClient client, ILoggerFactory loggerFactory, Action<ResponseMessage, WorldData> messageHandler)
+    public WorldConnection(string name, OwopClient client, ILoggerFactory loggerFactory, Action<ResponseMessage, WorldData> messageHandler, Action<World> disconnectHandler)
     {
-        Socket = new(new Uri(client.Options.SocketUrl)/*, () => new ClientWebSocket
-        {
-            Options =
-            {
-                KeepAliveInterval = TimeSpan.FromSeconds(5)
-            }
-        }*/);
+        Socket = new(new Uri(client.Options.SocketUrl));
         _world = new(name, this);
         Client = client;
         Logger = loggerFactory.CreateLogger($"Owop.Net.{name}");
         _messageHandler = messageHandler;
+        _disconnectHandler = disconnectHandler;
     }
 
     private byte[] GetConnectionMessage(string world)
@@ -53,22 +49,12 @@ public class WorldConnection : IDisposable
         //Socket.ReconnectTimeout = TimeSpan.FromSeconds(5);
         Socket.ReconnectionHappened.Subscribe(info =>
         {
-            /*if (info.Type == ReconnectionType.Lost)
-            {
-                Socket.Dispose();
-                Socket = new(new Uri(Client.Options.SocketUrl));
-                Connect(world);
-            }
-            else
-            {*/
             Logger.LogDebug($"Reconnecting... ({info.Type})");
             Socket.SendInstant(connectMsg);
             if (info.Type == ReconnectionType.Lost)
             {
                 Socket.MessageReceived.Subscribe(msg => _messageHandler(msg, _world));
             }
-                
-            //}
         });
         Socket.MessageReceived.Subscribe(msg => _messageHandler(msg, _world));
         Socket.Start();
@@ -89,6 +75,7 @@ public class WorldConnection : IDisposable
 
     public async Task Disconnect()
     {
+        _disconnectHandler(World);
         await Socket.Stop(WebSocketCloseStatus.NormalClosure, "Client.Disconnect()");
         _exitEvent.Set();
     }

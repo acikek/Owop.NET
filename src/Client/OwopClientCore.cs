@@ -51,7 +51,7 @@ public partial class OwopClient : IDisposable
             return ConnectResult.Exists;
         }
         Logger.LogDebug($"Connecting to world '{clean}'...");
-        WorldConnection connection = new(clean, this, _loggerFactory, HandleMessage);
+        WorldConnection connection = new(clean, this, _loggerFactory, HandleMessage, world => Disconnecting?.Invoke(this, world));
         Connections[clean] = connection;
         connection.Connect(clean);
         return ConnectResult.Activated;
@@ -70,6 +70,7 @@ public partial class OwopClient : IDisposable
 
     public async Task Destroy()
     {
+        Destroying?.Invoke(this, EventArgs.Empty);
         foreach (var connection in Connections.Values)
         {
             await connection.Disconnect();
@@ -78,6 +79,7 @@ public partial class OwopClient : IDisposable
 
     public void Dispose()
     {
+        Destroying?.Invoke(this, EventArgs.Empty);
         foreach (var connection in Connections.Values)
         {
             connection.Dispose();
