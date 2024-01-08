@@ -40,7 +40,8 @@ public class BucketData
     public void Update()
     {
         double value = Bucket.SpendRate * (DateTime.Now - _lastUpdate).TotalSeconds;
-        Allowance += Math.Min((int)value, Capacity);
+        Allowance += (int)value;
+        Allowance = Math.Min(Capacity, Allowance);
         _lastUpdate = DateTime.Now;
     }
 

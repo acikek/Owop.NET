@@ -64,11 +64,15 @@ public class WorldConnection : IDisposable
         _exitEvent.WaitOne();
     }
 
-    public void CheckRank(PlayerRank rank)
+    public void CheckInteraction(PlayerRank rank = PlayerRank.None)
     {
+        if (!Socket.IsRunning)
+        {
+            throw new InvalidOperationException($"Interaction failed in world '{World.Name}': socket is not connected");
+        }
         if (_world.ClientPlayerData.Rank < rank)
         {
-            throw new InvalidOperationException($"Insufficient permissions: must be rank '{rank}' or higher (is {_world.ClientPlayerData.Rank})");
+            throw new InvalidOperationException($"Insufficient permissions in world '{World.Name}': must be rank {rank} or higher (is {_world.ClientPlayerData.Rank})");
         }
     }
 

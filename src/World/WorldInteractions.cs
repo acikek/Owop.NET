@@ -6,20 +6,17 @@ namespace Owop;
 
 public partial class World
 {
-    public async Task Login(string password)
-    {
-        await RunCommand("pass", password);
-    }
+    public async Task LogIn(string password) => await RunCommand("pass", password);
 
     public async Task MovePlayer(int id, Position worldPos)
     {
-        _instance.Connection.CheckRank(PlayerRank.Moderator);
+        _instance.Connection.CheckInteraction(PlayerRank.Moderator);
         await RunCommand("tp", id.ToString(), worldPos.X.ToString(), worldPos.Y.ToString());
     }
 
     public async Task SetRestricted(bool restricted)
     {
-        _instance.Connection.CheckRank(PlayerRank.Moderator);
+        _instance.Connection.CheckInteraction(PlayerRank.Moderator);
         await RunCommand("restrict", restricted.ToString());
     }
 
@@ -29,11 +26,7 @@ public partial class World
 
     public async Task<bool> PlacePixel(Position? worldPos = null, Color? color = null, bool sneaky = false)
     {
-        if (!_instance.Connection.Socket.IsRunning)
-        {
-            return false;
-        }
-        _instance.Connection.CheckRank(PlayerRank.Player);
+        _instance.Connection.CheckInteraction(PlayerRank.Player);
         if (!_instance.ClientPlayerData.PixelBucketData.TrySpend(1))
         {
             return false;
@@ -71,6 +64,7 @@ public partial class World
 
     public async Task<WhoisData> QueryWhois(int playerId)
     {
+        _instance.Connection.CheckInteraction(PlayerRank.Moderator);
         if (_instance.WhoisQueue.TryGetValue(playerId, out var existing))
         {
             return await existing.Task;

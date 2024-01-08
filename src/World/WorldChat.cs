@@ -2,12 +2,9 @@ namespace Owop;
 
 public partial class World
 {
-    public async Task SendChatMessage(string message)
-    {
-        int length = ClientPlayer.Rank.GetMaxMessageLength();
-        string data = message[0..Math.Min(message.Length, length)] + _instance.Connection.Client.Options.ChatVerification;
-        await _instance.Connection.Send(data);
-    }
+    public async Task SendChatMessage(string message) => await _instance.QueueChatMessage(message).Task;
+
+    public void QueueChatMessage(string message) => _instance.QueueChatMessage(message);
 
     public async Task RunCommand(string command, params string[] args)
     {
