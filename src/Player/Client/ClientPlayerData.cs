@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using Owop.Util;
 
 namespace Owop;
@@ -5,19 +6,26 @@ namespace Owop;
 public class ClientPlayerData : WorldPlayerData<ClientPlayer>
 {
     public string? Nickname;
-    public PlayerRank Rank;
+    private PlayerRank _rank;
     public BucketData PixelBucketData;
+    public BucketData ChatBucketData;
 
     public ClientPlayerData(WorldData worldData) : base(worldData, null!)
     {
         Player = new ClientPlayer(this);
         PixelBucketData = BucketData.Empty;
+        ChatBucketData = new(4, 6, false, true);
     }
 
-    public void SetRank(PlayerRank rank)
+    public PlayerRank Rank
     {
-        Rank = rank;
-        bool admin = Rank == PlayerRank.Admin;
-        PixelBucketData.Infinite = admin;
+        get => _rank;
+        set
+        {
+            _rank = value;
+            bool admin = Rank == PlayerRank.Admin;
+            PixelBucketData.Infinite = admin;
+            ChatBucketData.Infinite = admin;
+        }
     }
 }
