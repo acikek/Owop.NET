@@ -1,3 +1,6 @@
+using System.Drawing;
+using Owop.Util;
+
 namespace Owop;
 
 /// <summary>A player's permission rank within a world.</summary>
@@ -21,6 +24,14 @@ public static class PlayerRankExtensions
             PlayerRank.Moderator => 512,
             PlayerRank.Admin => 16384,
             _ => 128
+        };
+
+    public static Color GetChatColor(this PlayerRank rank)
+        => rank switch
+        {
+            PlayerRank.Moderator => ChatColors.Moderator,
+            PlayerRank.Admin => ChatColors.Admin,
+            _ => ChatColors.Nickname
         };
 
     public static PlayerRank Parse(char c)
