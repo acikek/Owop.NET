@@ -55,15 +55,15 @@ public static class OwopProtocol
         return false;
     }
 
-    public static bool TryReadBucket(this SequenceReader<byte> reader, out PixelBucketData bucket)
+    public static bool TryReadBucket(this SequenceReader<byte> reader, out BucketData bucket)
     {
         if (reader.TryReadLittleEndian(out short capacity) &&
-            reader.TryReadLittleEndian(out short seconds))
+            reader.TryReadLittleEndian(out short interval))
         {
-            bucket = new(capacity, seconds);
+            bucket = new(capacity, interval, false);
             return true;
         }
-        bucket = PixelBucketData.Empty;
+        bucket = BucketData.Empty;
         return false;
     }
 

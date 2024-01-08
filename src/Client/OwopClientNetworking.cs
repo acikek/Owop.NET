@@ -140,7 +140,7 @@ public partial class OwopClient
     {
         if (reader.TryReadBucket(out BucketData bucket))
         {
-            world.ClientPlayerData.PixelBucketData.SetValues(bucket.Capacity, bucket.Seconds);
+            world.ClientPlayerData.PixelBucketData.SetValues(bucket.Capacity, bucket.Interval);
         }
     }
 

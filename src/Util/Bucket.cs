@@ -7,10 +7,10 @@ public class Bucket(BucketData data)
     private readonly BucketData _instance = data;
 
     public int Capacity => _instance.Capacity;
-    public int Seconds => _instance.Seconds;
+    public int Interval => _instance.Interval;
     public int Allowance => _instance.Allowance;
     public bool Infinite => _instance.Infinite;
-    public double SpendRate => (double)Capacity / Seconds;
+    public double SpendRate => (double)Capacity / Interval;
 
     public bool CanSpend(int pixels)
     {
