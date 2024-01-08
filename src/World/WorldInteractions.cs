@@ -68,4 +68,16 @@ public partial class World
         }
         return true;
     }
+
+    public async Task<WhoisData> QueryWhois(int playerId)
+    {
+        if (_instance.WhoisQueue.TryGetValue(playerId, out var existing))
+        {
+            return await existing.Task;
+        }
+        var source = new TaskCompletionSource<WhoisData>(TaskCreationOptions.RunContinuationsAsynchronously);
+        _instance.WhoisQueue[playerId] = source;
+        await RunCommand("whois", playerId.ToString());
+        return await source.Task;
+    }
 }

@@ -1,3 +1,4 @@
+using Owop.Network;
 using Owop.Util;
 
 namespace Owop;
@@ -11,4 +12,6 @@ public partial class Player
     public async Task TeleportTo() => await World.ClientPlayer.TeleportToPlayer(Id);
 
     public async Task Tell(string message) => await World.TellPlayer(Id, message);
+
+    public async Task<WhoisData> QueryWhois() => await World.QueryWhois(Id);
 }

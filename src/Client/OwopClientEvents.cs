@@ -14,6 +14,8 @@ public record TellEventArgs(World World, IPlayer Player, string Content);
 
 public record TeleportEventArgs(World World, Position Pos, Position WorldPos);
 
+public record WhoisEventArgs(World World, WhoisData Data);
+
 public partial class OwopClient
 {
     public event EventHandler<ConnectEventArgs>? Connected;
@@ -24,7 +26,7 @@ public partial class OwopClient
     public event EventHandler<Player>? PlayerConnected;
     public event EventHandler<Player>? PlayerDisconnected;
     public event EventHandler<TeleportEventArgs>? Teleported;
-    public event EventHandler<WhoisData>? Whois;
+    public event EventHandler<WhoisEventArgs>? Whois;
     public event EventHandler<World>? Disconnecting;
     public event EventHandler? Destroying;
 
@@ -49,7 +51,11 @@ public partial class OwopClient
     {
         if (WhoisData.Parse(message.Args) is WhoisData data)
         {
-            Whois?.Invoke(this, data);
+            Whois?.Invoke(this, new(world, data));
+            if (world.WhoisQueue.Remove(data.PlayerId, out var task))
+            {
+                task.SetResult(data);
+            }
         }
     }
 }

@@ -1,3 +1,7 @@
+using System.Collections.Concurrent;
+using Microsoft.Extensions.Logging;
+using Owop.Network;
+
 namespace Owop;
 
 public class WorldData
@@ -6,6 +10,7 @@ public class WorldData
     public Dictionary<int, WorldPlayerData<Player>> PlayerData = [];
     public Dictionary<int, Player> Players = [];
     public ClientPlayerData ClientPlayerData;
+    public ConcurrentDictionary<int, TaskCompletionSource<WhoisData>> WhoisQueue = [];
 
     public WorldConnection Connection;
     public World World;

@@ -1,4 +1,5 @@
 using System.Drawing;
+using Owop.Network;
 using Owop.Util;
 
 namespace Owop;
@@ -16,4 +17,5 @@ public interface IPlayer
     public Task MoveWorld(Position worldPos);
     public Task TeleportTo();
     public Task Tell(string message);
+    public Task<WhoisData> QueryWhois();
 }

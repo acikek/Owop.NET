@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Owop.Network;
 using Owop.Util;
 
 namespace Owop;
@@ -58,4 +59,6 @@ public partial class ClientPlayer
     }
 
     public async Task Tell(string message) => await World.TellPlayer(Id, message);
+
+    public async Task<WhoisData> QueryWhois() => await World.QueryWhois(Id);
 }

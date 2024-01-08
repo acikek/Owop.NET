@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Owop.Network;
 
-public record WhoisData(int PlayerId, int Connections, IPAddress? IPAddress, string? OriginHeader, int WarningLevel, PlayerRank Rank)
+public record WhoisData(int PlayerId, int Connections, IPAddress? IPAddress, string? OriginHeader, int WarningLevel, PlayerRank PlayerRank)
 {
     public static WhoisData? Parse(List<string> args)
     {
