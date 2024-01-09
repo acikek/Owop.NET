@@ -55,7 +55,7 @@ public partial class OwopClient
             world.Connected = true;
         }
         Connected?.Invoke(this, new(world, reconnect));
-        if (!reconnect) 
+        if (!reconnect)
         {
             Ready?.Invoke(this, world);
             Task.Run(() =>
@@ -95,7 +95,7 @@ public partial class OwopClient
                 {
                     PlayerConnected?.Invoke(this, player);
                 }
-            }  
+            }
         }
         if (!reader.TryReadLittleEndian(out short pixelCount))
         {
@@ -139,7 +139,7 @@ public partial class OwopClient
     {
         if (reader.TryReadBucket(out BucketData bucket))
         {
-            world.ClientPlayerData.PixelBucketData.SetValues(bucket.Capacity, bucket.Interval);
+            world.ClientPlayerData.PixelBucketData.SetValues(bucket.Capacity, bucket.FillTime);
         }
     }
 
@@ -155,7 +155,7 @@ public partial class OwopClient
 
     private void HandleOpcode(Opcode opcode, SequenceReader<byte> reader, WorldData world)
     {
-        world.World.Logger.LogDebug($"Received opcode: {opcode} ({(byte) opcode})");
+        world.World.Logger.LogDebug($"Received opcode: {opcode} ({(byte)opcode})");
         switch (opcode)
         {
             case Opcode.SetId:

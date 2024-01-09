@@ -12,24 +12,26 @@ public class BucketData
     public static BucketData Empty => new(0, 0, false);
 
     public int Capacity;
-    public int Interval; // in seconds
+    public int FillTime; // in seconds
     public int Allowance;
     public bool Infinite;
     private DateTime _lastUpdate;
+    private double _updateOverflow;
+    // needs lastAdd?
 
     public Bucket Bucket;
 
-    public BucketData(int capacity, int interval, bool infinite, bool fill = true)
+    public BucketData(int capacity, int fillTime, bool infinite, bool fill = true)
     {
-        SetValues(capacity, interval, fill);
+        SetValues(capacity, fillTime, fill);
         Infinite = infinite;
         Bucket = new Bucket(this);
     }
 
-    public void SetValues(int capacity, int interval, bool fill = true)
+    public void SetValues(int capacity, int fillTime, bool fill = true)
     {
         Capacity = capacity;
-        Interval = interval;
+        FillTime = fillTime;
         if (fill)
         {
             Allowance = capacity;
@@ -39,11 +41,14 @@ public class BucketData
 
     public void Update()
     {
-        double value = Bucket.SpendRate * (DateTime.Now - _lastUpdate).TotalSeconds;
-        Allowance += (int)value;
+        double progress = Bucket.FillRate * (DateTime.Now - _lastUpdate).TotalSeconds;
+        Allowance += (int)progress;
         Allowance = Math.Min(Capacity, Allowance);
         _lastUpdate = DateTime.Now;
+        _updateOverflow = progress % 1;
     }
+
+    public TimeSpan GetTimeUntilNextFill() => TimeSpan.FromSeconds(1.0 - _updateOverflow) / Bucket.FillRate;
 
     public bool TrySpend(int pixels)
     {

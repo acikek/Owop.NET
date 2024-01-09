@@ -58,9 +58,9 @@ public static class OwopProtocol
     public static bool TryReadBucket(this SequenceReader<byte> reader, out BucketData bucket)
     {
         if (reader.TryReadLittleEndian(out short capacity) &&
-            reader.TryReadLittleEndian(out short interval))
+            reader.TryReadLittleEndian(out short fillTime))
         {
-            bucket = new(capacity, interval, false);
+            bucket = new(capacity, fillTime, false);
             return true;
         }
         bucket = BucketData.Empty;

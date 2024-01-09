@@ -64,7 +64,7 @@ public class WorldData
                     continue;
                 }
                 (string content, var task) = message;
-                await ClientPlayerData.ChatBucketData.Bucket.DelayUntilOne();
+                await ClientPlayerData.ChatBucketData.Bucket.DelayAny();
                 if (!ClientPlayerData.ChatBucketData.TrySpend(1))
                 {
                     World.Logger.LogError($"Failed to send chat message '{content}'; no allowance left!");

@@ -12,14 +12,9 @@ public partial class OwopClient : IDisposable
 
     public OwopClient(ClientOptions? options = null, ILoggerFactory? loggerFactory = null)
     {
-        if (loggerFactory is null)
-        {
-            using ILoggerFactory factory = LoggerFactory.Create(builder => builder.AddConsole());
-            loggerFactory = factory;
-        }
-        _loggerFactory = loggerFactory;
-        Logger = _loggerFactory.CreateLogger("Owop.Net");
         Options = options ?? new ClientOptions();
+        _loggerFactory = loggerFactory ?? LoggerFactory.Create(builder => builder.AddConsole());
+        Logger = _loggerFactory.CreateLogger("Owop.Net");
         _httpClient = new();
         _messageBuffer = [];
     }
@@ -77,6 +72,7 @@ public partial class OwopClient : IDisposable
         {
             connection.Dispose();
         }
+        _loggerFactory.Dispose();
         _httpClient.Dispose();
         GC.SuppressFinalize(this);
     }
