@@ -6,12 +6,12 @@ public partial class World
 
     public void QueueChatMessage(string message) => _instance.QueueChatMessage(message);
 
-    public async Task RunCommand(string command, params string[] args)
+    public async Task RunCommand(string command, params object[] args)
     {
         string message = $"/{command} {string.Join(' ', args)}";
         await SendChatMessage(message);
     }
 
     public async Task TellPlayer(int id, string message)
-        => await RunCommand("tell", id.ToString(), message);
+        => await RunCommand("tell", id, message);
 }

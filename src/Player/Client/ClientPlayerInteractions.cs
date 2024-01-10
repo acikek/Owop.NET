@@ -35,8 +35,6 @@ public partial class ClientPlayer
         await Send();
     }
 
-    public async Task SetColor(int r, int g, int b) => await SetColor(Color.FromArgb(r, g, b));
-
     public async Task SetNickname(string nickname)
     {
         _instance.Nickname = nickname;
@@ -52,7 +50,7 @@ public partial class ClientPlayer
         if (Rank >= PlayerRank.Moderator)
         {
             Console.WriteLine("TeleportToPlayer: using direct method!");
-            await _instance.World.RunCommand("tp", id.ToString());
+            await _instance.World.RunCommand("tp", id);
         }
         var player = _instance.World.Players[id];
         await Move(player.Pos);
@@ -61,4 +59,15 @@ public partial class ClientPlayer
     public async Task Tell(string message) => await World.TellPlayer(Id, message);
 
     public async Task<WhoisData> QueryWhois() => await World.QueryWhois(Id);
+
+    /// <exception cref="InvalidOperationException">This operation cannot be performed on a <see cref="ClientPlayer"/>.</exception>
+    public Task SetRank(PlayerRank rank) => throw new InvalidOperationException("Cannot set own rank");
+
+    /// <exception cref="InvalidOperationException">This operation cannot be performed on a <see cref="ClientPlayer"/>.</exception>
+    public Task Mute() => throw new InvalidOperationException("Cannot mute self");
+
+    /// <exception cref="InvalidOperationException">This operation cannot be performed on a <see cref="ClientPlayer"/>.</exception>
+    public Task Unmute() => throw new InvalidOperationException("Cannot unmute self");
+
+    public Task Kick() => _instance.WorldData.Connection.Disconnect();
 }

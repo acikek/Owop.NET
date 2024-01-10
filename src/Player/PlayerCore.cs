@@ -13,6 +13,7 @@ public partial class Player(WorldPlayerData<Player> data) : IPlayer
     public PlayerTool Tool => _instance.Tool;
     public int Id => _instance.Id;
     public Color Color => _instance.Color;
+    public bool IsClient => false;
 
     public static implicit operator Player(WorldPlayerData<Player> data) => data.Player;
 }

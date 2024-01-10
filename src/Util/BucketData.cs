@@ -48,7 +48,6 @@ public class BucketData
         _lastUpdate = DateTime.Now;
     }
 
-
     public bool TrySpend(int pixels)
     {
         if (Infinite)

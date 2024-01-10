@@ -11,13 +11,57 @@ public partial class World
     public async Task MovePlayer(int id, Position worldPos)
     {
         _instance.Connection.CheckInteraction(PlayerRank.Moderator);
-        await RunCommand("tp", id.ToString(), worldPos.X.ToString(), worldPos.Y.ToString());
+        await RunCommand("tp", id, worldPos.X, worldPos.Y);
     }
+
+    public async Task SetPlayerRank(int id, PlayerRank rank)
+    {
+        _instance.Connection.CheckInteraction(PlayerRank.Moderator);
+        await RunCommand("setrank", id, (byte)rank);
+    }
+
+    public async Task KickPlayer(int id)
+    {
+        _instance.Connection.CheckInteraction(PlayerRank.Moderator);
+        await RunCommand("kick", id);
+    }
+
+    // TODO: public SetPlayerMuted
+    private async Task SetPlayerMuteState(int id, int state)
+    {
+        _instance.Connection.CheckInteraction(PlayerRank.Moderator);
+        await RunCommand("mute", id, state);
+    }
+
+    public async Task MutePlayer(int id) => await SetPlayerMuteState(id, 1);
+
+    public async Task UnmutePlayer(int id) => await SetPlayerMuteState(id, 0);
+
+    public async Task<WhoisData> QueryWhois(int playerId)
+    {
+        _instance.Connection.CheckInteraction(PlayerRank.Moderator);
+        if (_instance.WhoisQueue.TryGetValue(playerId, out var existing))
+        {
+            return await existing.Task;
+        }
+        var source = new TaskCompletionSource<WhoisData>(TaskCreationOptions.RunContinuationsAsynchronously);
+        _instance.WhoisQueue[playerId] = source;
+        await RunCommand("whois", playerId);
+        return await source.Task;
+    }
+
+    public async Task SetPassword(string password)
+    {
+        _instance.Connection.CheckInteraction(PlayerRank.Moderator);
+        await RunCommand("setworldpass", password);
+    }
+
+    public async Task RemovePassword() => await SetPassword("remove");
 
     public async Task SetRestricted(bool restricted)
     {
         _instance.Connection.CheckInteraction(PlayerRank.Moderator);
-        await RunCommand("restrict", restricted.ToString());
+        await RunCommand("restrict", restricted);
     }
 
     public async Task Restrict() => await SetRestricted(true);
@@ -62,16 +106,5 @@ public partial class World
         return true;
     }
 
-    public async Task<WhoisData> QueryWhois(int playerId)
-    {
-        _instance.Connection.CheckInteraction(PlayerRank.Moderator);
-        if (_instance.WhoisQueue.TryGetValue(playerId, out var existing))
-        {
-            return await existing.Task;
-        }
-        var source = new TaskCompletionSource<WhoisData>(TaskCreationOptions.RunContinuationsAsynchronously);
-        _instance.WhoisQueue[playerId] = source;
-        await RunCommand("whois", playerId.ToString());
-        return await source.Task;
-    }
+    public async Task Disconnect() => await _instance.Connection.Disconnect();
 }

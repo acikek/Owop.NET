@@ -9,6 +9,7 @@ using Websocket.Client;
 
 namespace Owop;
 
+// TODO: Expose more correctly
 public class WorldConnection : IDisposable
 {
     public WebsocketClient Socket { get; private set; }
