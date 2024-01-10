@@ -53,7 +53,7 @@ public class Bucket(BucketData data)
     public TimeSpan GetTimeToFill(int amount)
         => Infinite || amount <= 0
             ? TimeSpan.Zero
-            : FillInterval * (Math.Min(amount, Capacity) - 1) + _instance.GetTimeUntilNextFill();
+            : FillInterval * Math.Min(amount, Capacity); //+ _instance.GetTimeUntilNextFill();
 
     /// <summary>
     /// Creates a task that completes after the bucket has refilled 
@@ -82,6 +82,9 @@ public class Bucket(BucketData data)
     /// <summary>Creates a task that completes after the bucket has refilled <b>to</b> exactly one allowance point.</summary>
     /// <returns>A task that represents the time delay.</returns>
     public async Task DelayAny() => await DelayUntilHas(1);
+
+    /// <inheritdoc cref="object.ToString"/>
+    public override string ToString() => _instance.ToString();
 
     /// <summary>Returns <see cref="BucketData.Bucket"/>.</summary>
     /// <param name="data">The bucket data instance.</param>

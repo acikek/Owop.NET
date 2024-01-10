@@ -16,6 +16,7 @@ public class BucketData
     public int Allowance;
     public bool Infinite;
 
+    public event EventHandler<int>? Tick;
     public event EventHandler<int>? Fill;
 
     private DateTime _lastFilled;
@@ -41,6 +42,8 @@ public class BucketData
     }
 
     public void StartFill()
+    //public TimeSpan GetTimeUntilNextFill() => Bucket.FillInterval - (DateTime.Now - _lastFilled);
+
     {
         if (_fillTask is not null)
         {
@@ -60,8 +63,6 @@ public class BucketData
 
     }
 
-    public TimeSpan GetTimeUntilNextFill() => Bucket.FillInterval - (DateTime.Now - _lastFilled);
-
     public bool TrySpend(int pixels)
     {
         if (Infinite)
@@ -76,4 +77,6 @@ public class BucketData
         StartFill();
         return true;
     }
+
+    public override string ToString() => $"[{Allowance}/{Capacity}] @{Bucket.FillRate}a/s";
 }
