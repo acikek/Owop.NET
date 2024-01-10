@@ -38,27 +38,25 @@ public class BucketData
         _lastUpdate = DateTime.Now;
     }
 
-    //public TimeSpan GetTimeUntilNextFill() => Bucket.FillInterval - (DateTime.Now - _lastFilled);
-
     public void Update()
     {
         double value = Bucket.FillRate * (DateTime.Now - _lastUpdate).TotalSeconds;
+        _lastUpdate = DateTime.Now;
         Allowance += (int)value;
         Allowance = Math.Min(Capacity, Allowance);
-        _lastUpdate = DateTime.Now;
     }
 
-    public bool TrySpend(int pixels)
+    public bool TrySpend(int amount)
     {
         if (Infinite)
         {
             return true;
         }
-        if (!Bucket.CanSpend(pixels))
+        if (!Bucket.CanSpend(amount))
         {
             return false;
         }
-        Allowance -= pixels;
+        Allowance -= amount;
         return true;
     }
 

@@ -7,6 +7,12 @@ public class Bucket(BucketData data)
     /// <summary>An empty bucket instance.</summary>
     public static Bucket Empty => BucketData.Empty;
 
+    /// <summary>
+    /// A delay to add to every <see cref="GetTimeToFill"/>call.
+    /// Due to how OWOP handles bucket values, this is necessary for continuous allowance spending.
+    /// </summary>
+    public static readonly TimeSpan SafetyDelay = TimeSpan.FromMicroseconds(10);
+
     /// <summary>The internal bucket data.</summary>
     private readonly BucketData _instance = data;
 
@@ -19,7 +25,8 @@ public class Bucket(BucketData data)
     /// <summary>The bucket's current spendable allowance.</summary>
     public int Allowance
     {
-        get {
+        get
+        {
             _instance.Update();
             return _instance.Allowance;
         }
@@ -54,7 +61,7 @@ public class Bucket(BucketData data)
         _instance.Update();
         return Infinite || amount <= 0
             ? TimeSpan.Zero
-            : FillInterval * Math.Min(amount, Capacity);
+            : FillInterval * Math.Min(amount, Capacity) + TimeSpan.FromMilliseconds(10);
     }
 
     /// <summary>
