@@ -60,15 +60,15 @@ public class WorldData
         {
             World.Logger.LogDebug("Starting chat task...");
             int count = 0;
-            while (!ChatBuffer.IsEmpty)
+            while (!_chatBuffer.IsEmpty)
             {
-                if (!ChatBuffer.TryDequeue(out var message))
+                if (!_chatBuffer.TryDequeue(out var message))
                 {
                     continue;
                 }
                 (string content, var task) = message;
-                await ClientPlayerData.ChatBucketData.Bucket.DelayAny();
-                if (!ClientPlayerData.ChatBucketData.TrySpend(1))
+                await ChatBucket.Bucket.DelayAny();
+                if (!ChatBucket.TrySpend(1))
                 {
                     World.Logger.LogError($"Failed to send chat message '{content}'; no allowance left!");
                     continue;
@@ -77,7 +77,7 @@ public class WorldData
                 count++;
                 task.SetResult();
             }
-            ChatTask = null;
+            _chatTask = null;
             World.Logger.LogDebug($"Completed chat task with {count} message(s) sent.");
         });
     }
