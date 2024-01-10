@@ -10,6 +10,13 @@ public class Bucket(BucketData data)
     /// <summary>The internal bucket data.</summary>
     private readonly BucketData _instance = data;
 
+    /// <summary>Invoked when the bucket refills to the specified allowance.</summary>
+    public event EventHandler<int>? Fill
+    {
+        add => _instance.Fill += value;
+        remove => _instance.Fill -= value;
+    }
+
     /// <summary>The bucket's total capacity to refill towards.</summary>
     public int Capacity => _instance.Capacity;
 
@@ -17,14 +24,7 @@ public class Bucket(BucketData data)
     public int FillTime => _instance.FillTime;
 
     /// <summary>The bucket's current spendable allowance.</summary>
-    public int Allowance
-    {
-        get
-        {
-            _instance.Update();
-            return _instance.Allowance;
-        }
-    }
+    public int Allowance => _instance.Allowance;
 
     /// <summary>Whether the bucket is infinite (has no cooldowns).</summary>
     public bool Infinite => _instance.Infinite;
@@ -32,8 +32,14 @@ public class Bucket(BucketData data)
     /// <summary>The rate, in allowance/s, at which the bucket refills to capacity.</summary>
     public double FillRate => (double)Capacity / FillTime;
 
+    /// <summary>The duration, in seconds, it takes the bucket to refill one allowance.</summary>
+    public TimeSpan FillInterval => TimeSpan.FromSeconds(1.0 / FillRate);
+
     /// <summary>Whether the bucket is full.</summary>
-    public bool Full => Allowance >= Capacity;
+    public bool IsFull => Allowance >= Capacity;
+
+    /// <summary>Whether the bucket is empty.</summary>
+    public bool IsEmpty => Allowance <= 0;
 
     /// <summary>Returns whether the bucket can spend the specified amount from its allowance.</summary>
     /// <param name="amount">The amount to spend.</param>
@@ -45,14 +51,9 @@ public class Bucket(BucketData data)
     /// </summary>
     /// <param name="amount">The amount to refill.</param>
     public TimeSpan GetTimeToFill(int amount)
-    {
-        _instance.Update();
-        Console.WriteLine("Time until next fill: " + _instance.GetTimeUntilNextFill());
-        return Infinite || amount <= 0
+        => Infinite || amount <= 0
             ? TimeSpan.Zero
-            : TimeSpan.FromSeconds((Math.Min(amount, Capacity) - 1) / FillRate)
-                + _instance.GetTimeUntilNextFill();
-    }
+            : FillInterval * (Math.Min(amount, Capacity) - 1) + _instance.GetTimeUntilNextFill();
 
     /// <summary>
     /// Creates a task that completes after the bucket has refilled 
@@ -60,7 +61,7 @@ public class Bucket(BucketData data)
     /// </summary>
     /// <param name="amount">The amount to refill.</param>
     /// <returns>A task that represents the time delay.</returns>
-    public async Task DelayUntilFill(int amount) => await (Infinite ? Task.CompletedTask : Task.Delay(GetTimeToFill(amount)));
+    public async Task DelayUntilFill(int amount) => await (Infinite || amount <= 0 ? Task.CompletedTask : Task.Delay(GetTimeToFill(amount)));
 
     /// <summary>
     /// Creates a task that completes after the bucket has refilled <b>to</b>

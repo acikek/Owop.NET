@@ -7,5 +7,4 @@ public class ClientOptions
     public short WorldVerification = 25565;
     public int MaxWorldNameLength = 24;
     public string ChatVerification = "\u000A";
-    public int ChatTimeout = 2000;
 }

@@ -58,9 +58,9 @@ public partial class OwopClient
         if (!reconnect)
         {
             Ready?.Invoke(this, world);
-            Task.Run(() =>
+            Task.Run(async () =>
             {
-                Thread.Sleep(Options.ChatTimeout);
+                await Task.Delay(world.ChatBucket.Bucket.FillInterval);
                 ChatReady?.Invoke(this, world);
             });
         }
