@@ -1,6 +1,7 @@
 using System.Collections.Concurrent;
 using Microsoft.Extensions.Logging;
 using Owop.Network;
+using Owop.Util;
 
 namespace Owop;
 
@@ -10,16 +11,18 @@ public class WorldData
     public Dictionary<int, Player> Players = [];
     public ClientPlayerData ClientPlayerData;
 
-    public ConcurrentQueue<(string, TaskCompletionSource)> ChatBuffer = [];
+    private readonly ConcurrentQueue<(string, TaskCompletionSource)> _chatBuffer = [];
+    private Task? _chatTask = null;
+
     public ConcurrentDictionary<int, TaskCompletionSource<WhoisData>> WhoisQueue = [];
-    public Task? ChatTask = null;
 
     public readonly string Name;
     public readonly WorldConnection Connection;
     public readonly World World;
     public bool Connected = false;
-    //public bool PlayersInitialized = false;
     public bool Initialized = false;
+
+    public BucketData ChatBucket => ClientPlayerData.ChatBucketData;
 
     public WorldData(string name, WorldConnection connection)
     {
@@ -33,7 +36,7 @@ public class WorldData
     {
         World.Logger.LogDebug($"Queuing chat message: '{message}'");
         var source = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
-        ChatBuffer.Enqueue((message, source));
+        _chatBuffer.Enqueue((message, source));
         SendChatMessages();
         return source;
     }
@@ -49,11 +52,11 @@ public class WorldData
 
     public void SendChatMessages()
     {
-        if (ChatTask is not null)
+        if (_chatTask is not null)
         {
             return;
         }
-        ChatTask = Task.Run(async () =>
+        _chatTask = Task.Run(async () =>
         {
             World.Logger.LogDebug("Starting chat task...");
             int count = 0;
