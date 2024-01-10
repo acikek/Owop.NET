@@ -30,13 +30,6 @@ public class WorldData
         ClientPlayerData = new(this);
         Connection = connection;
         World = new(this);
-        ChatBucket.Bucket.Fill += async (_, value) =>
-        {
-            if (_chatTask is null)
-            {
-                await SendNextChatMessage();
-            }
-        };
     }
 
     public TaskCompletionSource QueueChatMessage(string message)
@@ -57,27 +50,6 @@ public class WorldData
         await Connection.Send(data);
     }
 
-    public async Task<bool> SendNextChatMessage()
-    {
-        if (_chatBuffer.IsEmpty)
-        {
-            return false;
-        }
-        if (!_chatBuffer.TryDequeue(out var message))
-        {
-            return false;
-        }
-        (string content, var task) = message;
-        if (!ChatBucket.TrySpend(1))
-        {
-            World.Logger.LogError($"Failed to send chat message '{content}'; no allowance left!");
-            return false;
-        }
-        await SendChatMessage(content);
-        task.SetResult();
-        return true;
-    }
-
     public void SendChatMessages()
     {
         if (_chatTask is not null)
@@ -88,12 +60,22 @@ public class WorldData
         {
             World.Logger.LogDebug("Starting chat task...");
             int count = 0;
-            while (!_chatBuffer.IsEmpty && !ChatBucket.Bucket.IsEmpty)
+            while (!_chatBuffer.IsEmpty)
             {
-                if (await SendNextChatMessage())
+                if (!_chatBuffer.TryDequeue(out var message))
                 {
-                    count++;
+                    continue;
                 }
+                (string content, var task) = message;
+                await ChatBucket.Bucket.DelayAny();
+                if (!ChatBucket.TrySpend(1))
+                {
+                    World.Logger.LogError($"Failed to send chat message '{content}'; no allowance left!");
+                    continue;
+                }
+                await SendChatMessage(content);
+                count++;
+                task.SetResult();
             }
             _chatTask = null;
             World.Logger.LogDebug($"Completed chat task with {count} message(s) sent.");

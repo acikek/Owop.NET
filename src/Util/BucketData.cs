@@ -16,11 +16,7 @@ public class BucketData
     public int Allowance;
     public bool Infinite;
 
-    public event EventHandler<int>? Tick;
-    public event EventHandler<int>? Fill;
-
-    private DateTime _lastFilled;
-    private Task? _fillTask;
+    private DateTime _lastUpdate;
 
     public Bucket Bucket;
 
@@ -39,29 +35,19 @@ public class BucketData
         {
             Allowance = capacity;
         }
+        _lastUpdate = DateTime.Now;
     }
 
-    public void StartFill()
     //public TimeSpan GetTimeUntilNextFill() => Bucket.FillInterval - (DateTime.Now - _lastFilled);
 
+    public void Update()
     {
-        if (_fillTask is not null)
-        {
-            return;
-        }
-        _fillTask = Task.Run(async () =>
-        {
-            while (!Bucket.IsFull)
-            {
-                await Task.Delay(Bucket.FillInterval + TimeSpan.FromMilliseconds(100));
-                _lastFilled = DateTime.Now;
-                Allowance++;
-                Fill?.Invoke(this, Allowance);
-            }
-            _fillTask = null;
-        });
-
+        double value = Bucket.FillRate * (DateTime.Now - _lastUpdate).TotalSeconds;
+        Allowance += (int)value;
+        Allowance = Math.Min(Capacity, Allowance);
+        _lastUpdate = DateTime.Now;
     }
+
 
     public bool TrySpend(int pixels)
     {
@@ -74,7 +60,6 @@ public class BucketData
             return false;
         }
         Allowance -= pixels;
-        StartFill();
         return true;
     }
 

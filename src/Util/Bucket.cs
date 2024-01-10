@@ -10,13 +10,6 @@ public class Bucket(BucketData data)
     /// <summary>The internal bucket data.</summary>
     private readonly BucketData _instance = data;
 
-    /// <summary>Invoked when the bucket refills to the specified allowance.</summary>
-    public event EventHandler<int>? Fill
-    {
-        add => _instance.Fill += value;
-        remove => _instance.Fill -= value;
-    }
-
     /// <summary>The bucket's total capacity to refill towards.</summary>
     public int Capacity => _instance.Capacity;
 
@@ -24,7 +17,13 @@ public class Bucket(BucketData data)
     public int FillTime => _instance.FillTime;
 
     /// <summary>The bucket's current spendable allowance.</summary>
-    public int Allowance => _instance.Allowance;
+    public int Allowance
+    {
+        get {
+            _instance.Update();
+            return _instance.Allowance;
+        }
+    }
 
     /// <summary>Whether the bucket is infinite (has no cooldowns).</summary>
     public bool Infinite => _instance.Infinite;
@@ -51,9 +50,12 @@ public class Bucket(BucketData data)
     /// </summary>
     /// <param name="amount">The amount to refill.</param>
     public TimeSpan GetTimeToFill(int amount)
-        => Infinite || amount <= 0
+    {
+        _instance.Update();
+        return Infinite || amount <= 0
             ? TimeSpan.Zero
-            : FillInterval * Math.Min(amount, Capacity); //+ _instance.GetTimeUntilNextFill();
+            : FillInterval * Math.Min(amount, Capacity);
+    }
 
     /// <summary>
     /// Creates a task that completes after the bucket has refilled 
