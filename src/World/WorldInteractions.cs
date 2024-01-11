@@ -71,7 +71,7 @@ public partial class World
     public async Task<bool> PlacePixel(Position? worldPos = null, Color? color = null, bool sneaky = false)
     {
         _instance.Connection.CheckInteraction(PlayerRank.Player);
-        if (!_instance.ClientPlayerData.PixelBucketData.TrySpend(1))
+        if (!_instance.ClientPlayerData.PixelBucket.TrySpend(1))
         {
             return false;
         }

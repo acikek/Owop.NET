@@ -3,10 +3,7 @@ namespace Owop.Util;
 /// <summary>Represents a refilling container with some spendable interaction <see cref="Allowance"/>.</summary>
 /// <param name="data">The internal bucket data.</param>
 public interface IBucket
-{
-    /// <summary>An empty bucket instance.</summary>
-    static Bucket Empty => BucketData.Empty;
-
+{ 
     /// <summary>The bucket's total capacity to refill towards.</summary>
     int Capacity { get; }
 

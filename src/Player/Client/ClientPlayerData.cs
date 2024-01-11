@@ -7,14 +7,14 @@ public class ClientPlayerData : WorldPlayerData<ClientPlayer>
 {
     public string? Nickname;
     private PlayerRank _rank;
-    public BucketData PixelBucketData;
-    public BucketData ChatBucketData;
+    public Bucket PixelBucket;
+    public Bucket ChatBucket;
 
     public ClientPlayerData(WorldData worldData) : base(worldData, null!)
     {
         Player = new ClientPlayer(this);
-        PixelBucketData = BucketData.Empty;
-        ChatBucketData = new(4, 6, false, true);
+        PixelBucket = Bucket.Empty;
+        ChatBucket = new(4, 6, false, true);
     }
 
     public PlayerRank Rank
@@ -24,8 +24,8 @@ public class ClientPlayerData : WorldPlayerData<ClientPlayer>
         {
             _rank = value;
             bool admin = Rank == PlayerRank.Admin;
-            PixelBucketData.Infinite = admin;
-            ChatBucketData.Infinite = admin;
+            PixelBucket.Infinite = admin;
+            ChatBucket.Infinite = admin;
         }
     }
 }

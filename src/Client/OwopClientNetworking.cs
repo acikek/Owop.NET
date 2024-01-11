@@ -62,7 +62,7 @@ public partial class OwopClient
             Ready?.Invoke(this, world);
             Task.Run(async () =>
             {
-                await Task.Delay(world.ChatBucket.Bucket.FillInterval);
+                await Task.Delay(world.ChatBucket.FillInterval);
                 world.IsChatReady = true;
                 ChatReady?.Invoke(this, world);
             });
@@ -141,9 +141,9 @@ public partial class OwopClient
 
     private void HandlePixelQuota(SequenceReader<byte> reader, WorldData world)
     {
-        if (reader.TryReadBucket(out BucketData bucket))
+        if (reader.TryReadBucket(out Bucket bucket))
         {
-            world.ClientPlayerData.PixelBucketData.SetValues(bucket.Capacity, bucket.FillTime);
+            world.ClientPlayerData.PixelBucket.SetValues(bucket.Capacity, bucket.FillTime);
         }
     }
 

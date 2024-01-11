@@ -7,10 +7,10 @@ using System.Threading.Tasks;
 namespace Owop.Util;
 
 /// <summary>An <see cref="IBucket"/> implementation.</summary>
-public class BucketData : IBucket
+public class Bucket : IBucket
 {
     /// <summary>An empty bucket instance.</summary>
-    public static BucketData Empty => new(0, 0, false);
+    public static Bucket Empty => new(0, 0, false);
 
     /// <summary>
     /// A delay to add to every <see cref="GetTimeToFill"/>call.
@@ -47,7 +47,7 @@ public class BucketData : IBucket
     /// <param name="fillTime">How long, in seconds, it takes to refill the bucket to capacity. </param>
     /// <param name="infinite">Whether the bucket is infinite (has no cooldown).</param>
     /// <param name="fill">Whether the allowance value should begin at capacity.</param>
-    public BucketData(int capacity, int fillTime, bool infinite, bool fill = true)
+    public Bucket(int capacity, int fillTime, bool infinite, bool fill = true)
     {
         SetValues(capacity, fillTime, fill);
         Infinite = infinite;
@@ -55,7 +55,7 @@ public class BucketData : IBucket
 
     /// <summary>
     /// Sets the bucket's values.
-    /// See <see cref="BucketData(int, int, bool, bool)"/> for more detail.
+    /// See <see cref="Bucket(int, int, bool, bool)"/> for more detail.
     /// </summary>
     public void SetValues(int capacity, int fillTime, bool fill = true)
     {

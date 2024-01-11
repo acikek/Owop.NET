@@ -23,7 +23,7 @@ public class WorldData
     public bool Initialized = false;
     public bool IsChatReady = false;
 
-    public BucketData ChatBucket => ClientPlayerData.ChatBucketData;
+    public Bucket ChatBucket => ClientPlayerData.ChatBucket;
 
     public WorldData(string name, WorldConnection connection)
     {
@@ -68,7 +68,7 @@ public class WorldData
                     continue;
                 }
                 (string content, var task) = message;
-                await ChatBucket.Bucket.DelayAny();
+                await ChatBucket.DelayAny();
                 if (!ChatBucket.TrySpend(1))
                 {
                     World.Logger.LogError($"Failed to send chat message '{content}'; no allowance left!");
