@@ -63,6 +63,7 @@ public partial class OwopClient
             Task.Run(async () =>
             {
                 await Task.Delay(world.ChatBucket.Bucket.FillInterval);
+                world.IsChatReady = true;
                 ChatReady?.Invoke(this, world);
             });
         }

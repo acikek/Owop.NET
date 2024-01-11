@@ -63,8 +63,8 @@ public class Bucket(BucketData data)
             return TimeSpan.Zero;
         }
         _instance.Update();
-        return FillInterval * Math.Min(amount, Capacity)
-            //+ _instance.GetNextTimeToFill()
+        return FillInterval * Math.Min(amount - 1, Capacity)
+            + _instance.GetNextTimeToFill()
             + SafetyDelay;
     }
 

@@ -21,6 +21,7 @@ public class WorldData
     public readonly World World;
     public bool Connected = false;
     public bool Initialized = false;
+    public bool IsChatReady = false;
 
     public BucketData ChatBucket => ClientPlayerData.ChatBucketData;
 

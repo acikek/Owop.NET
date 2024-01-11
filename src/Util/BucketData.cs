@@ -13,7 +13,7 @@ public class BucketData
 
     public int Capacity;
     public int FillTime; // in seconds
-    public int Allowance;
+    public double Allowance;
     public bool Infinite;
 
     private DateTime _lastUpdate;

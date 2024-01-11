@@ -12,6 +12,7 @@ public partial class World(WorldData data)
     public Dictionary<int, Player> Players => _instance.Players;
     public ClientPlayer ClientPlayer => _instance.ClientPlayerData;
     public ILogger Logger => _instance.Connection.Logger;
+    public bool IsChatReady => _instance.IsChatReady;
 
     public IPlayer GetPlayerById(int id) => Players.TryGetValue(id, out var player) ? player : ClientPlayer;
 
