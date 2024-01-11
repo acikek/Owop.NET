@@ -7,14 +7,14 @@ using System.Threading.Tasks;
 namespace Owop.Util;
 
 // TODO: multiplier
-public class BucketData
+public class BucketData : IBucket
 {
     public static BucketData Empty => new(0, 0, false);
 
-    public int Capacity;
-    public int FillTime; // in seconds
-    public double Allowance;
-    public bool Infinite;
+    public int Capacity { get; set; }
+    public int FillTime { get; set; }
+    public double Allowance { get; set; }
+    public bool Infinite { get; set; }
 
     private DateTime _lastUpdate;
 
@@ -46,6 +46,18 @@ public class BucketData
     }
 
     public TimeSpan GetNextTimeToFill() => Bucket.FillInterval * (1.0 - (Allowance % 1.0));
+
+    public TimeSpan GetTimeToFill(int amount)
+    {
+        if (Infinite || amount <= 0)
+        {
+            return TimeSpan.Zero;
+        }
+        Update();
+        return TimeSpan.Zero; /*FillInterval * Math.Min(amount - 1, Capacity)
+            + GetNextTimeToFill()
+            + SafetyDelay;*/
+    }
 
     public bool TrySpend(int amount)
     {
