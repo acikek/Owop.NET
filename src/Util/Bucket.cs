@@ -11,7 +11,7 @@ public class Bucket(BucketData data)
     /// A delay to add to every <see cref="GetTimeToFill"/>call.
     /// Due to how OWOP handles bucket values, this is necessary for continuous allowance spending.
     /// </summary>
-    public static readonly TimeSpan SafetyDelay = TimeSpan.FromMicroseconds(10);
+    public static readonly TimeSpan SafetyDelay = TimeSpan.FromMilliseconds(100);
 
     /// <summary>The internal bucket data.</summary>
     private readonly BucketData _instance = data;
@@ -23,7 +23,7 @@ public class Bucket(BucketData data)
     public int FillTime => _instance.FillTime;
 
     /// <summary>The bucket's current spendable allowance.</summary>
-    public int Allowance
+    public double Allowance
     {
         get
         {
@@ -58,10 +58,14 @@ public class Bucket(BucketData data)
     /// <param name="amount">The amount to refill.</param>
     public TimeSpan GetTimeToFill(int amount)
     {
+        if (Infinite || amount <= 0)
+        {
+            return TimeSpan.Zero;
+        }
         _instance.Update();
-        return Infinite || amount <= 0
-            ? TimeSpan.Zero
-            : FillInterval * Math.Min(amount, Capacity) + TimeSpan.FromMilliseconds(10);
+        return FillInterval * Math.Min(amount, Capacity)
+            //+ _instance.GetNextTimeToFill()
+            + SafetyDelay;
     }
 
     /// <summary>
@@ -78,11 +82,11 @@ public class Bucket(BucketData data)
     /// </summary>
     /// <param name="amount">The amount to refill to.</param>
     /// <returns>A task that represents the time delay.</returns>
-    public async Task DelayUntilHas(int allowance) => await DelayUntilFill(allowance - Allowance);
+    public async Task DelayUntilHas(int allowance) => await DelayUntilFill(allowance - (int)Allowance);
 
     /// <summary>Creates a task that completes after the bucket has completely refilled.</summary>
     /// <returns>A task that represents the time delay.</returns>
-    public async Task DelayUntilRestore() => await DelayUntilFill(Capacity - Allowance);
+    public async Task DelayUntilRestore() => await DelayUntilFill(Capacity - (int)Allowance);
 
     /// <summary>Creates a task that completes after the bucket has refilled exactly one allowance point.</summary>
     /// <returns>A task that represents the time delay.</returns>

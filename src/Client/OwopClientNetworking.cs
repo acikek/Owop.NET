@@ -46,9 +46,11 @@ public partial class OwopClient
     {
         if (!reader.TryReadLittleEndian(out int id))
         {
-            return;
         }
-        world.ClientPlayerData.Id = id;
+    }
+
+    private void InitWorld(WorldData world)
+    {
         bool reconnect = world.Connected;
         if (!reconnect)
         {
@@ -63,6 +65,11 @@ public partial class OwopClient
                 await Task.Delay(world.ChatBucket.Bucket.FillInterval);
                 ChatReady?.Invoke(this, world);
             });
+        }
+        if (!world.Initialized)
+        {
+            world.World.Logger.LogDebug("World initialized.");
+            world.Initialized = true;
         }
     }
 
@@ -120,11 +127,7 @@ public partial class OwopClient
                 }
             }
         }
-        if (!world.Initialized)
-        {
-            world.World.Logger.LogDebug("World initialized.");
-            world.Initialized = true;
-        }
+        InitWorld(world);
     }
 
     private void HandleSetRank(SequenceReader<byte> reader, WorldData world)

@@ -40,11 +40,12 @@ public class BucketData
 
     public void Update()
     {
-        double value = Bucket.FillRate * (DateTime.Now - _lastUpdate).TotalSeconds;
-        _lastUpdate = DateTime.Now;
-        Allowance += (int)value;
+        Allowance += Bucket.FillRate * (DateTime.Now - _lastUpdate).TotalSeconds;
         Allowance = Math.Min(Capacity, Allowance);
+        _lastUpdate = DateTime.Now;
     }
+
+    public TimeSpan GetNextTimeToFill() => Bucket.FillInterval * (1.0 - (Allowance % 1.0));
 
     public bool TrySpend(int amount)
     {
@@ -60,5 +61,5 @@ public class BucketData
         return true;
     }
 
-    public override string ToString() => $"[{Allowance}/{Capacity}] @{Bucket.FillRate}a/s";
+    public override string ToString() => $"[{Allowance:0.00}/{Capacity}] @{Bucket.FillRate}a/s";
 }
