@@ -1,3 +1,4 @@
+using System.Drawing;
 using Owop.Network;
 using Owop.Util;
 
@@ -8,6 +9,10 @@ public record ConnectEventArgs(World World, bool IsReconnect);
 public record ChatEventArgs(World World, ChatPlayer Player, string Content)
 {
     public IPlayer? WorldPlayer => Player.Id is int id ? World.GetPlayerById(id) : null;
+
+    public Color HeaderColor => Player.Rank.GetChatColor();
+
+    public Color? MessageColor => Player.Rank >= PlayerRank.Moderator ? HeaderColor : null;
 }
 
 public record TellEventArgs(World World, IPlayer Player, string Content);
