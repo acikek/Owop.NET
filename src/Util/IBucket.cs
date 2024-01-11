@@ -20,20 +20,20 @@ public interface IBucket
     bool Infinite { get; }
 
     /// <summary>The rate, in allowance/s, at which the bucket refills to capacity.</summary>
-    double FillRate => (double)Capacity / FillTime;
+    double FillRate { get; }
 
     /// <summary>The duration, in seconds, it takes the bucket to refill one allowance.</summary>
-    TimeSpan FillInterval => TimeSpan.FromSeconds(1.0 / FillRate);
+    TimeSpan FillInterval { get; }
 
     /// <summary>Whether the bucket is full.</summary>
-    bool IsFull => Allowance >= Capacity;
+    bool IsFull { get; }
 
     /// <summary>Whether the bucket is empty.</summary>
-    bool IsEmpty => Allowance <= 0;
+    bool IsEmpty { get; }
 
     /// <summary>Returns whether the bucket can spend the specified amount from its allowance.</summary>
     /// <param name="amount">The amount to spend.</param>
-    bool CanSpend(int amount) => Infinite || amount <= Allowance;
+    bool CanSpend(int amount);
 
     /// <summary>
     /// Returns a <see cref="TimeSpan"/> of how long the bucket will take to refill
@@ -48,7 +48,7 @@ public interface IBucket
     /// </summary>
     /// <param name="amount">The amount to refill.</param>
     /// <returns>A task that represents the time delay.</returns>
-    async Task DelayUntilFill(int amount) => await (Infinite || amount <= 0 ? Task.CompletedTask : Task.Delay(GetTimeToFill(amount)));
+    Task DelayUntilFill(int amount);
 
     /// <summary>
     /// Creates a task that completes after the bucket has refilled <b>to</b>
@@ -56,17 +56,17 @@ public interface IBucket
     /// </summary>
     /// <param name="amount">The amount to refill to.</param>
     /// <returns>A task that represents the time delay.</returns>
-    async Task DelayUntilHas(int allowance) => await DelayUntilFill(allowance - (int)Allowance);
+    Task DelayUntilHas(int allowance);
 
     /// <summary>Creates a task that completes after the bucket has completely refilled.</summary>
     /// <returns>A task that represents the time delay.</returns>
-    async Task DelayUntilRestore() => await DelayUntilFill(Capacity - (int)Allowance);
+    Task DelayUntilRestore();
 
     /// <summary>Creates a task that completes after the bucket has refilled exactly one allowance point.</summary>
     /// <returns>A task that represents the time delay.</returns>
-    async Task DelayOne() => await DelayUntilFill(1);
+    Task DelayOne();
 
     /// <summary>Creates a task that completes after the bucket has refilled <b>to</b> exactly one allowance point.</summary>
     /// <returns>A task that represents the time delay.</returns>
-    async Task DelayAny() => await DelayUntilHas(1);
+    Task DelayAny();
 }
