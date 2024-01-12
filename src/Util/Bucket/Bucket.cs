@@ -111,8 +111,8 @@ public class Bucket : IBucket
             return TimeSpan.Zero;
         }
         Update();
-        return FillInterval * Math.Min(amount - 1.0, Capacity)
-            + GetNextTimeToFill()
+        return FillInterval * Math.Min(amount, Capacity)
+            //+ GetNextTimeToFill() TODO: Fix
             + SafetyDelay;
     }
 

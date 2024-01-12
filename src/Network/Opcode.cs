@@ -15,7 +15,7 @@ public enum Opcode
     SetRank,
     /// <summary>Updates captcha status.</summary>
     Captcha,
-    /// <summary>Sets the client player's ...something. TODO: update this when I understand it better</summary>
+    /// <summary>Sets the client player's <see cref="IClientPlayer.PixelBucket"/> values.</summary>
     SetPixelQuota,
     /// <summary>Protects a chunk within a world.</summary>
     ChunkProtect,

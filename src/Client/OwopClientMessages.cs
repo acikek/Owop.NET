@@ -17,7 +17,7 @@ public partial class OwopClient
     private bool _whois = false;
     private readonly List<string> _messageBuffer;
 
-    private void HandleTextMessage(string text, WorldData world)
+    private void HandleTextMessage(string text, World world)
     {
         if (HandleTextLine(text) is ServerMessage message)
         {
@@ -75,10 +75,10 @@ public partial class OwopClient
         return new(ServerMessageType.Info, [text]);
     }
 
-    private void HandleServerMessage(ServerMessage message, WorldData world)
+    private void HandleServerMessage(ServerMessage message, World world)
     {
         var dbugLines = message.Args.Select(line => $"'{line}'");
-        world.World.Logger.LogDebug($"Received server message ({message.Type}): {string.Join(", ", dbugLines)}");
+        world.Logger.LogDebug($"Received server message ({message.Type}): {string.Join(", ", dbugLines)}");
         switch (message.Type)
         {
             case ServerMessageType.Chat:

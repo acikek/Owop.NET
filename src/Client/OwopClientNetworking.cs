@@ -25,7 +25,7 @@ public partial class OwopClient
         return serverInfo;
     }
 
-    private void HandleMessage(ResponseMessage response, WorldData world)
+    public void HandleMessage(ResponseMessage response, World world)
     {
         if (response.Text is string text)
         {
@@ -42,14 +42,15 @@ public partial class OwopClient
         }
     }
 
-    private void HandleSetId(SequenceReader<byte> reader, WorldData world)
+    private void HandleSetId(SequenceReader<byte> reader, World world)
     {
         if (!reader.TryReadLittleEndian(out int id))
         {
+            world._clientPlayer.Id = id;
         }
     }
 
-    private void InitWorld(WorldData world)
+    private void InitWorld(World world)
     {
         bool reconnect = world.Connected;
         if (!reconnect)
@@ -62,35 +63,35 @@ public partial class OwopClient
             Ready?.Invoke(this, world);
             Task.Run(async () =>
             {
-                await Task.Delay(world.ChatBucket.FillInterval);
+                await Task.Delay(world.ClientPlayer.ChatBucket.FillInterval);
                 world.IsChatReady = true;
                 ChatReady?.Invoke(this, world);
             });
         }
         if (!world.Initialized)
         {
-            world.World.Logger.LogDebug("World initialized.");
+            world.Logger.LogDebug("World initialized.");
             world.Initialized = true;
         }
     }
 
-    private void HandleWorldUpdate(SequenceReader<byte> reader, WorldData world)
+    private void HandleWorldUpdate(SequenceReader<byte> reader, World world)
     {
         if (reader.TryRead(out byte playerCount))
         {
             for (byte i = 0; i < playerCount; i++)
             {
                 if (!reader.TryReadPlayer(hasTool: true, out PlayerData data) ||
-                    data.Id == world.ClientPlayerData.Id)
+                    data.Id == world.ClientPlayer.Id)
                 {
                     break;
                 }
-                bool newConnection = !world.PlayerData.ContainsKey(data.Id);
+                bool newConnection = !world.Players.ContainsKey(data.Id);
                 if (newConnection)
                 {
-                    world.PlayerData[data.Id] = PlayerData.Create(world);
+                    world.Players[data.Id] = new Player(world);
                 }
-                var player = world.PlayerData[data.Id];
+                var player = (Player)world.Players[data.Id];
                 player.Id = data.Id;
                 player.Pos = data.Pos;
                 player.Color = data.Color;
@@ -120,46 +121,44 @@ public partial class OwopClient
         {
             for (byte i = 0; i < dcCount; i++)
             {
-                if (reader.TryReadLittleEndian(out int id))
+                if (reader.TryReadLittleEndian(out int id) && world.Players.Remove(id, out var player))
                 {
-                    PlayerDisconnected?.Invoke(this, world.PlayerData[id]);
-                    world.PlayerData.Remove(id);
-                    world.Players.Remove(id);
+                    PlayerDisconnected?.Invoke(this, player);
                 }
             }
         }
         InitWorld(world);
     }
 
-    private void HandleSetRank(SequenceReader<byte> reader, WorldData world)
+    private void HandleSetRank(SequenceReader<byte> reader, World world)
     {
         if (reader.TryRead(out byte rank))
         {
-            world.ClientPlayerData.Rank = (PlayerRank)rank;
+            world._clientPlayer.Rank = (PlayerRank)rank;
         }
     }
 
-    private void HandlePixelQuota(SequenceReader<byte> reader, WorldData world)
+    private void HandlePixelQuota(SequenceReader<byte> reader, World world)
     {
         if (reader.TryReadBucket(out Bucket bucket))
         {
-            world.ClientPlayerData.PixelBucket.SetValues(bucket.Capacity, bucket.FillTime);
+            world._clientPlayer._pixelBucket.SetValues(bucket.Capacity, bucket.FillTime);
         }
     }
 
-    private void HandleTeleport(SequenceReader<byte> reader, WorldData world)
+    private void HandleTeleport(SequenceReader<byte> reader, World world)
     {
         if (reader.TryReadPos(out Position pos))
         {
-            int s = World.ChunkSize;
-            world.ClientPlayerData.Pos = pos * s + (s / 2, s / 2);
-            Teleported?.Invoke(this, new(world, world.ClientPlayerData.Pos, world.ClientPlayerData.WorldPos));
+            int s = IWorld.ChunkSize;
+            world._clientPlayer.Pos = pos * s + (s / 2, s / 2);
+            Teleported?.Invoke(this, new(world, world.ClientPlayer.Pos, world.ClientPlayer.WorldPos));
         }
     }
 
-    private void HandleOpcode(Opcode opcode, SequenceReader<byte> reader, WorldData world)
+    private void HandleOpcode(Opcode opcode, SequenceReader<byte> reader, World world)
     {
-        world.World.Logger.LogDebug($"Received opcode: {opcode} ({(byte)opcode})");
+        world.Logger.LogDebug($"Received opcode: {opcode} ({(byte)opcode})");
         switch (opcode)
         {
             case Opcode.SetId:

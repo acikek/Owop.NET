@@ -1,5 +1,11 @@
+﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using Owop.Util;
+using Owop;
 
 namespace Owop;
 
@@ -18,7 +24,7 @@ public class PlayerData
         set
         {
             _pos = value;
-            _worldPos = value / World.ChunkSize;
+            _worldPos = value / IWorld.ChunkSize;
         }
     }
 
@@ -28,21 +34,7 @@ public class PlayerData
         set
         {
             _worldPos = value;
-            _pos = value * World.ChunkSize;
+            _pos = value * IWorld.ChunkSize;
         }
     }
-
-    public static WorldPlayerData<Player> Create(WorldData worldData)
-    {
-        var data = new WorldPlayerData<Player>(worldData, null!);
-        data.Player = new Player(data);
-        return data;
-    }
-}
-
-public class WorldPlayerData<T>(WorldData worldData, T player) : PlayerData
-{
-    public readonly WorldData WorldData = worldData;
-    public World World => WorldData;
-    public T Player = player;
 }

@@ -10,49 +10,49 @@ public partial class World
 
     public async Task MovePlayer(int id, Position worldPos)
     {
-        _instance.Connection.CheckInteraction(PlayerRank.Moderator);
+        _connection.CheckInteraction(PlayerRank.Moderator);
         await RunCommand("tp", id, worldPos.X, worldPos.Y);
     }
 
     public async Task SetPlayerRank(int id, PlayerRank rank)
     {
-        _instance.Connection.CheckInteraction(PlayerRank.Moderator);
+        _connection.CheckInteraction(PlayerRank.Moderator);
         await RunCommand("setrank", id, (byte)rank);
     }
 
     public async Task KickPlayer(int id)
     {
-        _instance.Connection.CheckInteraction(PlayerRank.Moderator);
+        _connection.CheckInteraction(PlayerRank.Moderator);
         await RunCommand("kick", id);
     }
 
     // TODO: public SetPlayerMuted
-    private async Task SetPlayerMuteState(int id, int state)
+    public async Task SetPlayerMuted(int id, bool muted)
     {
-        _instance.Connection.CheckInteraction(PlayerRank.Moderator);
-        await RunCommand("mute", id, state);
+        _connection.CheckInteraction(PlayerRank.Moderator);
+        await RunCommand("mute", id, muted ? 1 : 0);
     }
 
-    public async Task MutePlayer(int id) => await SetPlayerMuteState(id, 1);
+    public async Task MutePlayer(int id) => await SetPlayerMuted(id, true);
 
-    public async Task UnmutePlayer(int id) => await SetPlayerMuteState(id, 0);
+    public async Task UnmutePlayer(int id) => await SetPlayerMuted(id, false);
 
     public async Task<WhoisData> QueryWhois(int playerId)
     {
-        _instance.Connection.CheckInteraction(PlayerRank.Moderator);
-        if (_instance.WhoisQueue.TryGetValue(playerId, out var existing))
+        _connection.CheckInteraction(PlayerRank.Moderator);
+        if (WhoisQueue.TryGetValue(playerId, out var existing))
         {
             return await existing.Task;
         }
         var source = new TaskCompletionSource<WhoisData>(TaskCreationOptions.RunContinuationsAsynchronously);
-        _instance.WhoisQueue[playerId] = source;
+        WhoisQueue[playerId] = source;
         await RunCommand("whois", playerId);
         return await source.Task;
     }
 
     public async Task SetPassword(string password)
     {
-        _instance.Connection.CheckInteraction(PlayerRank.Moderator);
+        _connection.CheckInteraction(PlayerRank.Moderator);
         await RunCommand("setworldpass", password);
     }
 
@@ -60,7 +60,7 @@ public partial class World
 
     public async Task SetRestricted(bool restricted)
     {
-        _instance.Connection.CheckInteraction(PlayerRank.Moderator);
+        _connection.CheckInteraction(PlayerRank.Moderator);
         await RunCommand("restrict", restricted);
     }
 
@@ -68,43 +68,44 @@ public partial class World
 
     public async Task Unrestrict() => await SetRestricted(false);
 
+    // TODO: Check MaxPlaceDist
     public async Task<bool> PlacePixel(Position? worldPos = null, Color? color = null, bool sneaky = false)
     {
-        _instance.Connection.CheckInteraction(PlayerRank.Player);
-        if (!_instance.ClientPlayerData.PixelBucket.TrySpend(1))
+        _connection.CheckInteraction(PlayerRank.Player);
+        if (!_clientPlayer._pixelBucket.TrySpend(1))
         {
             return false;
         }
         bool update = worldPos is not null || color is not null;
-        var prevPos = _instance.ClientPlayerData.Pos;
+        var prevPos = ClientPlayer.Pos;
         if (worldPos is Position realPos)
         {
-            _instance.ClientPlayerData.WorldPos = realPos;
+            _clientPlayer.Pos = realPos;
         }
         else
         {
-            worldPos = _instance.ClientPlayerData.WorldPos;
+            worldPos = ClientPlayer.WorldPos;
         }
         if (color is Color realColor)
         {
-            _instance.ClientPlayerData.Color = realColor;
+            _clientPlayer.Color = realColor;
         }
         else
         {
-            color = _instance.ClientPlayerData.Color;
+            color = ClientPlayer.Color;
         }
         if (update)
         {
-            await _instance.Connection.SendPlayerData();
+            await _connection.SendPlayerData();
         }
         byte[] pixel = OwopProtocol.EncodePixel((Position) worldPos, (Color) color);
-        await _instance.Connection.Send(pixel);
+        await Connection.Send(pixel);
         if (sneaky)
         {
-            await _instance.ClientPlayerData.Player.Move(prevPos);
+            await _clientPlayer.Move(prevPos);
         }
         return true;
     }
 
-    public async Task Disconnect() => await _instance.Connection.Disconnect();
+    public async Task Disconnect() => await Connection.Disconnect();
 }

@@ -67,7 +67,7 @@ public static class OwopProtocol
         return false;
     }
 
-    public static byte[] EncodePlayer(PlayerData data)
+    public static byte[] EncodePlayer(Player data)
     {
         MemoryStream stream = new();
         BinaryWriter writer = new(stream);

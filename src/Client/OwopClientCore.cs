@@ -2,19 +2,18 @@
 
 namespace Owop.Client;
 
-public partial class OwopClient : IDisposable
+public partial class OwopClient : IOwopClient
 {
-    private readonly ILoggerFactory _loggerFactory;
-    public ILogger Logger;
+    public readonly ILoggerFactory LoggerFactory;
+    public ClientOptions Options { get; }
+    public Dictionary<string, IWorldConnection> Connections { get; } = [];
+    public ILogger Logger { get; }
 
-    public readonly ClientOptions Options;
-    public readonly Dictionary<string, WorldConnection> Connections = [];
-
-    public OwopClient(ClientOptions? options = null, ILoggerFactory? loggerFactory = null)
+    public OwopClient(ClientOptions? options, ILoggerFactory? loggerFactory)
     {
-        Options = options ?? new ClientOptions();
-        _loggerFactory = loggerFactory ?? LoggerFactory.Create(builder => builder.AddConsole());
-        Logger = _loggerFactory.CreateLogger("Owop.Net");
+        Options = options ?? new();
+        LoggerFactory = loggerFactory ?? Microsoft.Extensions.Logging.LoggerFactory.Create(builder => builder.AddConsole());
+        Logger = LoggerFactory.CreateLogger("Owop.Net");
         _httpClient = new();
         _messageBuffer = [];
     }
@@ -22,7 +21,8 @@ public partial class OwopClient : IDisposable
     private string CleanWorldId(string world)
     {
         string fixedLength = world[..Math.Min(world.Length, Options.MaxWorldNameLength)];
-        var span = fixedLength.Where(c => char.IsLetterOrDigit(c) || c == '_' || c == '.');
+        string lower = fixedLength.ToLower();
+        var span = lower.Where(c => char.IsLetterOrDigit(c) || c == '_' || c == '.');
         return new(span.ToArray());
     }
 
@@ -39,7 +39,7 @@ public partial class OwopClient : IDisposable
             return ConnectResult.Exists;
         }
         Logger.LogDebug($"Connecting to world '{clean}'...");
-        WorldConnection connection = new(clean, this, _loggerFactory, HandleMessage, world => Disconnecting?.Invoke(this, world));
+        WorldConnection connection = new(clean, this);
         Connections[clean] = connection;
         connection.Connect(clean);
         return ConnectResult.Activated;
@@ -70,9 +70,9 @@ public partial class OwopClient : IDisposable
         Destroying?.Invoke(this, EventArgs.Empty);
         foreach (var connection in Connections.Values)
         {
-            connection.Dispose();
+            ((WorldConnection)connection).Dispose();
         }
-        _loggerFactory.Dispose();
+        LoggerFactory.Dispose();
         _httpClient.Dispose();
         GC.SuppressFinalize(this);
     }

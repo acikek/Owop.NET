@@ -5,23 +5,29 @@ using Owop.Util;
 namespace Owop;
 
 /// <summary>
-/// A generic player within the world, either a <see cref="ClientPlayer"/>
-/// or another connected <see cref="Player"/>.
+/// Represents a generic player within the world, either another connected player
+/// or the <see cref="IClientPlayer"/>.
 /// </summary>
 public interface IPlayer
 {
     /// <summary>The player's connected world.</summary>
-    World World { get; }
+    IWorld World { get; }
+
     /// <summary>The player's raw position within the world.</summary>
     Position Pos { get; }
+
     /// <summary>The player's pixel position within the world.</summary>
     Position WorldPos { get; }
+
     /// <summary>The player's selected tool.</summary>
     PlayerTool Tool { get; }
+
     /// <summary>The player's ID.</summary>
     int Id { get; }
+
     /// <summary>The player's selected color.</summary>
     Color Color { get; }
+
     /// <summary>Whether the player is the client player.</summary>
     public bool IsClient { get; }
 

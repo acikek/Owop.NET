@@ -4,38 +4,38 @@ using Owop.Util;
 
 namespace Owop.Client;
 
-public record ConnectEventArgs(World World, bool IsReconnect);
+public record ConnectEventArgs(IWorld World, bool IsReconnect);
 
-public record ChatEventArgs(World World, ChatPlayer Player, string Content)
+public record ChatEventArgs(IWorld World, ChatPlayer Player, string Content)
 {
-    public IPlayer? WorldPlayer => Player.Id is int id ? World.GetPlayerById(id) : null;
+    public IPlayer? WorldPlayer => Player.Id is int id ? World.Players[id] : null;
 
     public Color HeaderColor => Player.Rank.GetChatColor();
 
     public Color? MessageColor => Player.Rank >= PlayerRank.Moderator ? HeaderColor : null;
 }
 
-public record TellEventArgs(World World, IPlayer Player, string Content);
+public record TellEventArgs(IWorld World, IPlayer Player, string Content);
 
-public record TeleportEventArgs(World World, Position Pos, Position WorldPos);
+public record TeleportEventArgs(IWorld World, Position Pos, Position WorldPos);
 
-public record WhoisEventArgs(World World, WhoisData Data);
+public record WhoisEventArgs(IWorld World, WhoisData Data);
 
 public partial class OwopClient
 {
     public event EventHandler<ConnectEventArgs>? Connected;
-    public event EventHandler<World>? Ready;
-    public event EventHandler<World>? ChatReady;
+    public event EventHandler<IWorld>? Ready;
+    public event EventHandler<IWorld>? ChatReady;
     public event EventHandler<ChatEventArgs>? Chat;
     public event EventHandler<TellEventArgs>? Tell;
-    public event EventHandler<Player>? PlayerConnected;
-    public event EventHandler<Player>? PlayerDisconnected;
+    public event EventHandler<IPlayer>? PlayerConnected;
+    public event EventHandler<IPlayer>? PlayerDisconnected;
     public event EventHandler<TeleportEventArgs>? Teleported;
     public event EventHandler<WhoisEventArgs>? Whois;
-    public event EventHandler<World>? Disconnecting;
+    public event EventHandler<IWorld>? Disconnecting;
     public event EventHandler? Destroying;
 
-    private void InvokeChat(ServerMessage message, WorldData world)
+    private void InvokeChat(ServerMessage message, World world)
     {
         string str = message.Args[0];
         int sep = str.IndexOf(": ");
@@ -44,15 +44,15 @@ public partial class OwopClient
         Chat?.Invoke(this, new(world, player, content));
     }
 
-    private void InvokeTell(ServerMessage message, WorldData world)
+    private void InvokeTell(ServerMessage message, World world)
     {
-        if (int.TryParse(message.Args[0], out int id) && world.World.GetPlayerById(id) is IPlayer player /*|| world.Players.TryGetValue(id, out Player? player) || player is null*/)
+        if (int.TryParse(message.Args[0], out int id))
         {
-            Tell?.Invoke(this, new(world, player, message.Args[1]));
+            Tell?.Invoke(this, new(world, world.Players[id], message.Args[1]));
         }
     }
 
-    private void InvokeWhois(ServerMessage message, WorldData world)
+    private void InvokeWhois(ServerMessage message, World world)
     {
         if (WhoisData.Parse(message.Args) is WhoisData data)
         {
@@ -63,4 +63,6 @@ public partial class OwopClient
             }
         }
     }
+
+    public void InvokeDisconnect(World world) => Disconnecting?.Invoke(this, world);
 }
