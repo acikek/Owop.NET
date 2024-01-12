@@ -31,7 +31,7 @@ public class Bucket : IBucket
     public double FillRate => (double)Capacity / FillTime;
     public TimeSpan FillInterval => TimeSpan.FromSeconds(1.0 / FillRate);
     public bool IsFull => Allowance >= Capacity;
-    public bool IsEmpty => Allowance <= 0;
+    public bool IsEmpty => Allowance <= 0.0;
 
     public double Allowance
     {
@@ -79,12 +79,12 @@ public class Bucket : IBucket
         _lastUpdate = DateTime.Now;
     }
 
-    public bool CanSpend(int amount) => Infinite || amount <= Allowance;
+    public bool CanSpend(double amount) => Infinite || amount <= Allowance;
 
     /// <summary>Tries to spend the specified amount from the bucket's allowance.</summary>
     /// <param name="amount">The amount to try to spend.</param>
     /// <returns>Whether the amount was spent.</returns>
-    public bool TrySpend(int amount)
+    public bool TrySpend(double amount)
     {
         if (Infinite)
         {
@@ -104,27 +104,27 @@ public class Bucket : IBucket
     /// </summary>
     private TimeSpan GetNextTimeToFill() => FillInterval * (1.0 - (_allowance % 1.0));
 
-    public TimeSpan GetTimeToFill(int amount)
+    public TimeSpan GetTimeToFill(double amount)
     {
-        if (Infinite || amount <= 0)
+        if (Infinite || amount <= 0.0)
         {
             return TimeSpan.Zero;
         }
         Update();
-        return FillInterval * Math.Min(amount - 1, Capacity)
+        return FillInterval * Math.Min(amount - 1.0, Capacity)
             + GetNextTimeToFill()
             + SafetyDelay;
     }
 
-    public async Task DelayUntilFill(int amount) => await (Infinite || amount <= 0 ? Task.CompletedTask : Task.Delay(GetTimeToFill(amount)));
+    public async Task DelayUntilFill(double amount) => await Task.Delay(GetTimeToFill(amount));
 
-    public async Task DelayUntilHas(int allowance) => await DelayUntilFill(allowance - (int)_allowance);
+    public async Task DelayUntilHas(double allowance) => await DelayUntilFill(allowance - _allowance);
 
-    public async Task DelayUntilRestore() => await DelayUntilFill(Capacity - (int)_allowance);
+    public async Task DelayUntilRestore() => await DelayUntilFill(Capacity - _allowance);
 
-    public async Task DelayOne() => await DelayUntilFill(1);
+    public async Task DelayOne() => await DelayUntilFill(1.0);
 
-    public async Task DelayAny() => await DelayUntilHas(1);
+    public async Task DelayAny() => await DelayUntilHas(1.0);
 
-    public override string ToString() => $"[{Allowance:0.00}/{Capacity}] @{FillRate}a/s";
+    public override string ToString() => $"[{Allowance:0.00}/{Capacity}] @{FillRate:0.00}a/s";
 }

@@ -1,7 +1,7 @@
 namespace Owop.Util;
 
 /// <summary>Represents a refilling container with some spendable interaction <see cref="Allowance"/>.</summary>
-/// <param name="data">The internal bucket data.</param>
+// TODO: Multiplier (doesn't actually affect calculations, just a visual thing)
 public interface IBucket
 { 
     /// <summary>The bucket's total capacity to refill towards.</summary>
@@ -30,14 +30,14 @@ public interface IBucket
 
     /// <summary>Returns whether the bucket can spend the specified amount from its allowance.</summary>
     /// <param name="amount">The amount to spend.</param>
-    bool CanSpend(int amount);
+    bool CanSpend(double amount);
 
     /// <summary>
     /// Returns a <see cref="TimeSpan"/> of how long the bucket will take to refill
     /// the specified amount of allowance.
     /// </summary>
     /// <param name="amount">The amount to refill.</param>
-    TimeSpan GetTimeToFill(int amount);
+    TimeSpan GetTimeToFill(double amount);
 
     /// <summary>
     /// Creates a task that completes after the bucket has refilled 
@@ -45,7 +45,7 @@ public interface IBucket
     /// </summary>
     /// <param name="amount">The amount to refill.</param>
     /// <returns>A task that represents the time delay.</returns>
-    Task DelayUntilFill(int amount);
+    Task DelayUntilFill(double amount);
 
     /// <summary>
     /// Creates a task that completes after the bucket has refilled <b>to</b>
@@ -53,7 +53,7 @@ public interface IBucket
     /// </summary>
     /// <param name="amount">The amount to refill to.</param>
     /// <returns>A task that represents the time delay.</returns>
-    Task DelayUntilHas(int allowance);
+    Task DelayUntilHas(double allowance);
 
     /// <summary>Creates a task that completes after the bucket has completely refilled.</summary>
     /// <returns>A task that represents the time delay.</returns>
