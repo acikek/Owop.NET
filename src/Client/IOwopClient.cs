@@ -12,7 +12,7 @@ public interface IOwopClient : IDisposable
 {
     ClientOptions Options { get; }
     ServerInfo? ServerInfo { get; }
-    Dictionary<string, IWorldConnection> Connections { get; }
+    IReadOnlyDictionary<string, IWorldConnection> Connections { get; }
     ILogger Logger { get; }
 
     Task<ConnectResult> Connect(string world = "main");

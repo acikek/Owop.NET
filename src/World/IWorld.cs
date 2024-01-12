@@ -17,7 +17,7 @@ public interface IWorld
     string Name { get; }
 
     /// <summary>The world's connected players (including the client player).</summary>
-    Dictionary<int, IPlayer> Players { get; }
+    IReadOnlyDictionary<int, IPlayer> Players { get; }
 
     /// <summary>The client player connected to the world.</summary>
     IClientPlayer ClientPlayer { get; }

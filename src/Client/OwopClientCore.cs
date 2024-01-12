@@ -4,9 +4,11 @@ namespace Owop.Client;
 
 public partial class OwopClient : IOwopClient
 {
+    private readonly Dictionary<string, IWorldConnection> _connections = [];
+
     public readonly ILoggerFactory LoggerFactory;
     public ClientOptions Options { get; }
-    public Dictionary<string, IWorldConnection> Connections { get; } = [];
+    public IReadOnlyDictionary<string, IWorldConnection> Connections => _connections;
     public ILogger Logger { get; }
 
     public OwopClient(ClientOptions? options, ILoggerFactory? loggerFactory)
@@ -40,7 +42,7 @@ public partial class OwopClient : IOwopClient
         }
         Logger.LogDebug($"Connecting to world '{clean}'...");
         WorldConnection connection = new(clean, this);
-        Connections[clean] = connection;
+        _connections[clean] = connection;
         connection.Connect(clean);
         return ConnectResult.Activated;
     }
@@ -48,7 +50,7 @@ public partial class OwopClient : IOwopClient
     public async Task<bool> Disconnect(string world = "main")
     {
         string clean = CleanWorldId(world);
-        if (Connections.Remove(clean, out var connection))
+        if (_connections.Remove(clean, out var connection))
         {
             await connection.Disconnect();
             return true;

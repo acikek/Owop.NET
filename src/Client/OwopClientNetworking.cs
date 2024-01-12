@@ -44,14 +44,19 @@ public partial class OwopClient
 
     private void HandleSetId(SequenceReader<byte> reader, World world)
     {
-        if (!reader.TryReadLittleEndian(out int id))
+        if (reader.TryReadLittleEndian(out int id))
         {
             world._clientPlayer.Id = id;
+            world._players[id] = world.ClientPlayer;
         }
     }
 
-    private void InitWorld(World world)
+    private void TryInitWorld(World world)
     {
+        if (world.Initialized)
+        {
+            return;
+        }
         bool reconnect = world.Connected;
         if (!reconnect)
         {
@@ -68,11 +73,8 @@ public partial class OwopClient
                 ChatReady?.Invoke(this, world);
             });
         }
-        if (!world.Initialized)
-        {
-            world.Logger.LogDebug("World initialized.");
-            world.Initialized = true;
-        }
+        world.Logger.LogDebug("World initialized.");
+        world.Initialized = true;
     }
 
     private void HandleWorldUpdate(SequenceReader<byte> reader, World world)
@@ -89,7 +91,7 @@ public partial class OwopClient
                 bool newConnection = !world.Players.ContainsKey(data.Id);
                 if (newConnection)
                 {
-                    world.Players[data.Id] = new Player(world);
+                    world._players[data.Id] = new Player(world);
                 }
                 var player = (Player)world.Players[data.Id];
                 player.Id = data.Id;
@@ -98,7 +100,7 @@ public partial class OwopClient
                 player.Tool = data.Tool;
                 if (!world.Players.ContainsKey(data.Id))
                 {
-                    world.Players[data.Id] = player;
+                    world._players[data.Id] = player;
                 }
                 if (world.Initialized && newConnection)
                 {
@@ -121,13 +123,13 @@ public partial class OwopClient
         {
             for (byte i = 0; i < dcCount; i++)
             {
-                if (reader.TryReadLittleEndian(out int id) && world.Players.Remove(id, out var player))
+                if (reader.TryReadLittleEndian(out int id) && world._players.Remove(id, out var player))
                 {
                     PlayerDisconnected?.Invoke(this, player);
                 }
             }
         }
-        InitWorld(world);
+        TryInitWorld(world);
     }
 
     private void HandleSetRank(SequenceReader<byte> reader, World world)
