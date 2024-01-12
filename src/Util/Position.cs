@@ -100,7 +100,16 @@ public struct Position(int x, int y) : IEquatable<Position>
     /// <param name="one">First position.</param>
     /// <param name="two">Int scalar.</param>
     /// <returns>Result.</returns>
-    public static Position operator /(Position one, int two) => new(one.X / two, one.Y / two);
+    public static Position operator /(Position one, int two)
+    {
+        // OWOP rounds up Y values (since up = negative Y)
+        int y = one.Y / two;
+        if (one.Y % two != 0)
+        {
+            y--;
+        }
+        return new(one.X / two, y);
+    }
 
     /// <summary>See <see cref="ToVector"/>.</summary>
     public static implicit operator Vector2(Position pos) => pos.ToVector();

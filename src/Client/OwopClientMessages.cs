@@ -90,6 +90,12 @@ public partial class OwopClient
             case ServerMessageType.Whois:
                 InvokeWhois(message, world);
                 break;
+            case ServerMessageType.Info:
+                if (message.Args[0].StartsWith("This world has a password set"))
+                {
+                    world.IsPasswordProtected = true;
+                }
+                break;
         }
     }
 }

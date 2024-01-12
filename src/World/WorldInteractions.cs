@@ -69,10 +69,10 @@ public partial class World
     public async Task Unrestrict() => await SetRestricted(false);
 
     // TODO: Check MaxPlaceDist
-    public async Task<bool> PlacePixel(Position? worldPos = null, Color? color = null, bool sneaky = false)
+    public async Task<bool> PlacePixel(Position? worldPos, Color? color, bool sneaky)
     {
         _connection.CheckInteraction(PlayerRank.Player);
-        if (!_clientPlayer._pixelBucket.TrySpend(1))
+        if (!_clientPlayer._pixelBucket.TrySpend(1.0))
         {
             return false;
         }
@@ -80,7 +80,7 @@ public partial class World
         var prevPos = ClientPlayer.Pos;
         if (worldPos is Position realPos)
         {
-            _clientPlayer.Pos = realPos;
+            _clientPlayer.WorldPos = realPos;
         }
         else
         {
@@ -98,7 +98,7 @@ public partial class World
         {
             await _connection.SendPlayerData();
         }
-        byte[] pixel = OwopProtocol.EncodePixel((Position) worldPos, (Color) color);
+        byte[] pixel = OwopProtocol.EncodePixel((Position)worldPos, (Color)color);
         await Connection.Send(pixel);
         if (sneaky)
         {
