@@ -11,7 +11,7 @@ public class Player(World world) : PlayerData, IPlayer
     public IWorld World => _world;
     public virtual bool IsClient => false;
 
-    public virtual async Task Move(Position pos) => await MoveWorld(pos / IWorld.ChunkSize);
+    public virtual async Task Move(Position pos) => await MoveWorld(IChunk.GetWorldPos(pos));
 
     public virtual async Task MoveWorld(Position worldPos) => await World.MovePlayer(Id, worldPos);
 

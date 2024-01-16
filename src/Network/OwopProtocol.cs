@@ -7,7 +7,7 @@ namespace Owop.Network;
 
 public static class OwopProtocol
 {
-    public static bool TryReadPos(this SequenceReader<byte> reader, out Position point)
+    public static bool TryReadPos(ref this SequenceReader<byte> reader, out Position point)
     {
         if (reader.TryReadLittleEndian(out int x) &&
             reader.TryReadLittleEndian(out int y))
@@ -19,7 +19,7 @@ public static class OwopProtocol
         return false;
     }
 
-    public static bool TryReadColor(this SequenceReader<byte> reader, out Color color)
+    public static bool TryReadColor(ref this SequenceReader<byte> reader, out Color color)
     {
         if (reader.TryRead(out byte r) &&
             reader.TryRead(out byte g) &&
@@ -32,7 +32,7 @@ public static class OwopProtocol
         return false;
     }
 
-    public static bool TryReadPlayer(this SequenceReader<byte> reader, bool hasTool, out PlayerData player)
+    public static bool TryReadPlayer(ref this SequenceReader<byte> reader, bool hasTool, out PlayerData player)
     {
         player = new();
         if (!reader.TryReadLittleEndian(out int id) ||
@@ -56,7 +56,7 @@ public static class OwopProtocol
         return false;
     }
 
-    public static bool TryReadBucket(this SequenceReader<byte> reader, out Bucket bucket)
+    public static bool TryReadBucket(ref this SequenceReader<byte> reader, out Bucket bucket)
     {
         if (reader.TryReadLittleEndian(out short capacity) &&
             reader.TryReadLittleEndian(out short fillTime))

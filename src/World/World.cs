@@ -2,12 +2,14 @@ using System.Collections.Concurrent;
 using Microsoft.Extensions.Logging;
 using Owop.Client;
 using Owop.Network;
+using Owop.Util;
 
 namespace Owop.Game;
 
 public partial class World : IWorld
 {
     public readonly Dictionary<int, IPlayer> _players = [];
+    public readonly WorldChunks _chunks = [];
     public readonly ClientPlayer _clientPlayer;
     public readonly WorldConnection _connection;
 
@@ -15,6 +17,7 @@ public partial class World : IWorld
 
     public string Name { get; }
     public IReadOnlyDictionary<int, IPlayer> Players => _players;
+    public IWorldChunks Chunks => _chunks;
     public IClientPlayer ClientPlayer => _clientPlayer;
     public bool IsChatReady { get; set; }
     public bool IsPasswordProtected { get; set; } // TODO: Implement

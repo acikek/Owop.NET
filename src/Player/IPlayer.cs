@@ -2,22 +2,16 @@ using System.Drawing;
 using Owop.Network;
 using Owop.Util;
 
-namespace Owop;
+namespace Owop.Game;
 
 /// <summary>
 /// Represents a generic player within the world, either another connected player
 /// or the <see cref="IClientPlayer"/>.
 /// </summary>
-public interface IPlayer
+public interface IPlayer : IPositioned
 {
     /// <summary>The player's connected world.</summary>
     IWorld World { get; }
-
-    /// <summary>The player's raw position within the world.</summary>
-    Position Pos { get; }
-
-    /// <summary>The player's pixel position within the world.</summary>
-    Position WorldPos { get; }
 
     /// <summary>The player's selected tool.</summary>
     PlayerTool Tool { get; }

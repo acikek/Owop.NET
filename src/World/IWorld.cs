@@ -9,15 +9,14 @@ namespace Owop.Game;
 /// <summary>Represents a world that a client has connected to.</summary>
 public interface IWorld
 {
-    // TODO: Move this when make chunk system
-    /// <summary>The width and height, in pixels, of a chunk.</summary>
-    public const int ChunkSize = 16;
-
     /// <summary>The world's name.</summary>
     string Name { get; }
 
     /// <summary>The world's connected players (including the client player).</summary>
     IReadOnlyDictionary<int, IPlayer> Players { get; }
+
+    /// <summary>The world's available chunks.</summary>
+    IWorldChunks Chunks { get; }
 
     /// <summary>The client player connected to the world.</summary>
     IClientPlayer ClientPlayer { get; }

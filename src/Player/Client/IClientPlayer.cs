@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Owop.Client;
 using Owop.Util;
 
-namespace Owop;
+namespace Owop.Game;
 
 /// <summary>Represents a player controlled by an <see cref="OwopClient"/>.</summary>
 public interface IClientPlayer : IPlayer

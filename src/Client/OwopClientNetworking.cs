@@ -84,10 +84,13 @@ public partial class OwopClient
         {
             for (byte i = 0; i < playerCount; i++)
             {
-                if (!reader.TryReadPlayer(hasTool: true, out PlayerData data) ||
-                    data.Id == world.ClientPlayer.Id)
+                if (!reader.TryReadPlayer(hasTool: true, out var data))
                 {
                     break;
+                }
+                if (data.Id == world.ClientPlayer.Id)
+                {
+                    continue;
                 }
                 bool newConnection = !world.Players.ContainsKey(data.Id);
                 if (newConnection)
@@ -109,15 +112,15 @@ public partial class OwopClient
                 }
             }
         }
-        if (!reader.TryReadLittleEndian(out short pixelCount))
+        if (reader.TryReadLittleEndian(out short pixelCount) && pixelCount > 0)
         {
             for (short i = 0; i < pixelCount; i++)
             {
-                if (!reader.TryReadPlayer(hasTool: false, out PlayerData data))
+                if (!reader.TryReadPlayer(hasTool: false, out var data))
                 {
                     break;
                 }
-                //Console.WriteLine($"WorldUpdate pixel: ({x}, {y}) = {r}, {g}, {b}");
+                Console.WriteLine($"WorldUpdate pixel: {data.Pos} = {data.Color}, chunK: {IChunk.GetChunkPos(data.Pos)}");
             }
         }
         if (reader.TryRead(out byte dcCount))
@@ -153,7 +156,7 @@ public partial class OwopClient
     {
         if (reader.TryReadPos(out Position pos))
         {
-            int s = IWorld.ChunkSize;
+            int s = IChunk.Size;
             world._clientPlayer.Pos = pos * s + (s / 2, s / 2);
             Teleported?.Invoke(this, new(world, world.ClientPlayer.Pos, world.ClientPlayer.WorldPos));
         }

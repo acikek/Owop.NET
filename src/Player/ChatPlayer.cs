@@ -1,4 +1,4 @@
-namespace Owop;
+namespace Owop.Game;
 
 public record ChatPlayer(PlayerRank Rank, int? Id, string? Nickname, string Header)
 {

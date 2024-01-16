@@ -24,7 +24,7 @@ public class PlayerData
         set
         {
             _pos = value;
-            _worldPos = value / IWorld.ChunkSize;
+            _worldPos = IChunk.GetWorldPos(_pos);
         }
     }
 
@@ -34,7 +34,7 @@ public class PlayerData
         set
         {
             _worldPos = value;
-            _pos = value * IWorld.ChunkSize;
+            _pos = value * IChunk.Size;
         }
     }
 }

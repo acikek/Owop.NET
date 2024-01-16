@@ -1,4 +1,4 @@
-namespace Owop;
+namespace Owop.Game;
 
 /// <summary>A player's selected tool.</summary>
 public enum PlayerTool
