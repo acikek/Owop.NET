@@ -1,7 +1,7 @@
 using System.Drawing;
 using Owop.Util;
 
-namespace Owop;
+namespace Owop.Game;
 
 /// <summary>A player's permission rank within a world.</summary>
 public enum PlayerRank

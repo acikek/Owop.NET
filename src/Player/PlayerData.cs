@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Owop.Util;
 using Owop;
 
-namespace Owop;
+namespace Owop.Game;
 
 public class PlayerData
 {

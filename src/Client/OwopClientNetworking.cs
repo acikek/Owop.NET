@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Net;
 using System.Text.Json;
 using Microsoft.Extensions.Logging;
+using Owop.Game;
 using Owop.Network;
 using Owop.Util;
 using Websocket.Client;

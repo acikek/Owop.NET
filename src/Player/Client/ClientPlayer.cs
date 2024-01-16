@@ -1,7 +1,7 @@
 using System.Collections.Concurrent;
 using Owop.Util;
 
-namespace Owop;
+namespace Owop.Game;
 
 /// <summary>An <see cref="IClientPlayer"/> implementation.</summary>
 /// <param name="world">The client player's connected world.</param>

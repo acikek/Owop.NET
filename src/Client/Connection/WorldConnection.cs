@@ -3,13 +3,12 @@ using System.Collections.Concurrent;
 using System.Net.WebSockets;
 using System.Text;
 using Microsoft.Extensions.Logging;
-using Owop.Client;
+using Owop.Game;
 using Owop.Network;
 using Websocket.Client;
 
-namespace Owop;
+namespace Owop.Client;
 
-// TODO: Expose more correctly
 public class WorldConnection : IWorldConnection
 {
     private readonly ManualResetEvent _exitEvent = new(false);

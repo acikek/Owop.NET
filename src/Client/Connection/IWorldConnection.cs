@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using Owop.Client;
+using Owop.Game;
 using Websocket.Client;
 
-namespace Owop;
+namespace Owop.Client;
 
 public interface IWorldConnection : IDisposable
 {

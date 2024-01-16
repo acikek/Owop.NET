@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Owop.Network;
 using Owop.Util;
 
-namespace Owop;
+namespace Owop.Game;
 
 public partial class ClientPlayer
 {

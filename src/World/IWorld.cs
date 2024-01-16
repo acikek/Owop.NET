@@ -4,7 +4,7 @@ using Owop.Client;
 using Owop.Network;
 using Owop.Util;
 
-namespace Owop;
+namespace Owop.Game;
 
 /// <summary>Represents a world that a client has connected to.</summary>
 public interface IWorld

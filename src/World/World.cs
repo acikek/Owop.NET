@@ -1,8 +1,9 @@
 using System.Collections.Concurrent;
 using Microsoft.Extensions.Logging;
+using Owop.Client;
 using Owop.Network;
 
-namespace Owop;
+namespace Owop.Game;
 
 public partial class World : IWorld
 {

@@ -2,7 +2,7 @@ using System.Drawing;
 using Owop.Network;
 using Owop.Util;
 
-namespace Owop;
+namespace Owop.Game;
 
 public class Player(World world) : PlayerData, IPlayer
 {
