@@ -9,15 +9,31 @@ using Owop.Util;
 
 namespace Owop.Game;
 
-public class Chunk(Position pos, bool isProtected) : IChunk
+public class Chunk : IChunk
 {
-    public bool _isProtected = isProtected;
-    private readonly Memory2D<Color> _memory = new(new Color[IChunk.Size, IChunk.Size]);
+    public bool _isProtected;
+    public readonly Memory2D<Color> _memory = new(new Color[IChunk.Size, IChunk.Size]);
 
     public ReadOnlyMemory2D<Color> Pixels => _memory;
     public bool IsProtected => _isProtected;
-    public Position Pos { get; } = pos;
-    public Position WorldPos { get; } = pos / IChunk.Size;
+    public Position Pos { get; }
+    public Position WorldPos { get; }
+    public Position ChunkPos { get; }
+
+    public Chunk(Position chunkPos, bool isProtected)
+    {
+        ChunkPos = chunkPos;
+        WorldPos = ChunkPos * IChunk.Size;
+        Pos = WorldPos * IChunk.Size;
+        _isProtected = isProtected;
+    }
+
+    public void SetPixel(Position worldPos, Color color)
+    {
+        var posInChunk = worldPos - WorldPos;
+        Console.WriteLine($"Setting pixel. WorldPos: {worldPos}, ChunkPos: {ChunkPos}, PosWithinChunk: {posInChunk}, Color: {color}");
+        _memory.Span[posInChunk.X, posInChunk.Y] = color;
+    }
 
     public Color this[int x, int y]
     {

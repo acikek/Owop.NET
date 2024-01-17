@@ -120,7 +120,7 @@ public partial class OwopClient
                 {
                     break;
                 }
-                Console.WriteLine($"WorldUpdate pixel: {data.Pos} = {data.Color}, chunK: {IChunk.GetChunkPos(data.Pos)}");
+                world._chunks.SetPixel(data.Pos, data.Color);
             }
         }
         if (reader.TryRead(out byte dcCount))
@@ -165,23 +165,30 @@ public partial class OwopClient
     private void HandleOpcode(Opcode opcode, SequenceReader<byte> reader, World world)
     {
         world.Logger.LogDebug($"Received opcode: {opcode} ({(byte)opcode})");
-        switch (opcode)
+        try
         {
-            case Opcode.SetId:
-                HandleSetId(reader, world);
-                break;
-            case Opcode.WorldUpdate:
-                HandleWorldUpdate(reader, world);
-                break;
-            case Opcode.SetRank:
-                HandleSetRank(reader, world);
-                break;
-            case Opcode.SetPixelQuota:
-                HandlePixelQuota(reader, world);
-                break;
-            case Opcode.Teleport:
-                HandleTeleport(reader, world);
-                break;
+            switch (opcode)
+            {
+                case Opcode.SetId:
+                    HandleSetId(reader, world);
+                    break;
+                case Opcode.WorldUpdate:
+                    HandleWorldUpdate(reader, world);
+                    break;
+                case Opcode.SetRank:
+                    HandleSetRank(reader, world);
+                    break;
+                case Opcode.SetPixelQuota:
+                    HandlePixelQuota(reader, world);
+                    break;
+                case Opcode.Teleport:
+                    HandleTeleport(reader, world);
+                    break;
+            }
+        }
+        catch (Exception ex)
+        {
+            world.Logger.LogError(ex, $"Exception while handling opcode '{opcode}':");
         }
     }
 }
