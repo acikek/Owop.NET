@@ -9,6 +9,11 @@ namespace Owop.Game;
 
 public class WorldChunks : Dictionary<Position, IChunk>, IWorldChunks
 {
+    public IChunk? GetForWorldPos(Position worldPos)
+    {
+        return null;
+    }
+
     public IChunk? this[int x, int y]
     {
         get => TryGetValue((x, y), out var color) ? color : default;

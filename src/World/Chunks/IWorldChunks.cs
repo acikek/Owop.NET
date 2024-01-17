@@ -9,7 +9,7 @@ namespace Owop.Game;
 
 public interface IWorldChunks : IReadOnlyDictionary<Position, IChunk>
 {
-
+    IChunk? GetForWorldPos(Position worldPos);
 
     IChunk? this[int x, int y] { get; }
 }

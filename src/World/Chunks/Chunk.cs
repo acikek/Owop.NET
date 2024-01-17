@@ -19,8 +19,6 @@ public class Chunk(Position pos, bool isProtected) : IChunk
     public Position Pos { get; } = pos;
     public Position WorldPos { get; } = pos / IChunk.Size;
 
-    public ReadOnlySpan<Color> this[int row] => _memory.Span.GetRowSpan(row);
-
     public Color this[int x, int y]
     {
         get => _memory.Span[x, y];
