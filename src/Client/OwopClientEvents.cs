@@ -22,6 +22,8 @@ public record TeleportEventArgs(IWorld World, Position Pos, Position WorldPos);
 
 public record WhoisEventArgs(IWorld World, WhoisData Data);
 
+public record PixelPlacedEventArgs(IWorld World, IPlayer Player, Color Color, Position WorldPos, IChunk Chunk);
+
 public partial class OwopClient
 {
     public event EventHandler<ConnectEventArgs>? Connected;
@@ -33,6 +35,7 @@ public partial class OwopClient
     public event EventHandler<IPlayer>? PlayerDisconnected;
     public event EventHandler<TeleportEventArgs>? Teleported;
     public event EventHandler<WhoisEventArgs>? Whois;
+    public event EventHandler<PixelPlacedEventArgs>? PixelPlaced;
     public event EventHandler<IWorld>? Disconnecting;
     public event EventHandler? Destroying;
 

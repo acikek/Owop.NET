@@ -17,6 +17,7 @@ public class PlayerData
 
     private Position _pos = Position.Origin;
     private Position _worldPos = Position.Origin;
+    private Position _chunkPos = Position.Origin;
 
     public Position Pos
     {
@@ -24,7 +25,8 @@ public class PlayerData
         set
         {
             _pos = value;
-            _worldPos = IChunk.GetWorldPos(_pos);
+            _worldPos = _pos.ToWorldPos();
+            _chunkPos = _worldPos.ToChunkPos();
         }
     }
 
@@ -33,8 +35,18 @@ public class PlayerData
         get => _worldPos;
         set
         {
-            _worldPos = value;
             _pos = value * IChunk.Size;
+            _worldPos = value;
+            _chunkPos = value.ToChunkPos();
+        }
+    }
+
+    public Position ChunkPos
+    {
+        get => _chunkPos;
+        set
+        {
+            // TODO: No?
         }
     }
 }

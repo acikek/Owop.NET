@@ -29,6 +29,7 @@ public interface IOwopClient : IDisposable
     event EventHandler<IPlayer>? PlayerDisconnected;
     event EventHandler<TeleportEventArgs>? Teleported;
     event EventHandler<WhoisEventArgs>? Whois;
+    event EventHandler<PixelPlacedEventArgs>? PixelPlaced;
     event EventHandler<IWorld>? Disconnecting;
     event EventHandler? Destroying;
 

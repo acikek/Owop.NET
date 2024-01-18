@@ -38,12 +38,12 @@ public partial class OwopClient
             var reader = new SequenceReader<byte>(data);
             if (reader.TryRead(out byte opcode))
             {
-                HandleOpcode((Opcode)opcode, reader, world);
+                HandleOpcode((Opcode)opcode, ref reader, world);
             }
         }
     }
 
-    private void HandleSetId(SequenceReader<byte> reader, World world)
+    private void HandleSetId(ref SequenceReader<byte> reader, World world)
     {
         if (reader.TryReadLittleEndian(out int id))
         {
@@ -78,7 +78,7 @@ public partial class OwopClient
         world.Initialized = true;
     }
 
-    private void HandleWorldUpdate(SequenceReader<byte> reader, World world)
+    private void HandleWorldUpdate(ref SequenceReader<byte> reader, World world)
     {
         if (reader.TryRead(out byte playerCount))
         {
@@ -120,7 +120,10 @@ public partial class OwopClient
                 {
                     break;
                 }
-                world._chunks.SetPixel(data.Pos, data.Color);
+                var chunk = world._chunks.SetPixel(data.Pos, data.Color);
+                var player = world.Players[data.Id];
+                PixelPlacedEventArgs args = new(world, player, data.Color, data.WorldPos, chunk);
+                PixelPlaced?.Invoke(this, args);
             }
         }
         if (reader.TryRead(out byte dcCount))
@@ -136,7 +139,7 @@ public partial class OwopClient
         TryInitWorld(world);
     }
 
-    private void HandleSetRank(SequenceReader<byte> reader, World world)
+    private void HandleSetRank(ref SequenceReader<byte> reader, World world)
     {
         if (reader.TryRead(out byte rank))
         {
@@ -144,7 +147,7 @@ public partial class OwopClient
         }
     }
 
-    private void HandlePixelQuota(SequenceReader<byte> reader, World world)
+    private void HandlePixelQuota(ref SequenceReader<byte> reader, World world)
     {
         if (reader.TryReadBucket(out Bucket bucket))
         {
@@ -152,7 +155,7 @@ public partial class OwopClient
         }
     }
 
-    private void HandleTeleport(SequenceReader<byte> reader, World world)
+    private void HandleTeleport(ref SequenceReader<byte> reader, World world)
     {
         if (reader.TryReadPos(out Position pos))
         {
@@ -162,7 +165,15 @@ public partial class OwopClient
         }
     }
 
-    private void HandleOpcode(Opcode opcode, SequenceReader<byte> reader, World world)
+    private void HandleChunkLoad(ref SequenceReader<byte> reader, World world)
+    {
+        if (!reader.TryDecompressChunk(world, out var chunk))
+        {
+
+        }
+    }
+
+    private void HandleOpcode(Opcode opcode, ref SequenceReader<byte> reader, World world)
     {
         world.Logger.LogDebug($"Received opcode: {opcode} ({(byte)opcode})");
         try
@@ -170,19 +181,22 @@ public partial class OwopClient
             switch (opcode)
             {
                 case Opcode.SetId:
-                    HandleSetId(reader, world);
+                    HandleSetId(ref reader, world);
                     break;
                 case Opcode.WorldUpdate:
-                    HandleWorldUpdate(reader, world);
+                    HandleWorldUpdate(ref reader, world);
                     break;
                 case Opcode.SetRank:
-                    HandleSetRank(reader, world);
+                    HandleSetRank(ref reader, world);
                     break;
                 case Opcode.SetPixelQuota:
-                    HandlePixelQuota(reader, world);
+                    HandlePixelQuota(ref reader, world);
                     break;
                 case Opcode.Teleport:
-                    HandleTeleport(reader, world);
+                    HandleTeleport(ref reader, world);
+                    break;
+                case Opcode.ChunkLoad:
+                    HandleChunkLoad(ref reader, world);
                     break;
             }
         }

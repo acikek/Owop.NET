@@ -15,4 +15,7 @@ public interface IPositioned
 
     /// <summary>The pixel position within the world.</summary>
     Position WorldPos { get; }
+
+    /// <summary>The chunk position within the world.</summary>
+    Position ChunkPos { get; }
 }

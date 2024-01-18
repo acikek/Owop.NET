@@ -1,40 +1,64 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Owop.Network;
 using Owop.Util;
 
 namespace Owop.Game;
 
-public class WorldChunks : Dictionary<Position, IChunk>, IWorldChunks
+public class WorldChunks(World world) : Dictionary<Position, IChunk>, IWorldChunks
 {
-    public IChunk? GetForWorldPos(Position worldPos) 
-        => TryGetValue(IChunk.GetChunkPos(worldPos), out var chunk) ? chunk : null;
+    private World _world = world;
+    public ConcurrentDictionary<Position, TaskCompletionSource<IChunk>> ChunkQueue = [];
 
-    public Chunk GetOrCreateForWorldPos(Position worldPos)
+    public Chunk GetOrCreate(Position worldPos)
     {
-        if (GetForWorldPos(worldPos) is IChunk chunk)
+        var chunkPos = worldPos.ToChunkPos();
+        if (TryGetValue(chunkPos, out var chunk) && chunk is Chunk existing)
         {
-            return (Chunk)chunk;
+            return existing;
         }
-        Chunk newChunk = new(IChunk.GetChunkPos(worldPos), false);
+        Chunk newChunk = new(_world, chunkPos, false);
         Add(newChunk.ChunkPos, newChunk);
         return newChunk;
     }
 
-    public void SetPixel(Position worldPos, Color color) => GetOrCreateForWorldPos(worldPos).SetPixel(worldPos, color);
-
-    public IChunk? this[int x, int y]
+    public Chunk SetPixel(Position worldPos, Color color)
     {
-        get => TryGetValue((x, y), out var chunk) ? chunk : null;
-        set
+        var chunk = GetOrCreate(worldPos);
+        chunk.SetPixel(worldPos, color);
+        return chunk;
+    }
+
+    public async Task Request(Position chunkPos, bool force = false)
+    {
+        if (!force && ContainsKey(chunkPos))
         {
-            if (value is IChunk chunk)
-            {
-                this[(x, y)] = chunk;
-            }
+            await Task.CompletedTask;
+            return;
         }
+        // TODO: Check for world border
+        byte[] pos = OwopProtocol.EncodePos(chunkPos);
+        await _world._connection.Send(pos);
+    }
+
+    public async Task<IChunk> Query(Position chunkPos, bool force = false)
+    {
+        if (!force && TryGetValue(chunkPos, out var chunk) && chunk is IChunk existingChunk)
+        {
+            return existingChunk;
+        }
+        if (ChunkQueue.TryGetValue(chunkPos, out var existingSource))
+        {
+            return await existingSource.Task;
+        }
+        var source = new TaskCompletionSource<IChunk>(TaskCreationOptions.RunContinuationsAsynchronously);
+        ChunkQueue[chunkPos] = source;
+        await Request(chunkPos);
+        return await source.Task;
     }
 }

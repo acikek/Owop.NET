@@ -60,6 +60,24 @@ public struct Position(int x, int y) : IEquatable<Position>
     /// <returns>The tuple.</returns>
     public readonly (int, int) ToTuple() => (X, Y);
 
+    /// <summary>Converts a <b>precise</b> position to a pixel-based world position.</summary>
+    /// <returns>The world position.</returns>
+    public readonly Position ToWorldPos()
+    {
+        // OWOP rounds up Y values (since up = negative Y)
+        int y = Y / IChunk.Size;
+        if (Y % IChunk.Size != 0)
+        {
+            y--;
+        }
+        return new(X / IChunk.Size, y);
+    }
+
+    /// <summary>Converts a pixel-based world position to its chunk's position.</summary>
+    /// <returns>The chunk position.</returns>
+    public readonly Position ToChunkPos()
+        => ((int)Math.Floor((decimal)X / IChunk.Size), (int)Math.Floor((decimal)Y / IChunk.Size));
+
     /// <summary>Gets a simple string of the position.</summary>
     /// <returns>The string.</returns>
     public override readonly string ToString() => $"({X}, {Y})";

@@ -28,21 +28,7 @@ public interface IChunk : IPositioned
     /// <exception cref="IndexOutOfRangeException"></exception>
     Color this[int x, int y] { get; }
 
-    /// <summary>Converts a precise position to a pixel-based world position.</summary>
-    /// <param name="pos">The precise position.</param>
-    static Position GetWorldPos(Position pos)
-    {
-        // OWOP rounds up Y values (since up = negative Y)
-        int y = pos.Y / Size;
-        if (pos.Y % Size != 0)
-        {
-            y--;
-        }
-        return new(pos.X / Size, y);
-    }
+    Task Request();
 
-    /// <summary>Converts a pixel-based world position to its chunk's position.</summary>
-    /// <param name="worldPos">The world position.</param>
-    static Position GetChunkPos(Position worldPos)
-        => ((int)Math.Floor((decimal)worldPos.X / Size), (int)Math.Floor((decimal)worldPos.Y / Size));
+    Task Query();
 }

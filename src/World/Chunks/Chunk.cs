@@ -11,21 +11,22 @@ namespace Owop.Game;
 
 public class Chunk : IChunk
 {
-    public bool _isProtected;
+    private readonly World _world;
     public readonly Memory2D<Color> _memory = new(new Color[IChunk.Size, IChunk.Size]);
 
     public ReadOnlyMemory2D<Color> Pixels => _memory;
-    public bool IsProtected => _isProtected;
+    public bool IsProtected { get; set; }
     public Position Pos { get; }
     public Position WorldPos { get; }
     public Position ChunkPos { get; }
 
-    public Chunk(Position chunkPos, bool isProtected)
+    public Chunk(World world, Position chunkPos, bool isProtected)
     {
+        _world = world;
         ChunkPos = chunkPos;
         WorldPos = ChunkPos * IChunk.Size;
         Pos = WorldPos * IChunk.Size;
-        _isProtected = isProtected;
+        IsProtected = isProtected;
     }
 
     public void SetPixel(Position worldPos, Color color)
@@ -40,4 +41,18 @@ public class Chunk : IChunk
         get => _memory.Span[x, y];
         set => _memory.Span[x, y] = value;
     }
+
+    public Color this[int index]
+    {
+        set
+        {
+            int row = index / IChunk.Size;
+            int col = index % IChunk.Size;
+            this[row, col] = value;
+        }
+    }
+
+    public async Task Request() => await _world.Chunks.Request(ChunkPos, true);
+
+    public async Task Query() => await _world.Chunks.Query(ChunkPos, true);
 }
