@@ -32,7 +32,6 @@ public class Chunk : IChunk
     public void SetPixel(Position worldPos, Color color)
     {
         var posInChunk = worldPos - WorldPos;
-        Console.WriteLine($"Setting pixel. WorldPos: {worldPos}, ChunkPos: {ChunkPos}, PosWithinChunk: {posInChunk}, Color: {color}");
         _memory.Span[posInChunk.X, posInChunk.Y] = color;
     }
 

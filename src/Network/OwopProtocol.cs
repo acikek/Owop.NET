@@ -90,42 +90,41 @@ public static class OwopProtocol
         {
             return false;
         }
-        MemoryStream stream = new(length);
+        MemoryStream stream = new(length); // length should always be 768
         BinaryWriter writer = new(stream);
         chunk = world._chunks.GetOrCreate(chunkPos);
         chunk.IsProtected = protectedByte == 1;
-        Console.WriteLine(string.Join(' ', reader.UnreadSequence.ToArray()));
-        int[] repeatTimes = new int[segments];
+        int repeatOffset = (2 * segments) + 14; // 17, but 1 indexed, then subtract 2 for no reason?
+        int[] repeatLocations = new int[segments];
         for (int i = 0; i < segments; i++)
         {
-            if (!reader.TryReadChunkAmount(out int times))
+            if (reader.TryReadChunkAmount(out int location))
             {
-                return false;
-            }
-            Console.WriteLine("Times: " + times);
-            for (int j = 0; j < times; j++)
-            {
-                if (reader.TryRead(out byte next))
-                {
-                    writer.Write(next);
-                }
-            }
-            if (!reader.TryReadChunkAmount(out int repeat) ||
-                !reader.TryReadColor(out var repeatColor))
-            {
-                return false;
-            }
-            byte[] repeatColorData = EncodeColor(repeatColor);
-            for (int k = 0; k < repeat; k++)
-            {
-                writer.Write(repeatColorData);
+                repeatLocations[i] = location + repeatOffset;
             }
         }
-        while (!reader.End && reader.TryRead(out byte next))
+        for (int i = 0; i < segments; i++)
         {
-            writer.Write(next);
+            int diff = repeatLocations[i] - reader.Position.GetInteger();
+            if (diff > 0 && reader.TryReadExact(diff, out var fillData))
+            {
+                writer.Write(fillData.ToArray());
+            }
+            if (!reader.TryReadChunkAmount(out int times) ||
+                !reader.TryReadExact(3, out var colorData))
+            {
+                return false;
+            }
+            byte[] colorArr = colorData.ToArray();
+            for (int t = 0; t < times; t++)
+            {
+                writer.Write(colorArr);
+            }
         }
-        Console.WriteLine(string.Join(' ', stream.ToArray()));
+        if (reader.Remaining > 0 && reader.TryReadExact((int)reader.Remaining, out var remaining))
+        {
+            writer.Write(remaining.ToArray());
+        }
         return true;
     }
 
