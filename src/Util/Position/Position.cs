@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Numerics;
 using System.Runtime.InteropServices;
@@ -60,6 +61,10 @@ public struct Position(int x, int y) : IEquatable<Position>
     /// <returns>The tuple.</returns>
     public readonly (int, int) ToTuple() => (X, Y);
 
+    /// <summary>Converts this position to a drawing point.</summary>
+    /// <returns>The point.</returns>
+    public readonly Point ToPoint() => new(X, Y);
+
     /// <summary>Converts a <b>precise</b> position to a pixel-based world position.</summary>
     /// <returns>The world position.</returns>
     public readonly Position ToWorldPos()
@@ -81,6 +86,20 @@ public struct Position(int x, int y) : IEquatable<Position>
     /// <summary>Gets a simple string of the position.</summary>
     /// <returns>The string.</returns>
     public override readonly string ToString() => $"({X}, {Y})";
+
+    /// <summary>Iterates from this top-left position to another bottom-right position.</summary>
+    /// <param name="other">The other position.</param>
+    /// <returns>An enumeration of positions within the rectangle bounded by the two positions.</returns>
+    public readonly IEnumerable<Position> IterateRect(Position other)
+    {
+        for (int x = X; x <= other.X; x++)
+        {
+            for (int y = Y; y <= other.Y; y++)
+            {
+                yield return (x, y);
+            }
+        }
+    }
 
     /// <summary>Logical comparison.</summary>
     /// <param name="one">First position.</param>

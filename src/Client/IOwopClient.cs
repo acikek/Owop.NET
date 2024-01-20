@@ -30,6 +30,7 @@ public interface IOwopClient : IDisposable
     event EventHandler<TeleportEventArgs>? Teleported;
     event EventHandler<WhoisEventArgs>? Whois;
     event EventHandler<PixelPlacedEventArgs>? PixelPlaced;
+    event EventHandler<ChunkLoadedEventArgs>? ChunkLoaded;
     event EventHandler<IWorld>? Disconnecting;
     event EventHandler? Destroying;
 

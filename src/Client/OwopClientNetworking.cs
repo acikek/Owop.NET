@@ -167,9 +167,13 @@ public partial class OwopClient
 
     private void HandleChunkLoad(ref SequenceReader<byte> reader, World world)
     {
-        if (!reader.TryDecompressChunk(world, out var chunk))
+        if (reader.TryDecompressChunk(world, out var chunk) && chunk is IChunk loaded)
         {
-
+            if (world._chunks.ChunkQueue.TryRemove(loaded.ChunkPos, out var task))
+            {
+                task.SetResult(loaded);
+            }
+            ChunkLoaded?.Invoke(this, new(world, loaded));
         }
     }
 

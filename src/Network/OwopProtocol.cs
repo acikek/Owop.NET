@@ -1,5 +1,6 @@
 using System.Buffers;
 using System.Drawing;
+using CommunityToolkit.HighPerformance;
 using Owop.Game;
 using Owop.Util;
 
@@ -124,6 +125,14 @@ public static class OwopProtocol
         if (reader.Remaining > 0 && reader.TryReadExact((int)reader.Remaining, out var remaining))
         {
             writer.Write(remaining.ToArray());
+        }
+        byte[] data = stream.ToArray();
+        // Write to span directly to preserve references
+        for (int i = 0; i < data.Length; i += 3)
+        {
+            var color = Color.FromArgb(data[i], data[i + 1], data[i + 2]);
+            int index = i / 3;
+            chunk._memory.Span[index / IChunk.Size, index % IChunk.Size] = color;
         }
         return true;
     }

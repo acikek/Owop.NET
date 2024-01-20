@@ -30,5 +30,5 @@ public interface IChunk : IPositioned
 
     Task Request();
 
-    Task Query();
+    Task<IChunk> Query();
 }

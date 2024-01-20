@@ -15,9 +15,8 @@ public class WorldChunks(World world) : Dictionary<Position, IChunk>, IWorldChun
     private World _world = world;
     public ConcurrentDictionary<Position, TaskCompletionSource<IChunk>> ChunkQueue = [];
 
-    public Chunk GetOrCreate(Position worldPos)
+    public Chunk GetOrCreate(Position chunkPos)
     {
-        var chunkPos = worldPos.ToChunkPos();
         if (TryGetValue(chunkPos, out var chunk) && chunk is Chunk existing)
         {
             return existing;
@@ -29,7 +28,7 @@ public class WorldChunks(World world) : Dictionary<Position, IChunk>, IWorldChun
 
     public Chunk SetPixel(Position worldPos, Color color)
     {
-        var chunk = GetOrCreate(worldPos);
+        var chunk = GetOrCreate(worldPos.ToChunkPos());
         chunk.SetPixel(worldPos, color);
         return chunk;
     }
@@ -58,7 +57,7 @@ public class WorldChunks(World world) : Dictionary<Position, IChunk>, IWorldChun
         }
         var source = new TaskCompletionSource<IChunk>(TaskCreationOptions.RunContinuationsAsynchronously);
         ChunkQueue[chunkPos] = source;
-        await Request(chunkPos);
+        await Request(chunkPos, force);
         return await source.Task;
     }
 }

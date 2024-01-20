@@ -53,5 +53,5 @@ public class Chunk : IChunk
 
     public async Task Request() => await _world.Chunks.Request(ChunkPos, true);
 
-    public async Task Query() => await _world.Chunks.Query(ChunkPos, true);
+    public async Task<IChunk> Query() => await _world.Chunks.Query(ChunkPos, true);
 }
