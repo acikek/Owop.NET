@@ -33,9 +33,22 @@ public class WorldChunks(World world) : Dictionary<Position, IChunk>, IWorldChun
         return chunk;
     }
 
+    public bool IsChunkLoaded(Position chunkPos, out IChunk? chunk)
+    {
+        if (TryGetValue(chunkPos, out var existing) && existing.IsLoaded)
+        {
+            chunk = existing;
+            return true;
+        }
+        chunk = null;
+        return false;
+    }
+
+    public bool IsChunkLoaded(Position chunkPos) => IsChunkLoaded(chunkPos, out _);
+
     public async Task Request(Position chunkPos, bool force = false)
     {
-        if (!force && ContainsKey(chunkPos))
+        if (!force && IsChunkLoaded(chunkPos))
         {
             await Task.CompletedTask;
             return;
@@ -47,9 +60,9 @@ public class WorldChunks(World world) : Dictionary<Position, IChunk>, IWorldChun
 
     public async Task<IChunk> Query(Position chunkPos, bool force = false)
     {
-        if (!force && TryGetValue(chunkPos, out var chunk) && chunk is IChunk existingChunk)
+        if (!force && IsChunkLoaded(chunkPos, out var chunk) && chunk is not null)
         {
-            return existingChunk;
+            return chunk;
         }
         if (ChunkQueue.TryGetValue(chunkPos, out var existingSource))
         {

@@ -16,6 +16,8 @@ public class Chunk : IChunk
 
     public ReadOnlyMemory2D<Color> Pixels => _memory;
     public bool IsProtected { get; set; }
+    public DateTime? LastLoad { get; set; }
+    public bool IsLoaded { get; set; }
     public Position Pos { get; }
     public Position WorldPos { get; }
     public Position ChunkPos { get; }

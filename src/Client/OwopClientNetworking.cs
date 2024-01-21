@@ -169,6 +169,8 @@ public partial class OwopClient
     {
         if (reader.TryDecompressChunk(world, out var chunk) && chunk is IChunk loaded)
         {
+            chunk.LastLoad = DateTime.Now;
+            chunk.IsLoaded = true;
             if (world._chunks.ChunkQueue.TryRemove(loaded.ChunkPos, out var task))
             {
                 task.SetResult(loaded);

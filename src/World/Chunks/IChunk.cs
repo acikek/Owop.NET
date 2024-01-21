@@ -21,6 +21,12 @@ public interface IChunk : IPositioned
     /// <summary>Whether modifying the chunk requires <see cref="PlayerRank.Moderator"/> permissions.</summary>
     bool IsProtected { get; }
 
+    /// <summary>The last time this chunk was loaded by the client.</summary>
+    DateTime? LastLoad { get; }
+
+    /// <summary>Whether the client has requested and loaded this chunk at least once.</summary>
+    bool IsLoaded { get; }
+
     /// <summary>Retrieves a single pixel within the chunk.</summary>
     /// <param name="x">The x coordinate.</param>
     /// <param name="y">The y coordinate.</param>

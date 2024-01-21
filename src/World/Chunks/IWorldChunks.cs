@@ -9,6 +9,10 @@ namespace Owop.Game;
 
 public interface IWorldChunks : IReadOnlyDictionary<Position, IChunk>
 {
+    bool IsChunkLoaded(Position chunkPos);
+
+    bool IsChunkLoaded(Position chunkPos, out IChunk? chunk);
+
     Task Request(Position chunkPos, bool force = false);
 
     Task<IChunk> Query(Position chunkPos, bool force = false);
