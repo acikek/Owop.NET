@@ -12,17 +12,19 @@ namespace Owop.Client;
 public class WorldConnection : IWorldConnection
 {
     private readonly ManualResetEvent _exitEvent = new(false);
-    private readonly OwopClient _client;
-    private readonly World _world;
+    public readonly OwopClient _client;
+    public readonly World _world;
 
     public WebsocketClient Socket { get; }
     public IOwopClient Client => _client;
+    public ConnectionOptions? Options { get; }
     public IWorld World => _world;
     public ILogger Logger { get; }
 
-    public WorldConnection(string name, OwopClient client)
+    public WorldConnection(string name, ConnectionOptions? options, OwopClient client)
     {
         Socket = new(new Uri(client.Options.SocketUrl));
+        Options = options;
         _client = client;
         _world = new(name, this);
         Logger = client.LoggerFactory.CreateLogger($"Owop.Net.{name}");
@@ -33,7 +35,7 @@ public class WorldConnection : IWorldConnection
         string fixedLength = world[..Math.Min(world.Length, 24)];
         var bytes = Encoding.ASCII.GetBytes(fixedLength);
         var list = new List<byte>(bytes);
-        list.AddRange(BitConverter.GetBytes(Client.Options.WorldVerification));
+        list.AddRange(BitConverter.GetBytes(_client.Options.WorldVerification));
         return [.. list];
     }
 
@@ -50,7 +52,7 @@ public class WorldConnection : IWorldConnection
             Socket.SendInstant(connectMsg);
             if (info.Type == ReconnectionType.Lost)
             {
-                Socket.MessageReceived.Subscribe(msg => _client.HandleMessage(msg, _world));
+                //Socket.MessageReceived.Subscribe(msg => _client.HandleMessage(msg, _world));
             }
         });
         Socket.MessageReceived.Subscribe(msg => _client.HandleMessage(msg, _world));

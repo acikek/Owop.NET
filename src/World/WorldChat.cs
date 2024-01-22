@@ -35,7 +35,7 @@ public partial class World
         _connection.CheckInteraction();
         Logger.LogDebug($"Sending chat message: '{message}'");
         int length = ClientPlayer.Rank.GetMaxMessageLength();
-        string data = message[0..Math.Min(message.Length, length)] + Connection.Client.Options.ChatVerification;
+        string data = message[0..Math.Min(message.Length, length)] + _connection._client.Options.ChatVerification;
         await Connection.Send(data);
     }
 

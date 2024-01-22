@@ -11,9 +11,16 @@ public record ChatEventArgs(IWorld World, ChatPlayer Player, string Content)
 {
     public IPlayer? WorldPlayer => Player.Id is int id ? World.Players[id] : null;
 
-    public Color HeaderColor => Player.Rank.GetChatColor();
+    public Color HeaderColor => Player.IsDiscord ? ChatColors.Discord : Player.Rank.GetChatColor();
 
-    public Color? MessageColor => Player.Rank >= PlayerRank.Moderator ? HeaderColor : null;
+    public Color? ContentColor => Player.Rank >= PlayerRank.Moderator ? HeaderColor : null;
+
+    public string GetColoredMessage(Func<string, Color, string> styler)
+    {
+        var header = styler($"{Player.Header}:", HeaderColor);
+        var content = ContentColor is Color color ? styler(Content, color) : Content;
+        return $"{header} {content}";
+    }
 }
 
 public record TellEventArgs(IWorld World, IPlayer Player, string Content);

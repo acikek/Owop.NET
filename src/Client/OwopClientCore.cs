@@ -28,7 +28,7 @@ public partial class OwopClient : IOwopClient
         return new(span.ToArray());
     }
 
-    public async Task<ConnectResult> Connect(string world = "main")
+    public async Task<ConnectResult> Connect(string world = "main", ConnectionOptions? options = null)
     {
         var serverInfo = await FetchServerInfo();
         if (serverInfo is null || serverInfo.ClientConnections >= serverInfo.MaxConnectionsPerIp)
@@ -41,7 +41,7 @@ public partial class OwopClient : IOwopClient
             return ConnectResult.Exists;
         }
         Logger.LogDebug($"Connecting to world '{clean}'...");
-        WorldConnection connection = new(clean, this);
+        WorldConnection connection = new(clean, options, this);
         _connections[clean] = connection;
         connection.Connect(clean);
         return ConnectResult.Activated;

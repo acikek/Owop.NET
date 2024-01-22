@@ -49,33 +49,38 @@ public partial class OwopClient
         {
             world._clientPlayer.Id = id;
             world._players[id] = world.ClientPlayer;
+            world.Initialized = false;
         }
     }
 
-    private void TryInitWorld(World world)
+    private void InitWorld(World world)
     {
-        if (world.Initialized)
-        {
-            return;
-        }
         bool reconnect = world.Connected;
         if (!reconnect)
         {
             world.Connected = true;
         }
+        world.Logger.LogDebug("World initialized.");
+        world.Initialized = true;
         Connected?.Invoke(this, new(world, reconnect));
-        if (!reconnect)
+        Task.Run(async () =>
         {
-            Ready?.Invoke(this, world);
-            Task.Run(async () =>
+            if (world._connection.Options?.Password is string pass)
             {
+                await world.LogIn(pass);
+            }
+            if (world._connection.Options?.Nickname is string nickname)
+            {
+                await world.ClientPlayer.SetNickname(nickname);
+            }
+            if (!reconnect)
+            {
+                Ready?.Invoke(this, world);
                 await Task.Delay(world.ClientPlayer.ChatBucket.FillInterval);
                 world.IsChatReady = true;
                 ChatReady?.Invoke(this, world);
-            });
-        }
-        world.Logger.LogDebug("World initialized.");
-        world.Initialized = true;
+            }
+        });
     }
 
     private void HandleWorldUpdate(ref SequenceReader<byte> reader, World world)
@@ -136,7 +141,10 @@ public partial class OwopClient
                 }
             }
         }
-        TryInitWorld(world);
+        if (!world.Initialized)
+        {
+            InitWorld(world);
+        }
     }
 
     private void HandleSetRank(ref SequenceReader<byte> reader, World world)
