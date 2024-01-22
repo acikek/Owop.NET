@@ -31,10 +31,19 @@ public class Chunk : IChunk
         IsProtected = isProtected;
     }
 
+    // TODO: Bounds-check these?
+    public Position GetPosInChunk(Position worldPos) => worldPos - WorldPos;
+
     public void SetPixel(Position worldPos, Color color)
     {
-        var posInChunk = worldPos - WorldPos;
-        _memory.Span[posInChunk.X, posInChunk.Y] = color;
+        var pos = GetPosInChunk(worldPos);
+        _memory.Span[pos.X, pos.Y] = color;
+    }
+
+    public Color GetPixel(Position worldPos)
+    {
+        var pos = GetPosInChunk(worldPos);
+        return _memory.Span[pos.X, pos.Y];
     }
 
     public Color this[int x, int y]

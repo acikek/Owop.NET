@@ -12,7 +12,7 @@ namespace Owop.Game;
 
 public class WorldChunks(World world) : Dictionary<Position, IChunk>, IWorldChunks
 {
-    private World _world = world;
+    private readonly World _world = world;
     public ConcurrentDictionary<Position, TaskCompletionSource<IChunk>> ChunkQueue = [];
 
     public Chunk GetOrCreate(Position chunkPos)
@@ -31,6 +31,15 @@ public class WorldChunks(World world) : Dictionary<Position, IChunk>, IWorldChun
         var chunk = GetOrCreate(worldPos.ToChunkPos());
         chunk.SetPixel(worldPos, color);
         return chunk;
+    }
+
+    public Color? GetPixel(Position worldPos)
+    {
+        if (!TryGetValue(worldPos.ToChunkPos(), out var chunk))
+        {
+            return null;
+        }
+        return chunk.GetPixel(worldPos);
     }
 
     public bool IsChunkLoaded(Position chunkPos, out IChunk? chunk)
