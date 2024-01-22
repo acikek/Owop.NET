@@ -69,6 +69,18 @@ public static class OwopProtocol
         return false;
     }
 
+    public static bool TryReadChunkMeta(ref this SequenceReader<byte> reader, out Position chunkPos, out bool isProtected)
+    {
+        if (!reader.TryReadPos(out chunkPos) ||
+            !reader.TryRead(out byte protectedByte))
+        {
+            isProtected = false;
+            return false;
+        }
+        isProtected = protectedByte == 1;
+        return true;
+    }
+
     public static bool TryReadChunkAmount(ref this SequenceReader<byte> reader, out int amount)
     {
         if (!reader.TryReadExact(2, out var meta))
@@ -81,11 +93,10 @@ public static class OwopProtocol
         return true;
     }
 
-    public static bool TryDecompressChunk(ref this SequenceReader<byte> reader, World world, out Chunk? chunk)
+    public static bool TryReadChunk(ref this SequenceReader<byte> reader, World world, out Chunk? chunk)
     {
         chunk = null;
-        if (!reader.TryReadPos(out var chunkPos) ||
-            !reader.TryRead(out byte protectedByte) ||
+        if (!reader.TryReadChunkMeta(out var chunkPos, out bool isProtected) ||
             !reader.TryReadChunkAmount(out int length) ||
             !reader.TryReadChunkAmount(out int segments))
         {
@@ -94,7 +105,7 @@ public static class OwopProtocol
         MemoryStream stream = new(length); // length should always be 768
         BinaryWriter writer = new(stream);
         chunk = world._chunks.GetOrCreate(chunkPos);
-        chunk.IsProtected = protectedByte == 1;
+        chunk.IsProtected = isProtected;
         int repeatOffset = (2 * segments) + 14; // 17, but 1 indexed, then subtract 2 for no reason?
         int[] repeatLocations = new int[segments];
         for (int i = 0; i < segments; i++)

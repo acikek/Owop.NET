@@ -175,7 +175,7 @@ public partial class OwopClient
 
     private void HandleChunkLoad(ref SequenceReader<byte> reader, World world)
     {
-        if (reader.TryDecompressChunk(world, out var chunk) && chunk is IChunk loaded)
+        if (reader.TryReadChunk(world, out var chunk) && chunk is IChunk loaded)
         {
             chunk.LastLoad = DateTime.Now;
             chunk.IsLoaded = true;
@@ -184,6 +184,39 @@ public partial class OwopClient
                 task.SetResult(loaded);
             }
             ChunkLoaded?.Invoke(this, new(world, loaded));
+        }
+    }
+
+    private void HandleCaptcha(ref SequenceReader<byte> reader, World world)
+    {
+        if (!reader.TryRead(out byte captchaByte))
+        {
+            return;
+        }
+        var state = (CaptchaState)captchaByte;
+        switch (state)
+        {
+            case CaptchaState.Waiting:
+                // TODO: CaptchaPass in connection options
+                break;
+            case CaptchaState.Ok:
+                // TODO: Connect to world?
+                break;
+            case CaptchaState.Invalid:
+                world.Logger.LogError("Captcha failed; disconnecting...");
+                Task.Run(world._connection.Disconnect);
+                break;
+        }
+        // TODO: captcha event
+        // TODO: understand when this opcode is sent
+    }
+
+    private void HandleChunkProtect(ref SequenceReader<byte> reader, World world)
+    {
+        if (reader.TryReadChunkMeta(out var chunkPos, out bool isProtected))
+        {
+            world._chunks.GetOrCreate(chunkPos).IsProtected = isProtected;
+            // TODO: event
         }
     }
 
@@ -200,17 +233,23 @@ public partial class OwopClient
                 case Opcode.WorldUpdate:
                     HandleWorldUpdate(ref reader, world);
                     break;
-                case Opcode.SetRank:
-                    HandleSetRank(ref reader, world);
-                    break;
-                case Opcode.SetPixelQuota:
-                    HandlePixelQuota(ref reader, world);
+                case Opcode.ChunkLoad:
+                    HandleChunkLoad(ref reader, world);
                     break;
                 case Opcode.Teleport:
                     HandleTeleport(ref reader, world);
                     break;
-                case Opcode.ChunkLoad:
-                    HandleChunkLoad(ref reader, world);
+                case Opcode.SetRank:
+                    HandleSetRank(ref reader, world);
+                    break;
+                case Opcode.Captcha:
+                    HandleCaptcha(ref reader, world);
+                    break;
+                case Opcode.SetPixelQuota:
+                    HandlePixelQuota(ref reader, world);
+                    break;
+                case Opcode.ChunkProtect:
+                    HandleChunkProtect(ref reader, world);
                     break;
             }
         }

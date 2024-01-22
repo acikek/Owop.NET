@@ -29,6 +29,7 @@ public record TeleportEventArgs(IWorld World, Position Pos, Position WorldPos);
 
 public record WhoisEventArgs(IWorld World, WhoisData Data);
 
+// TODO: prev color
 public record PixelPlacedEventArgs(IWorld World, IPlayer Player, Color Color, Position WorldPos, IChunk Chunk);
 
 public record ChunkLoadedEventArgs(IWorld World, IChunk Chunk);
