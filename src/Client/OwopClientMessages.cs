@@ -20,9 +20,16 @@ public partial class OwopClient
 
     private void HandleTextMessage(string text, World world)
     {
-        if (HandleTextLine(text) is ServerMessage message)
+        try
         {
-            HandleServerMessage(message, world);
+            if (HandleTextLine(text) is ServerMessage message)
+            {
+                HandleServerMessage(message, world);
+            }
+        }
+        catch (Exception ex)
+        {
+            world.Logger.LogError(ex, $"Exception while handling text message '{text}':");
         }
     }
 

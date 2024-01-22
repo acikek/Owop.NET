@@ -1,6 +1,6 @@
 namespace Owop.Game;
 
-public record ChatPlayer(PlayerRank Rank, int? Id, string? Nickname, string Header)
+public record ChatPlayer(PlayerRank Rank, int? Id, string? Nickname, bool IsDiscord, string Header)
 {
     public string Display => Nickname ?? Id?.ToString() ?? string.Empty;
 
@@ -10,10 +10,17 @@ public record ChatPlayer(PlayerRank Rank, int? Id, string? Nickname, string Head
         var rank = PlayerRank.Player;
         int? id = null;
         string? nickname = null;
+        bool discord = false;
         bool restNick = true;
         if (copy.StartsWith('('))
         {
             rank = PlayerRankExtensions.Parse(copy.ElementAt(1));
+            copy = copy[4..];
+        }
+        else if (copy.StartsWith("[D]"))
+        {
+            rank = PlayerRank.None;
+            discord = true;
             copy = copy[4..];
         }
         else if (copy.StartsWith('['))
@@ -31,6 +38,6 @@ public record ChatPlayer(PlayerRank Rank, int? Id, string? Nickname, string Head
         {
             nickname = copy;
         }
-        return new ChatPlayer(rank, id, nickname, str);
+        return new ChatPlayer(rank, id, nickname, discord, str);
     }
 }
