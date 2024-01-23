@@ -4,6 +4,8 @@ namespace Owop.Client;
 
 public partial class OwopClient : IOwopClient
 {
+    public const int MaxWorldNameLength = 24;
+
     private readonly Dictionary<string, IWorldConnection> _connections = [];
 
     public readonly ILoggerFactory LoggerFactory;
@@ -20,9 +22,9 @@ public partial class OwopClient : IOwopClient
         _messageBuffer = [];
     }
 
-    private string CleanWorldId(string world)
+    private static string CleanWorldId(string world)
     {
-        string fixedLength = world[..Math.Min(world.Length, Options.MaxWorldNameLength)];
+        string fixedLength = world[..Math.Min(world.Length, MaxWorldNameLength)];
         string lower = fixedLength.ToLower();
         var span = lower.Where(c => char.IsLetterOrDigit(c) || c == '_' || c == '.');
         return new(span.ToArray());

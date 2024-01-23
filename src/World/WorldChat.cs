@@ -5,6 +5,8 @@ namespace Owop.Game;
 
 public partial class World
 {
+    public const string ChatVerification = "\u000A";
+
     private readonly ConcurrentQueue<(string, TaskCompletionSource)> _chatBuffer = [];
     private Task? _chatTask = null;
 
@@ -35,7 +37,7 @@ public partial class World
         _connection.CheckInteraction();
         Logger.LogDebug($"Sending chat message: '{message}'");
         int length = ClientPlayer.Rank.GetMaxMessageLength();
-        string data = message[0..Math.Min(message.Length, length)] + _connection._client.Options.ChatVerification;
+        string data = message[0..Math.Min(message.Length, length)] + ChatVerification;
         await Connection.Send(data);
     }
 

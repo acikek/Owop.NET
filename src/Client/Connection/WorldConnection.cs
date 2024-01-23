@@ -11,6 +11,8 @@ namespace Owop.Client;
 
 public class WorldConnection : IWorldConnection
 {
+    public const int WorldVerification = 25565;
+
     private readonly ManualResetEvent _exitEvent = new(false);
     public readonly OwopClient _client;
     public readonly World _world;
@@ -30,12 +32,12 @@ public class WorldConnection : IWorldConnection
         Logger = client.LoggerFactory.CreateLogger($"Owop.Net.{name}");
     }
 
-    private byte[] GetConnectionMessage(string world)
+    private static byte[] GetConnectionMessage(string world)
     {
         string fixedLength = world[..Math.Min(world.Length, 24)];
         var bytes = Encoding.ASCII.GetBytes(fixedLength);
         var list = new List<byte>(bytes);
-        list.AddRange(BitConverter.GetBytes(_client.Options.WorldVerification));
+        list.AddRange(BitConverter.GetBytes(WorldVerification));
         return [.. list];
     }
 
