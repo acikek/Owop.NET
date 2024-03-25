@@ -82,4 +82,14 @@ public class WorldChunks(World world) : Dictionary<Position, IChunk>, IWorldChun
         await Request(chunkPos, force);
         return await source.Task;
     }
+
+    public async Task SetChunkProtected(Position chunkPos, bool protect)
+    {
+        _world._connection.CheckInteraction(PlayerRank.Moderator);
+        await _world._connection.Send(OwopProtocol.EncodeChunkProtect(chunkPos, protect));
+    }
+
+    public async Task Protect(Position chunkPos) => await SetChunkProtected(chunkPos, true);
+
+    public async Task Unprotect(Position chunkPos) => await SetChunkProtected(chunkPos, false);
 }

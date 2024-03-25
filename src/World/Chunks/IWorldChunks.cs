@@ -19,4 +19,10 @@ public interface IWorldChunks : IReadOnlyDictionary<Position, IChunk>
     Task Request(Position chunkPos, bool force = false);
 
     Task<IChunk> Query(Position chunkPos, bool force = false);
+
+    Task SetChunkProtected(Position chunkPos, bool protect);
+
+    Task Protect(Position chunkPos);
+
+    Task Unprotect(Position chunkPos);
 }

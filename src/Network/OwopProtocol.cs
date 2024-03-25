@@ -157,6 +157,16 @@ public static class OwopProtocol
         return stream.ToArray();
     }
 
+    public static byte[] EncodeChunkProtect(Position chunkPos, bool protect)
+    {
+        MemoryStream stream = new();
+        BinaryWriter writer = new(stream);
+        writer.Write(EncodePos(chunkPos));
+        writer.Write(protect);
+        writer.Write((byte)0); // ???
+        return stream.ToArray();
+    }
+
     public static byte[] EncodeColor(Color color) => [color.R, color.G, color.B];
 
     public static byte[] EncodePixel(Position pos, Color color)

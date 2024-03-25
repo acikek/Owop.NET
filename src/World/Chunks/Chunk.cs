@@ -65,4 +65,10 @@ public class Chunk : IChunk
     public async Task Request() => await _world.Chunks.Request(ChunkPos, true);
 
     public async Task<IChunk> Query() => await _world.Chunks.Query(ChunkPos, true);
+
+    public async Task SetProtected(bool protect) => await _world.Chunks.SetChunkProtected(ChunkPos, protect);
+
+    public async Task Protect() => await _world.Chunks.Protect(ChunkPos);
+
+    public async Task Unprotect() => await _world.Chunks.Unprotect(ChunkPos);
 }

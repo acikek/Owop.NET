@@ -39,4 +39,10 @@ public interface IChunk : IPositioned
     Task Request();
 
     Task<IChunk> Query();
+
+    Task SetProtected(bool protect);
+
+    Task Protect();
+
+    Task Unprotect();
 }

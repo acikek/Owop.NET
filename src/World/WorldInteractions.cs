@@ -26,7 +26,6 @@ public partial class World
         await RunCommand("kick", id);
     }
 
-    // TODO: public SetPlayerMuted
     public async Task SetPlayerMuted(int id, bool muted)
     {
         _connection.CheckInteraction(PlayerRank.Moderator);

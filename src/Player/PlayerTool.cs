@@ -16,10 +16,15 @@ public enum PlayerTool
     Eraser,
     /// <summary>Changes the view resolution.</summary>
     Zoom,
-    /// <summary>Canvas screenshotting tool.</summary>
-    Export,
     /// <summary>Continuously replaces adjacent pixels of a certain color.</summary>
     Fill,
+    /// <summary>
+    /// <b>Moderator-only.</b>
+    /// Pastes an image onto the canvas.
+    /// </summary>
+    Paste,
+    /// <summary>Canvas screenshotting tool.</summary>
+    Export,
     /// <summary>Places pixels in a rasterized line.</summary>
     Line,
     /// <summary>
@@ -30,17 +35,12 @@ public enum PlayerTool
     Protect,
     /// <summary>
     /// <b>Moderator-only.</b>
-    /// Protects a set of chunks in some rectangular bounds.
-    /// </summary>
-    AreaProtect,
-    /// <summary>
-    /// <b>Moderator-only.</b>
-    /// Pastes an image onto the canvas.
-    /// </summary>
-    Paste,
-    /// <summary>
-    /// <b>Moderator-only.</b>
     /// Copies a section of the canvas.
     /// </summary>
-    Copy
+    Copy,
+    /// <summary>
+    /// <b>Moderator-only.</b>
+    /// Protects a set of chunks in some rectangular bounds.
+    /// </summary>
+    AreaProtect
 }
