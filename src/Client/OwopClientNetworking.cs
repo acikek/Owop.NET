@@ -194,6 +194,7 @@ public partial class OwopClient
             return;
         }
         var state = (CaptchaState)captchaByte;
+        world.Logger.LogDebug($"Received captcha state: {state}");
         switch (state)
         {
             case CaptchaState.Waiting:

@@ -45,7 +45,7 @@ public partial class OwopClient : IOwopClient
         Logger.LogDebug($"Connecting to world '{clean}'...");
         WorldConnection connection = new(clean, options, this);
         _connections[clean] = connection;
-        connection.Connect(clean);
+        connection.Connect();
         return ConnectResult.Activated;
     }
 

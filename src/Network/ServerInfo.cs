@@ -9,12 +9,18 @@ class TimeSpanConverter : JsonConverter<TimeSpan>
     public override void Write(Utf8JsonWriter writer, TimeSpan value, JsonSerializerOptions options) => writer.WriteNumberValue(value.TotalMilliseconds);
 }
 
+class BanStateConverter : JsonConverter<BanState>
+{
+    public override BanState Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) => BanState.Create(reader.GetInt64());
+    public override void Write(Utf8JsonWriter writer, BanState value, JsonSerializerOptions options) => writer.WriteNumberValue(value.Value);
+}
+
 public record class ServerInfo
 {
+    [JsonConverter(typeof(BanStateConverter))]
     [JsonPropertyName("banned")]
     [JsonInclude]
-    // TODO: proper ban state class
-    public int BanState { get; internal set; }
+    public BanState? BanState { get; internal set; }
 
     [JsonInclude]
     public bool CaptchaEnabled { get; internal set; }

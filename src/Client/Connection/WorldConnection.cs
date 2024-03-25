@@ -11,11 +11,12 @@ namespace Owop.Client;
 
 public class WorldConnection : IWorldConnection
 {
-    public const int WorldVerification = 25565;
+    public const short WorldVerification = 25565;
 
     private readonly ManualResetEvent _exitEvent = new(false);
     public readonly OwopClient _client;
     public readonly World _world;
+    public readonly byte[] ConnectionMessage;
 
     public WebsocketClient Socket { get; }
     public IOwopClient Client => _client;
@@ -29,6 +30,7 @@ public class WorldConnection : IWorldConnection
         Options = options;
         _client = client;
         _world = new(name, this);
+        ConnectionMessage = GetConnectionMessage(name);
         Logger = client.LoggerFactory.CreateLogger($"Owop.Net.{name}");
     }
 
@@ -44,23 +46,29 @@ public class WorldConnection : IWorldConnection
     public async Task Send(byte[] message) => await Task.Run(() => Socket.Send(message));
     public async Task Send(string message) => await Task.Run(() => Socket.Send(message));
 
-    public void Connect(string world)
+    public void Connect()
     {
-        var connectMsg = GetConnectionMessage(world);
-        //Socket.ReconnectTimeout = TimeSpan.FromSeconds(5);
-        Socket.ReconnectionHappened.Subscribe(info =>
+        try
         {
-            Logger.LogDebug($"Reconnecting... ({info.Type})");
-            Socket.SendInstant(connectMsg);
-            if (info.Type == ReconnectionType.Lost)
+            //Socket.ReconnectTimeout = TimeSpan.FromSeconds(5);
+            Socket.ReconnectionHappened.Subscribe(info =>
             {
-                //Socket.MessageReceived.Subscribe(msg => _client.HandleMessage(msg, _world));
-            }
-        });
-        Socket.MessageReceived.Subscribe(msg => _client.HandleMessage(msg, _world));
-        Socket.Start();
-        Task.Run(() => Socket.Send(connectMsg));
-        _exitEvent.WaitOne();
+                Logger.LogDebug($"Reconnecting... ({info.Type})");
+                Socket.SendInstant(ConnectionMessage);
+                if (info.Type == ReconnectionType.Lost)
+                {
+                    //Socket.MessageReceived.Subscribe(msg => _client.HandleMessage(msg, _world));
+                }
+            });
+            Socket.MessageReceived.Subscribe(msg => _client.HandleMessage(msg, _world));
+            Socket.Start();
+            Task.Run(() => Socket.Send(ConnectionMessage));
+            _exitEvent.WaitOne();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, $"Error while connecting to world '{_world.Name}':");
+        }
     }
 
     public void CheckInteraction(PlayerRank rank = PlayerRank.None)
