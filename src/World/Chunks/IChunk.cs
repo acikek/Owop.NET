@@ -27,6 +27,9 @@ public interface IChunk : IPositioned
     /// <summary>Whether the client has requested and loaded this chunk at least once.</summary>
     bool IsLoaded { get; }
 
+    /// <summary>Retrieves a pixel at the specified position within the chunk.</summary>
+    /// <param name="worldPos">The pixel world position within the chunk.</param>
+    /// <returns>The pixel color.</returns>
     Color GetPixel(Position worldPos);
 
     /// <summary>Retrieves a single pixel within the chunk.</summary>
@@ -36,13 +39,22 @@ public interface IChunk : IPositioned
     /// <exception cref="IndexOutOfRangeException"></exception>
     Color this[int x, int y] { get; }
 
+    /// <summary>Requests data from this chunk.</summary>
     Task Request();
 
+    /// <summary>Queries data from this chunk.</summary>
+    /// <returns>This chunk with updated data.</returns>
     Task<IChunk> Query();
 
+    /// <summary>Sets whether this chunk is draw-protected.</summary>
+    /// <param name="protect">The protection state.</param>
     Task SetProtected(bool protect);
 
+    /// <summary>Protects this chunk.</summary>
+    /// <seealso cref="SetProtected"/>
     Task Protect();
 
+    /// <summary>Unprotects this chunk.</summary>
+    /// <seealso cref="SetProtected"/>
     Task Unprotect();
 }
