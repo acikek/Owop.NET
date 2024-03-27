@@ -57,4 +57,11 @@ public interface IChunk : IPositioned
     /// <summary>Unprotects this chunk.</summary>
     /// <seealso cref="SetProtected"/>
     Task Unprotect();
+
+    /// <summary>Fills this chunk with a specific color.</summary>
+    /// <param name="color">The color to fill with. Defaults to the client player color.</param>
+    Task Fill(Color? color = null);
+
+    /// <summary>Erases a chunk by filling it with <see cref="Color.White"/>.</summary>
+    Task Erase();
 }

@@ -11,7 +11,7 @@ public enum PlayerTool
     Pipette,
     /// <summary>
     /// <b>Moderator-only</b>. 
-    /// Erases an entire chunk, setting its pixels to <see cref="Color.White"/>.
+    /// Fills an entire chunk with one color.
     /// </summary>
     Eraser,
     /// <summary>Changes the view resolution.</summary>

@@ -52,4 +52,13 @@ public interface IWorldChunks : IReadOnlyDictionary<Position, IChunk>
     /// <param name="chunkPos">The chunk position.</param>
     /// <seealso cref="SetChunkProtected"/> 
     Task Unprotect(Position chunkPos);
+
+    /// <summary>Fills a chunk with a specific color.</summary>
+    /// <param name="chunkPos">The chunk position.</param>
+    /// <param name="color">The color to fill with. Defaults to the client player color.</param>
+    Task Fill(Position chunkPos, Color? color = null);
+
+    /// <summary>Erases a chunk by filling it with <see cref="Color.White"/>.</summary>
+    /// <param name="chunkPos">The chunk position.</param>
+    Task Erase(Position chunkPos);
 }

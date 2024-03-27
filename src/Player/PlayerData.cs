@@ -46,7 +46,9 @@ public class PlayerData
         get => _chunkPos;
         set
         {
-            // TODO: No?
+            _worldPos = value * IChunk.Size;
+            _pos = _worldPos * IChunk.Size;
+            _chunkPos = value;
         }
     }
 }

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using CommunityToolkit.HighPerformance;
+using Owop.Network;
 using Owop.Util;
 
 namespace Owop.Game;
@@ -71,4 +72,8 @@ public class Chunk : IChunk
     public async Task Protect() => await _world.Chunks.Protect(ChunkPos);
 
     public async Task Unprotect() => await _world.Chunks.Unprotect(ChunkPos);
+
+    public async Task Fill(Color? color = null) => await _world.Chunks.Fill(ChunkPos, color);
+
+    public async Task Erase() => await _world.Chunks.Erase(ChunkPos);
 }

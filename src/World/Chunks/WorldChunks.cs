@@ -63,8 +63,7 @@ public class WorldChunks(World world) : Dictionary<Position, IChunk>, IWorldChun
             return;
         }
         // TODO: Check for world border
-        byte[] pos = OwopProtocol.EncodePos(chunkPos);
-        await _world._connection.Send(pos);
+        await _world._connection.Send(OwopProtocol.EncodePos(chunkPos));
     }
 
     public async Task<IChunk> Query(Position chunkPos, bool force = false)
@@ -92,4 +91,17 @@ public class WorldChunks(World world) : Dictionary<Position, IChunk>, IWorldChun
     public async Task Protect(Position chunkPos) => await SetChunkProtected(chunkPos, true);
 
     public async Task Unprotect(Position chunkPos) => await SetChunkProtected(chunkPos, false);
+
+    public async Task Fill(Position chunkPos, Color? color = null)
+    {
+        _world._connection.CheckInteraction(PlayerRank.Moderator);
+        if (!_world._clientPlayer._pixelBucket.TrySpend(1.0))
+        {
+            return;
+        }
+        var fillColor = color ?? _world.ClientPlayer.Color;
+        await _world._connection.Send(OwopProtocol.EncodeChunkFill(chunkPos, fillColor));
+    }
+
+    public async Task Erase(Position chunkPos) => await Fill(chunkPos, OwopColors.White);
 }
