@@ -24,6 +24,10 @@ public class PlayerData
         get => _pos;
         set
         {
+            if (value == _pos)
+            {
+                return;
+            }
             _pos = value;
             _worldPos = _pos.ToWorldPos();
             _chunkPos = _worldPos.ToChunkPos();
@@ -35,6 +39,10 @@ public class PlayerData
         get => _worldPos;
         set
         {
+            if (value == _worldPos)
+            {
+                return;
+            }
             _pos = value * IChunk.Size;
             _worldPos = value;
             _chunkPos = value.ToChunkPos();
@@ -46,6 +54,10 @@ public class PlayerData
         get => _chunkPos;
         set
         {
+            if (value == _chunkPos)
+            {
+                return;
+            }
             _worldPos = value * IChunk.Size;
             _pos = _worldPos * IChunk.Size;
             _chunkPos = value;

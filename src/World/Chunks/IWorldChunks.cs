@@ -27,6 +27,11 @@ public interface IWorldChunks : IReadOnlyDictionary<Position, IChunk>
     /// <returns>The pixel color, or <c>null</c> if the corresponding chunk isn't loaded.</returns>
     Color? GetPixel(Position worldPos);
 
+    /// <summary>Queries a pixel at a position, requesting the chunk if necessary.</summary>
+    /// <param name="worldPos">The pixel world position.</param>
+    /// <returns>The pixel color.</returns>
+    Task<Color> QueryPixel(Position worldPos);
+
     /// <summary>Loads chunk data at the specified chunk position.</summary>
     /// <param name="chunkPos">The chunk position.</param>
     /// <param name="force">Whether to request data even if it has already been loaded.</param>

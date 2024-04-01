@@ -42,6 +42,12 @@ public class WorldChunks(World world) : Dictionary<Position, IChunk>, IWorldChun
         return chunk.GetPixel(worldPos);
     }
 
+    public async Task<Color> QueryPixel(Position worldPos)
+    {
+        var chunk = await Query(worldPos.ToChunkPos());
+        return chunk.GetPixel(worldPos);
+    }
+
     public bool IsChunkLoaded(Position chunkPos, out IChunk? chunk)
     {
         if (TryGetValue(chunkPos, out var existing) && existing.IsLoaded)
