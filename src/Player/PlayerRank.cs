@@ -16,8 +16,11 @@ public enum PlayerRank
     Admin
 }
 
+/// <summary>Extension methods for <see cref="PlayerRank"/>.</summary>
 public static class PlayerRankExtensions
 {
+    /// <summary>Returns the maximum chat message length that players with a rank can send.</summary>
+    /// <param name="rank">The player rank.</param>
     public static int GetMaxMessageLength(this PlayerRank rank)
         => rank switch
         {
@@ -26,6 +29,8 @@ public static class PlayerRankExtensions
             _ => 128
         };
 
+    /// <summary>Returns the chat color of players with a specific rank.</summary>
+    /// <param name="rank">The player rank.</param>
     public static Color GetChatColor(this PlayerRank rank)
         => rank switch
         {
@@ -34,6 +39,8 @@ public static class PlayerRankExtensions
             _ => ChatColors.Nickname
         };
 
+    /// <summary>Converts a chat 'emblem' character into a player rank.</summary>
+    /// <param name="c">The character to convert.</param>
     public static PlayerRank Parse(char c)
         => c switch
         {

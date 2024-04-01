@@ -30,7 +30,7 @@ public interface IWorld
     /// <summary>The world's client connection.</summary>
     IWorldConnection Connection { get; }
 
-    /// <summary>The world's own logger. Uses the same logging factory as provided to the <see cref="OwopClient"/>.</summary>
+    /// <summary>The world's distinct logger. Uses the same logging factory as provided to the <see cref="OwopClient"/>.</summary>
     ILogger Logger { get; }
 
     /// <summary>Sends a chat message.</summary>

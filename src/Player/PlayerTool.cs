@@ -40,8 +40,11 @@ public enum PlayerTool
     Copy,
 }
 
+/// <summary>Extension methods for <see cref="PlayerTool"/>.</summary>
 public static class PlayerToolExtensions
 {
+    /// <summary>Returns whether this tool is only available to <see cref="PlayerRank.Moderator"/> or higher.</summary>
+    /// <param name="tool">The player tool.</param>
     public static bool IsModerator(this PlayerTool tool)
         => tool switch
         {
