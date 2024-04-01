@@ -43,7 +43,7 @@ public class PlayerData
             {
                 return;
             }
-            _pos = value * IChunk.Size;
+            _pos = value * IChunk.Width;
             _worldPos = value;
             _chunkPos = value.ToChunkPos();
         }
@@ -58,8 +58,8 @@ public class PlayerData
             {
                 return;
             }
-            _worldPos = value * IChunk.Size;
-            _pos = _worldPos * IChunk.Size;
+            _worldPos = value * IChunk.Width;
+            _pos = _worldPos * IChunk.Width;
             _chunkPos = value;
         }
     }

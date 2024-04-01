@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using Owop.Network;
@@ -110,4 +111,25 @@ public class WorldChunks(World world) : Dictionary<Position, IChunk>, IWorldChun
     }
 
     public async Task Erase(Position chunkPos) => await Fill(chunkPos, OwopColors.White);
+
+    public async Task SetChunkData(Position chunkPos, byte[] data)
+    {
+        _world._connection.CheckInteraction(PlayerRank.Moderator);
+        await _world._connection.Send(OwopProtocol.EncodeChunkData(chunkPos, data));
+    }
+
+    // TODO: Find a better way to do this
+    public async Task SetChunkData(Position chunkPos, Color[] data)
+    {
+        byte[] result = new byte[IChunk.DataSize];
+        for (int i = 0; i < data.Length; i++)
+        {
+            var idx = i * 3;
+            var color = data[i];
+            result[idx] = color.R;
+            result[idx + 1] = color.G;
+            result[idx + 2] = color.B;
+        }
+        await SetChunkData(chunkPos, result);
+    }
 }

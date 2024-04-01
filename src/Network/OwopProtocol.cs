@@ -143,7 +143,7 @@ public static class OwopProtocol
         {
             var color = Color.FromArgb(data[i], data[i + 1], data[i + 2]);
             int index = i / 3;
-            chunk._memory.Span[index / IChunk.Size, index % IChunk.Size] = color;
+            chunk._memory.Span[index / IChunk.Width, index % IChunk.Width] = color;
         }
         return true;
     }
@@ -166,4 +166,19 @@ public static class OwopProtocol
     public static byte[] EncodeChunkProtect(Position chunkPos, bool protect) => [.. EncodePos(chunkPos), (byte)(protect ? 1 : 0), 0];
 
     public static byte[] EncodeChunkFill(Position chunkPos, Color color) => [.. EncodePixel(chunkPos, color), 0, 0];
+
+    public static byte[] EncodeChunkData(Position chunkPos, byte[] data)
+    {
+        var pos = EncodePos(chunkPos);
+        // TODO: set remaining data to white instead?
+        MemoryStream stream = new(new byte[IChunk.DataSize + pos.Length]);
+        BinaryWriter writer = new(stream);
+        writer.Write(pos);
+        if (data.Length > IChunk.DataSize)
+        {
+            data = data[0..IChunk.DataSize];
+        }
+        writer.Write(data);
+        return stream.ToArray();
+    }
 }

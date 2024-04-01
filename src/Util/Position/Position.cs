@@ -70,18 +70,18 @@ public struct Position(int x, int y) : IEquatable<Position>
     public readonly Position ToWorldPos()
     {
         // OWOP rounds up Y values (since up = negative Y)
-        int y = Y / IChunk.Size;
-        if (Y % IChunk.Size != 0)
+        int y = Y / IChunk.Width;
+        if (Y % IChunk.Width != 0)
         {
             y--;
         }
-        return new(X / IChunk.Size, y);
+        return new(X / IChunk.Width, y);
     }
 
     /// <summary>Converts a pixel-based world position to its chunk's position.</summary>
     /// <returns>The chunk position.</returns>
     public readonly Position ToChunkPos()
-        => ((int)Math.Floor((decimal)X / IChunk.Size), (int)Math.Floor((decimal)Y / IChunk.Size));
+        => ((int)Math.Floor((decimal)X / IChunk.Width), (int)Math.Floor((decimal)Y / IChunk.Width));
 
     /// <summary>Gets a simple string of the position.</summary>
     /// <returns>The string.</returns>

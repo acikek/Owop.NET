@@ -172,7 +172,7 @@ public partial class OwopClient
     {
         if (reader.TryReadPos(out Position pos))
         {
-            int s = IChunk.Size;
+            int s = IChunk.Width;
             world._clientPlayer.Pos = pos * s + (s / 2, s / 2);
             Teleported?.Invoke(new(world, world.ClientPlayer.Pos, world.ClientPlayer.WorldPos));
         }

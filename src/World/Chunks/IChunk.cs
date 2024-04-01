@@ -13,7 +13,10 @@ namespace Owop.Game;
 public interface IChunk : IPositioned
 {
     /// <summary>The width and height of a chunk.</summary>
-    const int Size = 16;
+    const int Width = 16;
+
+    /// <summary>The number of bytes needed to store one chunk.</summary>
+    const int DataSize = Width * Width * 3;
 
     /// <summary>The grid of pixels within the chunk.</summary>
     ReadOnlyMemory2D<Color> Pixels { get; }
@@ -62,6 +65,14 @@ public interface IChunk : IPositioned
     /// <param name="color">The color to fill with. Defaults to the client player color.</param>
     Task Fill(Color? color = null);
 
-    /// <summary>Erases a chunk by filling it with <see cref="Color.White"/>.</summary>
+    /// <summary>Erases this chunk by filling it with <see cref="Color.White"/>.</summary>
     Task Erase();
+
+    /// <summary>Sets the raw data of this chunk.</summary>
+    /// <param name="data">The chunk data. Gets trimmed or extended to <see cref="DataSize"/>.</param>
+    Task SetData(byte[] data);
+
+    /// <summary>Sets the data of this chunk using a <see cref="Color"/> array.</summary>
+    /// <param name="data">The chunk data. The resulting byte array gets trimmed or extended to <see cref="IChunk.DataSize"/>.</param>
+    Task SetData(Color[] data);
 }

@@ -66,4 +66,14 @@ public interface IWorldChunks : IReadOnlyDictionary<Position, IChunk>
     /// <summary>Erases a chunk by filling it with <see cref="Color.White"/>.</summary>
     /// <param name="chunkPos">The chunk position.</param>
     Task Erase(Position chunkPos);
+
+    /// <summary>Sets the raw data of a chunk.</summary>
+    /// <param name="chunkPos">The chunk position.</param>
+    /// <param name="data">The chunk data. Gets trimmed or extended to <see cref="IChunk.DataSize"/>.</param>
+    Task SetChunkData(Position chunkPos, byte[] data);
+
+    /// <summary>Sets the data of a chunk using a <see cref="Color"/> array.</summary>
+    /// <param name="chunkPos">The chunk position.</param>
+    /// <param name="data">The chunk data. The resulting byte array gets trimmed or extended to <see cref="IChunk.DataSize"/>.</param>
+    Task SetChunkData(Position chunkPos, Color[] data);
 }
