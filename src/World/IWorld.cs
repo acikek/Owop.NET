@@ -109,8 +109,8 @@ public interface IWorld
     /// <summary>Places a pixel at a world position.</summary>
     /// <param name="worldPos">The pixel position. Defaults to the client player position.</param>
     /// <param name="color">The pixel color. Defaults to the client player color.</param>
-    /// <param name="sneaky">Whether to return to the previous location after placement.</param>
-    Task<bool> PlacePixel(Position? worldPos = null, Color? color = null, bool sneaky = false);
+    /// <param name="lazy">Whether to only move the cursor if necessary.</param>
+    Task<bool> PlacePixel(Position? worldPos = null, Color? color = null, bool lazy = false);
 
     /// <summary>Disconnects from the world.</summary>
     // TODO: what happens if try reconnect

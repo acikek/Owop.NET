@@ -67,42 +67,36 @@ public partial class World
 
     public async Task Unrestrict() => await SetRestricted(false);
 
-    // TODO: Check MaxPlaceDist
-    public async Task<bool> PlacePixel(Position? worldPos, Color? color, bool sneaky)
+    public Position? GetPlaceDestination(Position? worldPos, bool lazy)
+    {
+        if (worldPos is not Position realPos || realPos == ClientPlayer.WorldPos || (lazy && ClientPlayer.Rank == PlayerRank.Admin))
+        {
+            return null;
+        }
+        if (!lazy)
+        {
+            return realPos;
+        }
+        double dist = (realPos.ToChunkPos() - ClientPlayer.ChunkPos).ToVector().Length();
+        return dist >= 4.0 ? realPos : null;
+    }
+
+    public async Task<bool> PlacePixel(Position? worldPos, Color? color, bool lazy)
     {
         _connection.CheckInteraction(PlayerRank.Player);
         if (!_clientPlayer._pixelBucket.TrySpend(1.0))
         {
             return false;
         }
-        bool update = worldPos is not null || color is not null;
-        var prevPos = ClientPlayer.Pos;
-        if (worldPos is Position realPos)
+        if (GetPlaceDestination(worldPos, lazy) is Position destPos)
         {
-            _clientPlayer.WorldPos = realPos;
+            await ClientPlayer.MoveWorld(destPos);
         }
-        else
-        {
-            worldPos = ClientPlayer.WorldPos;
-        }
-        if (color is Color realColor)
-        {
-            _clientPlayer.Color = realColor;
-        }
-        else
-        {
-            color = ClientPlayer.Color;
-        }
-        if (update)
-        {
-            await _connection.SendPlayerData();
-        }
-        byte[] pixel = OwopProtocol.EncodePixel((Position)worldPos, (Color)color);
+        var pixelPos = worldPos ?? ClientPlayer.WorldPos;
+        var pixelColor = color ?? ClientPlayer.Color;
+        byte[] pixel = OwopProtocol.EncodePixel(pixelPos, pixelColor);
         await Connection.Send(pixel);
-        if (sneaky)
-        {
-            await _clientPlayer.Move(prevPos);
-        }
+        _chunks.SetPixel(pixelPos, pixelColor);
         return true;
     }
 
