@@ -38,9 +38,14 @@ public enum PlayerTool
     /// Copies a section of the canvas.
     /// </summary>
     Copy,
-    /// <summary>
-    /// <b>Moderator-only.</b>
-    /// Protects a set of chunks in some rectangular bounds.
-    /// </summary>
-    AreaProtect
+}
+
+public static class PlayerToolExtensions
+{
+    public static bool IsModerator(this PlayerTool tool)
+        => tool switch
+        {
+            PlayerTool.Eraser or PlayerTool.Paste or PlayerTool.Protect or PlayerTool.Copy => true,
+            _ => false
+        };
 }

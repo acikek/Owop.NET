@@ -7,8 +7,7 @@ using System.Threading.Tasks;
 
 namespace Owop.Network;
 
-// TODO: trim these, buffer these, that stuff. can't do an OOP implementation because of client access
-// TODO: these are just notes
+// TODO: Replace notes with docs
 public enum ServerMessageType
 {
     Info, // "[Server] content" | "Server: content"
