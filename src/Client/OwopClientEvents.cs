@@ -36,19 +36,19 @@ public record ChunkLoadedEventArgs(IWorld World, IChunk Chunk);
 
 public partial class OwopClient
 {
-    public event EventHandler<ConnectEventArgs>? Connected;
-    public event EventHandler<IWorld>? Ready;
-    public event EventHandler<IWorld>? ChatReady;
-    public event EventHandler<ChatEventArgs>? Chat;
-    public event EventHandler<TellEventArgs>? Tell;
-    public event EventHandler<IPlayer>? PlayerConnected;
-    public event EventHandler<IPlayer>? PlayerDisconnected;
-    public event EventHandler<TeleportEventArgs>? Teleported;
-    public event EventHandler<WhoisEventArgs>? Whois;
-    public event EventHandler<PixelPlacedEventArgs>? PixelPlaced;
-    public event EventHandler<ChunkLoadedEventArgs>? ChunkLoaded;
-    public event EventHandler<IWorld>? Disconnecting;
-    public event EventHandler? Destroying;
+    public event Action<ConnectEventArgs>? Connected;
+    public event Action<IWorld>? Ready;
+    public event Action<IWorld>? ChatReady;
+    public event Action<ChatEventArgs>? Chat;
+    public event Action<TellEventArgs>? Tell;
+    public event Action<IPlayer>? PlayerConnected;
+    public event Action<IPlayer>? PlayerDisconnected;
+    public event Action<TeleportEventArgs>? Teleported;
+    public event Action<WhoisEventArgs>? Whois;
+    public event Action<PixelPlacedEventArgs>? PixelPlaced;
+    public event Action<ChunkLoadedEventArgs>? ChunkLoaded;
+    public event Action<IWorld>? Disconnecting;
+    public event Action? Destroying;
 
     private void InvokeChat(ServerMessage message, World world)
     {
@@ -56,14 +56,14 @@ public partial class OwopClient
         int sep = str.IndexOf(": ");
         var player = ChatPlayer.ParseHeader(str[0..sep]);
         string content = str[(sep + 2)..];
-        Chat?.Invoke(this, new(world, player, content));
+        Chat?.Invoke(new(world, player, content));
     }
 
     private void InvokeTell(ServerMessage message, World world)
     {
         if (int.TryParse(message.Args[0], out int id))
         {
-            Tell?.Invoke(this, new(world, world.Players[id], message.Args[1]));
+            Tell?.Invoke(new(world, world.Players[id], message.Args[1]));
         }
     }
 
@@ -71,7 +71,7 @@ public partial class OwopClient
     {
         if (WhoisData.Parse(message.Args) is WhoisData data)
         {
-            Whois?.Invoke(this, new(world, data));
+            Whois?.Invoke(new(world, data));
             if (world.WhoisQueue.Remove(data.PlayerId, out var task))
             {
                 task.SetResult(data);
@@ -79,5 +79,5 @@ public partial class OwopClient
         }
     }
 
-    public void InvokeDisconnect(World world) => Disconnecting?.Invoke(this, world);
+    public void InvokeDisconnect(World world) => Disconnecting?.Invoke(world);
 }

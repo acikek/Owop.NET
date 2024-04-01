@@ -62,7 +62,7 @@ public partial class OwopClient
         }
         world.Logger.LogDebug("World initialized.");
         world.Initialized = true;
-        Connected?.Invoke(this, new(world, reconnect));
+        Connected?.Invoke(new(world, reconnect));
         Task.Run(async () =>
         {
             if (world._connection.Options?.Password is string pass)
@@ -75,10 +75,10 @@ public partial class OwopClient
             }
             if (!reconnect)
             {
-                Ready?.Invoke(this, world);
+                Ready?.Invoke(world);
                 await Task.Delay(world.ClientPlayer.ChatBucket.FillInterval);
                 world.IsChatReady = true;
-                ChatReady?.Invoke(this, world);
+                ChatReady?.Invoke(world);
             }
         });
     }
@@ -113,7 +113,7 @@ public partial class OwopClient
                 }
                 if (world.Initialized && newConnection)
                 {
-                    PlayerConnected?.Invoke(this, player);
+                    PlayerConnected?.Invoke(player);
                 }
             }
         }
@@ -125,10 +125,15 @@ public partial class OwopClient
                 {
                     break;
                 }
+                // data.Pos is actually the world pos in this case. TODO: Fix?
                 var chunk = world._chunks.SetPixel(data.Pos, data.Color);
+                if (data.Id == world.ClientPlayer.Id)
+                {
+                    continue;
+                }
                 var player = world.Players[data.Id];
-                PixelPlacedEventArgs args = new(world, player, data.Color, data.WorldPos, chunk);
-                PixelPlaced?.Invoke(this, args);
+                PixelPlacedEventArgs args = new(world, player, data.Color, data.Pos, chunk);
+                PixelPlaced?.Invoke(args);
             }
         }
         if (reader.TryRead(out byte dcCount))
@@ -137,7 +142,7 @@ public partial class OwopClient
             {
                 if (reader.TryReadLittleEndian(out int id) && world._players.Remove(id, out var player))
                 {
-                    PlayerDisconnected?.Invoke(this, player);
+                    PlayerDisconnected?.Invoke(player);
                 }
             }
         }
@@ -169,7 +174,7 @@ public partial class OwopClient
         {
             int s = IChunk.Size;
             world._clientPlayer.Pos = pos * s + (s / 2, s / 2);
-            Teleported?.Invoke(this, new(world, world.ClientPlayer.Pos, world.ClientPlayer.WorldPos));
+            Teleported?.Invoke(new(world, world.ClientPlayer.Pos, world.ClientPlayer.WorldPos));
         }
     }
 
@@ -183,7 +188,7 @@ public partial class OwopClient
             {
                 task.SetResult(loaded);
             }
-            ChunkLoaded?.Invoke(this, new(world, loaded));
+            ChunkLoaded?.Invoke(new(world, loaded));
         }
     }
 

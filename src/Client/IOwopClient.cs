@@ -19,19 +19,19 @@ public interface IOwopClient : IDisposable
     Task<bool> Disconnect(string world = "main");
     Task Destroy();
 
-    event EventHandler<ConnectEventArgs>? Connected;
-    event EventHandler<IWorld>? Ready;
-    event EventHandler<IWorld>? ChatReady;
-    event EventHandler<ChatEventArgs>? Chat;
-    event EventHandler<TellEventArgs>? Tell;
-    event EventHandler<IPlayer>? PlayerConnected;
-    event EventHandler<IPlayer>? PlayerDisconnected;
-    event EventHandler<TeleportEventArgs>? Teleported;
-    event EventHandler<WhoisEventArgs>? Whois;
-    event EventHandler<PixelPlacedEventArgs>? PixelPlaced;
-    event EventHandler<ChunkLoadedEventArgs>? ChunkLoaded;
-    event EventHandler<IWorld>? Disconnecting;
-    event EventHandler? Destroying;
+    event Action<ConnectEventArgs>? Connected;
+    event Action<IWorld>? Ready;
+    event Action<IWorld>? ChatReady;
+    event Action<ChatEventArgs>? Chat;
+    event Action<TellEventArgs>? Tell;
+    event Action<IPlayer>? PlayerConnected;
+    event Action<IPlayer>? PlayerDisconnected;
+    event Action<TeleportEventArgs>? Teleported;
+    event Action<WhoisEventArgs>? Whois;
+    event Action<PixelPlacedEventArgs>? PixelPlaced;
+    event Action<ChunkLoadedEventArgs>? ChunkLoaded;
+    event Action<IWorld>? Disconnecting;
+    event Action? Destroying;
 
     static IOwopClient Create(ClientOptions? options = null, ILoggerFactory? loggerFactory = null)
         => new OwopClient(options, loggerFactory);

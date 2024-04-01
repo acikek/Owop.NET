@@ -62,7 +62,7 @@ public partial class OwopClient : IOwopClient
 
     public async Task Destroy()
     {
-        Destroying?.Invoke(this, EventArgs.Empty);
+        Destroying?.Invoke();
         foreach (var connection in Connections.Values)
         {
             await connection.Disconnect();
@@ -71,7 +71,7 @@ public partial class OwopClient : IOwopClient
 
     public void Dispose()
     {
-        Destroying?.Invoke(this, EventArgs.Empty);
+        Destroying?.Invoke();
         foreach (var connection in Connections.Values)
         {
             ((WorldConnection)connection).Dispose();
