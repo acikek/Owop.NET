@@ -221,8 +221,9 @@ public partial class OwopClient
     {
         if (reader.TryReadChunkMeta(out var chunkPos, out bool isProtected))
         {
-            world._chunks.GetOrCreate(chunkPos).IsProtected = isProtected;
-            // TODO: event
+            var chunk = world._chunks.GetOrCreate(chunkPos);
+            chunk.IsProtected = isProtected;
+            ChunkProtectionChanged?.Invoke(new(world, chunk));
         }
     }
 

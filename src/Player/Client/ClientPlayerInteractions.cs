@@ -23,7 +23,6 @@ public partial class ClientPlayer
         await Send();
     }
 
-    // TODO: Check rank
     public async Task SetTool(PlayerTool tool)
     {
         Tool = tool;

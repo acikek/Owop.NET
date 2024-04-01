@@ -29,7 +29,8 @@ public interface IOwopClient : IDisposable
     event Action<TeleportEventArgs>? Teleported;
     event Action<WhoisEventArgs>? Whois;
     event Action<PixelPlacedEventArgs>? PixelPlaced;
-    event Action<ChunkLoadedEventArgs>? ChunkLoaded;
+    event Action<ChunkEventArgs>? ChunkLoaded;
+    event Action<ChunkEventArgs>? ChunkProtectionChanged;
     event Action<IWorld>? Disconnecting;
     event Action? Destroying;
 

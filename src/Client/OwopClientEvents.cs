@@ -32,7 +32,7 @@ public record WhoisEventArgs(IWorld World, WhoisData Data);
 // TODO: prev color
 public record PixelPlacedEventArgs(IWorld World, IPlayer Player, Color Color, Position WorldPos, IChunk Chunk);
 
-public record ChunkLoadedEventArgs(IWorld World, IChunk Chunk);
+public record ChunkEventArgs(IWorld World, IChunk Chunk);
 
 public partial class OwopClient
 {
@@ -46,7 +46,8 @@ public partial class OwopClient
     public event Action<TeleportEventArgs>? Teleported;
     public event Action<WhoisEventArgs>? Whois;
     public event Action<PixelPlacedEventArgs>? PixelPlaced;
-    public event Action<ChunkLoadedEventArgs>? ChunkLoaded;
+    public event Action<ChunkEventArgs>? ChunkLoaded;
+    public event Action<ChunkEventArgs>? ChunkProtectionChanged;
     public event Action<IWorld>? Disconnecting;
     public event Action? Destroying;
 

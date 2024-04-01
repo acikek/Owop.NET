@@ -16,7 +16,6 @@ public enum PlayerRank
     Admin
 }
 
-// TODO: GetMaxPlaceDistance
 public static class PlayerRankExtensions
 {
     public static int GetMaxMessageLength(this PlayerRank rank)
