@@ -27,11 +27,11 @@ public class WorldChunks(World world) : Dictionary<Position, IChunk>, IWorldChun
         return newChunk;
     }
 
-    public Chunk SetPixel(Position worldPos, Color color)
+    public (Chunk, Color) SetPixel(Position worldPos, Color color)
     {
         var chunk = GetOrCreate(worldPos.ToChunkPos());
-        chunk.SetPixel(worldPos, color);
-        return chunk;
+        var prev = chunk.SetPixel(worldPos, color);
+        return (chunk, prev);
     }
 
     public Color? GetPixel(Position worldPos)

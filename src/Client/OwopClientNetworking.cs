@@ -126,13 +126,13 @@ public partial class OwopClient
                     break;
                 }
                 // data.Pos is actually the world pos in this case. TODO: Fix?
-                var chunk = world._chunks.SetPixel(data.Pos, data.Color);
+                var (chunk, prev) = world._chunks.SetPixel(data.Pos, data.Color);
                 if (data.Id == world.ClientPlayer.Id)
                 {
                     continue;
                 }
                 var player = world.Players[data.Id];
-                PixelPlacedEventArgs args = new(world, player, data.Color, data.Pos, chunk);
+                PixelPlacedEventArgs args = new(world, player, data.Color, prev, data.Pos, chunk);
                 PixelPlaced?.Invoke(args);
             }
         }

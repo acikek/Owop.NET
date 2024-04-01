@@ -35,10 +35,12 @@ public class Chunk : IChunk
     // TODO: Bounds-check these?
     public Position GetPosInChunk(Position worldPos) => worldPos - WorldPos;
 
-    public void SetPixel(Position worldPos, Color color)
+    public Color SetPixel(Position worldPos, Color color)
     {
         var pos = GetPosInChunk(worldPos);
+        var prev = _memory.Span[pos.X, pos.Y];
         _memory.Span[pos.X, pos.Y] = color;
+        return prev;
     }
 
     public Color GetPixel(Position worldPos)
