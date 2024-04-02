@@ -12,11 +12,11 @@ namespace Owop.Client;
 public interface IOwopClient : IDisposable
 {
     ServerInfo? ServerInfo { get; }
-    IReadOnlyDictionary<string, IWorldConnection> Connections { get; }
+    IReadOnlyDictionary<string, IReadOnlySet<IWorldConnection>> Connections { get; }
     ILogger Logger { get; }
 
-    Task<ConnectResult> Connect(string world = "main", ConnectionOptions? options = null);
-    Task<bool> Disconnect(string world = "main");
+    Task<bool> Connect(string world = "main", ConnectionOptions? options = null);
+    Task<bool> DisconnectAll(string world = "main");
     Task Destroy();
 
     event Action<ConnectEventArgs>? Connected;

@@ -24,14 +24,14 @@ public class WorldConnection : IWorldConnection
     public IWorld World => _world;
     public ILogger Logger { get; }
 
-    public WorldConnection(string name, ConnectionOptions? options, OwopClient client)
+    public WorldConnection(string name, ConnectionOptions? options, OwopClient client, int index)
     {
         Socket = new(new Uri(client.Options.SocketUrl));
         Options = options;
         _client = client;
         _world = new(name, this);
         ConnectionMessage = GetConnectionMessage(name);
-        Logger = client.LoggerFactory.CreateLogger($"Owop.Net.{name}");
+        Logger = client.LoggerFactory.CreateLogger($"Owop.Net.{name}#{index}");
     }
 
     private static byte[] GetConnectionMessage(string world)
@@ -83,14 +83,22 @@ public class WorldConnection : IWorldConnection
         }
     }
 
-    public async Task SendPlayerData()
-        => await Send(OwopProtocol.EncodePlayer(_world._clientPlayer));
+    public async Task SendPlayerData() => await Send(OwopProtocol.EncodePlayer(_world._clientPlayer));
 
-    public async Task Disconnect()
+    public async Task DisconnectInternal()
     {
         _client.InvokeDisconnect(_world);
         await Socket.Stop(WebSocketCloseStatus.NormalClosure, "Client.Disconnect()");
         _exitEvent.Set();
+    }
+
+    public async Task Disconnect()
+    {
+        await DisconnectInternal();
+        if (_client.Connections[_world.Name] is HashSet<IWorldConnection> mutable)
+        {
+            mutable.Remove(this);
+        }
     }
 
     public void Dispose()

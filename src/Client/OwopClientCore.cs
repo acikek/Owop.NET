@@ -6,11 +6,11 @@ public partial class OwopClient : IOwopClient
 {
     public const int MaxWorldNameLength = 24;
 
-    private readonly Dictionary<string, IWorldConnection> _connections = [];
+    private readonly Dictionary<string, IReadOnlySet<IWorldConnection>> _connections = [];
 
     public readonly ILoggerFactory LoggerFactory;
     public ClientOptions Options { get; }
-    public IReadOnlyDictionary<string, IWorldConnection> Connections => _connections;
+    public IReadOnlyDictionary<string, IReadOnlySet<IWorldConnection>> Connections => _connections;
     public ILogger Logger { get; }
 
     public OwopClient(ClientOptions? options, ILoggerFactory? loggerFactory)
@@ -30,42 +30,53 @@ public partial class OwopClient : IOwopClient
         return new(span.ToArray());
     }
 
-    public async Task<ConnectResult> Connect(string world = "main", ConnectionOptions? options = null)
+    public async Task<bool> Connect(string world = "main", ConnectionOptions? options = null)
     {
         var serverInfo = await FetchServerInfo();
         if (serverInfo is null || serverInfo.ClientConnections >= serverInfo.MaxConnectionsPerIp)
         {
-            return ConnectResult.LimitReached;
+            return false;
         }
         string clean = CleanWorldId(world);
-        if (Connections.ContainsKey(clean))
-        {
-            return ConnectResult.Exists;
-        }
         Logger.LogDebug($"Connecting to world '{clean}'...");
-        WorldConnection connection = new(clean, options, this);
-        _connections[clean] = connection;
+        var connections = Connections.TryGetValue(clean, out IReadOnlySet<IWorldConnection>? set) ? set : null;
+        WorldConnection connection = new(clean, options, this, connections?.Count ?? 0);
+        if (connections is HashSet<IWorldConnection> mutable)
+        {
+            mutable.Add(connection);
+        }
+        else
+        {
+            _connections.Add(clean, new HashSet<IWorldConnection>([connection]));
+        }
         connection.Connect();
-        return ConnectResult.Activated;
+        return true;
     }
 
-    public async Task<bool> Disconnect(string world = "main")
+    public async Task<bool> DisconnectAllInternal(string world)
     {
-        string clean = CleanWorldId(world);
-        if (_connections.Remove(clean, out var connection))
+        if (!_connections.Remove(world, out var connections))
         {
-            await connection.Disconnect();
-            return true;
+            return false;
         }
-        return false;
+        foreach (var connection in connections)
+        {
+            if (connection is WorldConnection mutable)
+            {
+                await mutable.DisconnectInternal();
+            }
+        }
+        return true;
     }
+
+    public async Task<bool> DisconnectAll(string world = "main") => await DisconnectAllInternal(CleanWorldId(world));
 
     public async Task Destroy()
     {
         Destroying?.Invoke();
-        foreach (var connection in Connections.Values)
+        foreach (string world in Connections.Keys.ToList())
         {
-            await connection.Disconnect();
+            await DisconnectAllInternal(world);
         }
     }
 
