@@ -3,7 +3,7 @@ using Owop.Util;
 
 namespace Owop.Game;
 
-/// <summary>A player's permission rank within a world.</summary>
+/// <summary>Enumeration of player permission ranks.</summary>
 public enum PlayerRank
 {
     /// <summary>No permissions.</summary>

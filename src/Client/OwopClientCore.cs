@@ -7,6 +7,7 @@ public partial class OwopClient : IOwopClient
     public const int MaxWorldNameLength = 24;
 
     private readonly Dictionary<string, IReadOnlySet<IWorldConnection>> _connections = [];
+    private readonly Dictionary<string, int> _connectionCounts = [];
 
     public readonly ILoggerFactory LoggerFactory;
     public ClientOptions Options { get; }
@@ -39,15 +40,16 @@ public partial class OwopClient : IOwopClient
         }
         string clean = CleanWorldId(world);
         Logger.LogDebug($"Connecting to world '{clean}'...");
-        var connections = Connections.TryGetValue(clean, out IReadOnlySet<IWorldConnection>? set) ? set : null;
-        WorldConnection connection = new(clean, options, this, connections?.Count ?? 0);
-        if (connections is HashSet<IWorldConnection> mutable)
+        int index = _connectionCounts.GetValueOrDefault(clean, -1) + 1;
+        WorldConnection connection = new(clean, options, this, index);
+        if (Connections.TryGetValue(clean, out IReadOnlySet<IWorldConnection>? set) && set is HashSet<IWorldConnection> mutable)
         {
             mutable.Add(connection);
         }
         else
         {
             _connections.Add(clean, new HashSet<IWorldConnection>([connection]));
+            _connectionCounts.Add(clean, 0);
         }
         connection.Connect();
         return true;

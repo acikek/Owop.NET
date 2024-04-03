@@ -9,21 +9,37 @@ using Websocket.Client;
 
 namespace Owop.Client;
 
+/// <summary>An <see cref="IWorldConnection"/> implementation.</summary>
 public class WorldConnection : IWorldConnection
 {
+    /// <summary>Verification bytes to append to the connection message.</summary>
     public const short WorldVerification = 25565;
 
+    /// <summary>Internal connection thread exit event.</summary>
     private readonly ManualResetEvent _exitEvent = new(false);
+
+    /// <summary>Internal client instance.</summary>
     public readonly OwopClient _client;
+
+    /// <summary>Internal world instance.</summary>
     public readonly World _world;
+
+    /// <summary>Connection message to generate and (re)send.</summary>
     public readonly byte[] ConnectionMessage;
+
+    /// <summary>Options passed to this connection.</summary>
+    public ConnectionOptions? Options { get; }
 
     public WebsocketClient Socket { get; }
     public IOwopClient Client => _client;
-    public ConnectionOptions? Options { get; }
     public IWorld World => _world;
     public ILogger Logger { get; }
 
+    /// <summary>Constructs a new <see cref="WorldConnection"/>.</summary>
+    /// <param name="name">The world name to connect to.</param>
+    /// <param name="options">The connection options.</param>
+    /// <param name="client">The client connecting to the world.</param>
+    /// <param name="index">The number of previous connections to the world.</param>
     public WorldConnection(string name, ConnectionOptions? options, OwopClient client, int index)
     {
         Socket = new(new Uri(client.Options.SocketUrl));
@@ -34,6 +50,9 @@ public class WorldConnection : IWorldConnection
         Logger = client.LoggerFactory.CreateLogger($"Owop.Net.{name}#{index}");
     }
 
+    /// <summary>Creates a connection message from a world name.</summary>
+    /// <param name="world">The cleaned world name.</param>
+    /// <returns>The connection message.</returns>
     private static byte[] GetConnectionMessage(string world)
     {
         string fixedLength = world[..Math.Min(world.Length, 24)];
@@ -46,6 +65,7 @@ public class WorldConnection : IWorldConnection
     public async Task Send(byte[] message) => await Task.Run(() => Socket.Send(message));
     public async Task Send(string message) => await Task.Run(() => Socket.Send(message));
 
+    /// <summary>Connects to the world, handling reconnects when necessary.</summary>
     public void Connect()
     {
         try
@@ -71,6 +91,9 @@ public class WorldConnection : IWorldConnection
         }
     }
 
+    /// <summary>Checks whether the client player can perform an operation.</summary>
+    /// <param name="rank">The lowest rank required for the operation.</param>
+    /// <exception cref="InvalidOperationException">If the socket isn't running or the player's rank is insufficient.</exception>
     public void CheckInteraction(PlayerRank rank = PlayerRank.None)
     {
         if (!Socket.IsRunning)
@@ -83,8 +106,10 @@ public class WorldConnection : IWorldConnection
         }
     }
 
+    /// <summary>Sends the local client player data to the server.</summary>
     public async Task SendPlayerData() => await Send(OwopProtocol.EncodePlayer(_world._clientPlayer));
 
+    /// <summary>Terminates the client connection.</summary>
     public async Task DisconnectInternal()
     {
         _client.InvokeDisconnect(_world);

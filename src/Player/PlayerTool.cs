@@ -1,6 +1,6 @@
 namespace Owop.Game;
 
-/// <summary>A player's selected tool.</summary>
+/// <summary>Enumeration of player tools.</summary>
 public enum PlayerTool
 {
     /// <summary>Default cursor. Places one pixel at a time.</summary>
