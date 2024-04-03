@@ -87,7 +87,8 @@ public struct Position(int x, int y) : IEquatable<Position>
     /// <returns>The string.</returns>
     public override readonly string ToString() => $"({X}, {Y})";
 
-    /// <summary>Iterates from this top-left position to another bottom-right position.</summary>
+    // TODO: make this work regardless of position order
+    /// <summary>Iterates rectangularly from this top-left position to another bottom-right position.</summary>
     /// <param name="other">The other position.</param>
     /// <returns>An enumeration of positions within the rectangle bounded by the two positions.</returns>
     public readonly IEnumerable<Position> IterateRect(Position other)
@@ -97,6 +98,33 @@ public struct Position(int x, int y) : IEquatable<Position>
             for (int y = Y; y <= other.Y; y++)
             {
                 yield return (x, y);
+            }
+        }
+    }
+
+    /// <summary>Iterates linearly from this position to another position.</summary>
+    /// <param name="other">The other position.</param>
+    /// <returns>An enumeration of positions on the line between the two positions.</returns>
+    public readonly IEnumerable<Position> IterateLine(Position other)
+    {
+        int x1 = X, x2 = other.X, y1 = Y, y2 = other.Y;
+        int dx = Math.Abs(x2 - x1), sx = x1 < x2 ? 1 : -1;
+        int dy = -Math.Abs(y2 - y1), sy = y1 < y2 ? 1 : -1;
+        int err = dx + dy;
+        while (true)
+        {
+            yield return (x1, y1);
+            if (x1 == x2 && y1 == y2) break;
+            int e2 = err * 2;
+            if (e2 >= dy)
+            {
+                err += dy;
+                x1 += sx;
+            }
+            if (e2 <= dx)
+            {
+                err += dx;
+                y1 += sy;
             }
         }
     }
@@ -111,10 +139,7 @@ public struct Position(int x, int y) : IEquatable<Position>
     /// <param name="one">First position.</param>
     /// <param name="two">Second position.</param>
     /// <returns>Result.</returns>
-    public static bool operator ==(Position one, Position two)
-    {
-        return one.Equals(two);
-    }
+    public static bool operator ==(Position one, Position two) => one.Equals(two);
 
     /// <summary>Mathematical comparison.</summary>
     /// <param name="one">First position.</param>
