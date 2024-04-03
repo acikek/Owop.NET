@@ -35,11 +35,8 @@ public interface IWorld
 
     /// <summary>Sends a chat message.</summary>
     /// <param name="message">The message to send.</param>
-    Task SendChatMessage(string message);
-
-    /// <summary>Queues a chat message.</summary>
-    /// <param name="message">The message to queue.</param>
-    void QueueChatMessage(string message);
+    /// <param name="queue">Whether to queue the chat message and complete the task immediately.</param>
+    Task SendChatMessage(string message, bool queue = false);
 
     /// <summary>Runs a server command.</summary>
     /// <param name="command">The command name.</param>
@@ -110,7 +107,8 @@ public interface IWorld
     /// <param name="worldPos">The pixel position. Defaults to the client player position.</param>
     /// <param name="color">The pixel color. Defaults to the client player color.</param>
     /// <param name="lazy">Whether to only move the cursor if necessary.</param>
-    Task<bool> PlacePixel(Position? worldPos = null, Color? color = null, bool lazy = false);
+    /// <param name="queue">Whether to queue the pixel placement and complete the task immediately.</param>
+    Task PlacePixel(Position? worldPos = null, Color? color = null, bool lazy = false, bool queue = false);
 
     /// <summary>Disconnects from the world.</summary>
     // TODO: what happens if try reconnect

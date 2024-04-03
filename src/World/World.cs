@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using System.Drawing;
 using Microsoft.Extensions.Logging;
 using Owop.Client;
 using Owop.Network;
@@ -12,6 +13,9 @@ public partial class World : IWorld
     public readonly WorldChunks _chunks;
     public readonly ClientPlayer _clientPlayer;
     public readonly WorldConnection _connection;
+
+    public readonly BucketQueue<string> ChatQueue;
+    public readonly BucketQueue<(Position?, Color?, bool)> PixelQueue;
 
     public ConcurrentDictionary<int, TaskCompletionSource<WhoisData>> WhoisQueue = [];
 
@@ -33,5 +37,7 @@ public partial class World : IWorld
         _chunks = new(this);
         _connection = connection;
         _clientPlayer = new(this);
+        ChatQueue = new(_clientPlayer._chatBucket, "chat", this, SendChatMessageInternal);
+        PixelQueue = new(_clientPlayer._pixelBucket, "pixel", this, PlacePixelInternal);
     }
 }

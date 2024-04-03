@@ -1,4 +1,5 @@
 using System.Drawing;
+using Microsoft.Extensions.Logging;
 using Owop.Network;
 using Owop.Util;
 
@@ -6,6 +7,15 @@ namespace Owop.Game;
 
 public partial class World
 {
+    public async Task RunCommand(string command, params object[] args)
+    {
+        string message = $"/{command} {string.Join(' ', args)}";
+        await SendChatMessage(message, false);
+    }
+
+    public async Task TellPlayer(int id, string message)
+        => await RunCommand("tell", id, message);
+
     public async Task LogIn(string password) => await RunCommand("pass", password);
 
     public async Task MovePlayer(int id, Position worldPos)
@@ -66,39 +76,6 @@ public partial class World
     public async Task Restrict() => await SetRestricted(true);
 
     public async Task Unrestrict() => await SetRestricted(false);
-
-    public Position? GetPlaceDestination(Position? worldPos, bool lazy)
-    {
-        if (worldPos is not Position realPos || realPos == ClientPlayer.WorldPos || (lazy && ClientPlayer.Rank == PlayerRank.Admin))
-        {
-            return null;
-        }
-        if (!lazy)
-        {
-            return realPos;
-        }
-        double dist = (realPos.ToChunkPos() - ClientPlayer.ChunkPos).ToVector().Length();
-        return dist >= 4.0 ? realPos : null;
-    }
-
-    public async Task<bool> PlacePixel(Position? worldPos, Color? color, bool lazy)
-    {
-        _connection.CheckInteraction(PlayerRank.Player);
-        if (!_clientPlayer._pixelBucket.TrySpend(1.0))
-        {
-            return false;
-        }
-        if (GetPlaceDestination(worldPos, lazy) is Position destPos)
-        {
-            await ClientPlayer.MoveWorld(destPos);
-        }
-        var pixelPos = worldPos ?? ClientPlayer.WorldPos;
-        var pixelColor = color ?? ClientPlayer.Color;
-        byte[] pixel = OwopProtocol.EncodePixel(pixelPos, pixelColor);
-        await Connection.Send(pixel);
-        _chunks.SetPixel(pixelPos, pixelColor);
-        return true;
-    }
 
     public async Task Disconnect() => await Connection.Disconnect();
 }
