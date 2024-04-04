@@ -5,10 +5,14 @@ using Owop.Util;
 
 namespace Owop.Game;
 
+/// <remarks>Handles chat messages and pixel placements.</remarks>
 public partial class World
 {
+    /// <summary>A validation string to append to all outbound chat messages.</summary>
     public const string ChatVerification = "\u000A";
 
+    /// <summary>Sends a chat message.</summary>
+    /// <param name="message">The chat message to send.</param>
     public async Task SendChatMessageInternal(string message)
     {
         _connection.CheckInteraction();
@@ -23,6 +27,10 @@ public partial class World
         await (queue ? Task.CompletedTask : source.Task);
     }
 
+    /// <summary>Finds a world position the cursor needs to move to for a pixel placement.</summary>
+    /// <param name="worldPos">The pixel position.</param>
+    /// <param name="lazy">Whether to only move the cursor if necessary.</param>
+    /// <returns>The found position, or <c>null</c> if no movement is necessary.</returns>
     public Position? GetPlaceDestination(Position? worldPos, bool lazy)
     {
         if (worldPos is not Position realPos || realPos == ClientPlayer.WorldPos || (lazy && ClientPlayer.Rank == PlayerRank.Admin))
@@ -37,6 +45,9 @@ public partial class World
         return dist >= 4.0 ? realPos : null;
     }
 
+    /// <summary>Places a pixel at a world position.</summary>
+    /// <param name="obj">The pixel queue entry.</param>
+    /// <seealso cref="PlacePixel"/>
     public async Task PlacePixelInternal((Position? worldPos, Color? color, bool lazy) obj)
     {
         _connection.CheckInteraction(PlayerRank.Player);

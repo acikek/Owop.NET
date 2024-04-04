@@ -9,6 +9,7 @@ using Owop.Util;
 
 namespace Owop.Game;
 
+/// <remarks><see cref="IPlayer"/> method implementations for <see cref="ClientPlayer"/>.</remarks>
 public partial class ClientPlayer
 {
     public override async Task Move(Position pos)

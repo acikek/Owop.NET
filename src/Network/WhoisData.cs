@@ -8,9 +8,20 @@ using Owop.Game;
 
 namespace Owop.Network;
 
-public record WhoisData(int PlayerId, int Connections, IPAddress? IPAddress, string? OriginHeader, int WarningLevel, PlayerRank PlayerRank)
+/// <summary>Data queried from a '/whois' command.</summary>
+/// <param name="Player">The queried player.</param>
+/// <param name="Connections">The number of connections from the player's IP.</param>
+/// <param name="IPAddress">The player's IP. Visible to site moderators.</param>
+/// <param name="OriginHeader">The origin request header, if any.</param>
+/// <param name="WarningLevel">The player's warning level.</param>
+/// <param name="PlayerRank">The player's rank.</param>
+public record WhoisData(IPlayer Player, int Connections, IPAddress? IPAddress, string? OriginHeader, int WarningLevel, PlayerRank PlayerRank)
 {
-    public static WhoisData? Parse(List<string> args)
+    /// <summary>Parses <see cref="ServerMessageType.Whois"/> message arguments into a <see cref="WhoisData"/>instance.</summary>
+    /// <param name="args">The message arguments.</param>
+    /// <param name="world">The world the message was received in.</param>
+    /// <returns>The resulting data.</returns>
+    public static WhoisData? Parse(List<string> args, IWorld world)
     {
         if (!int.TryParse(args[0], out int id))
         {
@@ -34,6 +45,6 @@ public record WhoisData(int PlayerId, int Connections, IPAddress? IPAddress, str
         var ipAddress = values.TryGetValue("IP", out string? ipStr)
             ? (IPAddress.TryParse(ipStr, out IPAddress? ip) ? ip : null)
             : null;
-        return new(id, connections, ipAddress, originHeader, warningLevel, (PlayerRank)rank);
+        return new(world.Players[id], connections, ipAddress, originHeader, warningLevel, (PlayerRank)rank);
     }
 }

@@ -111,6 +111,5 @@ public interface IWorld
     Task PlacePixel(Position? worldPos = null, Color? color = null, bool lazy = false, bool queue = false);
 
     /// <summary>Disconnects from the world.</summary>
-    // TODO: what happens if try reconnect
     Task Disconnect();
 }

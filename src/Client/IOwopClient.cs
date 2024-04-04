@@ -9,8 +9,10 @@ using Owop.Network;
 
 namespace Owop.Client;
 
+/// <summary>Represents the main client interface to OWOP world connections.</summary>
 public interface IOwopClient : IDisposable
 {
+    /// <summary>The server API values. Re-fetched on each <see cref="Connect"/> call. </summary>
     ServerInfo? ServerInfo { get; }
     IReadOnlyDictionary<string, IReadOnlySet<IWorldConnection>> Connections { get; }
     ILogger Logger { get; }

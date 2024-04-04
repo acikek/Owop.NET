@@ -69,10 +69,10 @@ public partial class OwopClient
 
     private void InvokeWhois(ServerMessage message, World world)
     {
-        if (WhoisData.Parse(message.Args) is WhoisData data)
+        if (WhoisData.Parse(message.Args, world) is WhoisData data)
         {
             Whois?.Invoke(new(world, data));
-            if (world.WhoisQueue.Remove(data.PlayerId, out var task))
+            if (world.WhoisQueue.Remove(data.Player.Id, out var task))
             {
                 task.SetResult(data);
             }

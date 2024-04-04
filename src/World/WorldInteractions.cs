@@ -5,6 +5,7 @@ using Owop.Util;
 
 namespace Owop.Game;
 
+/// <remarks>Handles world interaction implementations.</remarks>
 public partial class World
 {
     public async Task RunCommand(string command, params object[] args)

@@ -7,6 +7,7 @@ using Owop.Util;
 
 namespace Owop.Game;
 
+/// <summary>An <see cref="IWorld"/> implementation.</summary>
 public partial class World : IWorld
 {
     public readonly Dictionary<int, IPlayer> _players = [];
