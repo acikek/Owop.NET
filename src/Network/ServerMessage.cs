@@ -25,7 +25,7 @@ public enum ServerMessageType
     /// <summary>Response to the '/ids' command.</summary>
     Ids,
     /// <summary>Response to the `/whois` command.</summary>
-    Whois // "Client information for: ok I just put it in discord
+    Whois
 }
 
 /// <summary>Represents a plaintext message received from the server.</summary>

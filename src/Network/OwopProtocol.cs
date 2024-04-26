@@ -6,20 +6,29 @@ using Owop.Util;
 
 namespace Owop.Network;
 
+/// <summary>Contains serialization methods in the OWOP format.</summary>
 public static class OwopProtocol
 {
-    public static bool TryReadPos(ref this SequenceReader<byte> reader, out Position point)
+    /// <summary>Tries to read a generic <see cref="Position"/>.</summary>
+    /// <param name="reader">The byte reader.</param>
+    /// <param name="pos">The decoded position.</param>
+    /// <returns>Whether the position was read properly.</returns>
+    public static bool TryReadPos(ref this SequenceReader<byte> reader, out Position pos)
     {
         if (reader.TryReadLittleEndian(out int x) &&
             reader.TryReadLittleEndian(out int y))
         {
-            point = (x, y);
+            pos = (x, y);
             return true;
         }
-        point = Position.Origin;
+        pos = Position.Origin;
         return false;
     }
 
+    /// <summary>Tries to read a <see cref="Color"/>.</summary>
+    /// <param name="reader">The byte reader.</param>
+    /// <param name="color">The decoded color.</param>
+    /// <returns>Whether the color was read properly.</returns>
     public static bool TryReadColor(ref this SequenceReader<byte> reader, out Color color)
     {
         if (reader.TryRead(out byte r) &&
@@ -33,6 +42,11 @@ public static class OwopProtocol
         return false;
     }
 
+    /// <summary>Tries to read some <see cref="PlayerData"/>.</summary>
+    /// <param name="reader">The byte reader.</param>
+    /// <param name="hasTool">Whether to also read the player's selected tool.</param>
+    /// <param name="player">The decoded player data.</param>
+    /// <returns>Whether the player data was read properly.</returns>
     public static bool TryReadPlayer(ref this SequenceReader<byte> reader, bool hasTool, out PlayerData player)
     {
         player = new();
@@ -57,6 +71,10 @@ public static class OwopProtocol
         return false;
     }
 
+    /// <summary>Tries to read a <see cref="Bucket"/>.</summary>
+    /// <param name="reader">The byte reader.</param>
+    /// <param name="bucket">The decoded bucket.</param>
+    /// <returns>Whether the bucket was read properly.</returns>
     public static bool TryReadBucket(ref this SequenceReader<byte> reader, out Bucket bucket)
     {
         if (reader.TryReadLittleEndian(out short capacity) &&
@@ -69,6 +87,11 @@ public static class OwopProtocol
         return false;
     }
 
+    /// <summary>Tries to read metadata at the beginning of a chunk sequence.</summary>
+    /// <param name="reader">The byte reader.</param>
+    /// <param name="chunkPos">The chunk position.</param>
+    /// <param name="isProtected">Whether the chunk is protected.</param>
+    /// <returns>Whether the chunk metadata was read properly.</returns>
     public static bool TryReadChunkMeta(ref this SequenceReader<byte> reader, out Position chunkPos, out bool isProtected)
     {
         if (!reader.TryReadPos(out chunkPos) ||
@@ -81,24 +104,32 @@ public static class OwopProtocol
         return true;
     }
 
-    public static bool TryReadChunkAmount(ref this SequenceReader<byte> reader, out int amount)
+    /// <summary>Tries to read a number within a chunk sequence.</summary>
+    /// <param name="reader">The byte reader.</param>
+    /// <param name="number">The decoded number.</param>
+    /// <returns>Whether the number was read properly.</returns>
+    public static bool TryReadChunkNumber(ref this SequenceReader<byte> reader, out int number)
     {
         if (!reader.TryReadExact(2, out var meta))
         {
-            amount = 0;
+            number = 0;
             return false;
         }
         byte[] header = meta.ToArray();
-        amount = header[1] << 8 | header[0];
+        number = header[1] << 8 | header[0];
         return true;
     }
 
+    /// <summary>Tries to read a <see cref="Chunk"/>.</summary>
+    /// <param name="reader">The byte reader.</param>
+    /// <param name="chunk">The decoded chunk, if any.</param>
+    /// <returns>Whether the chunk was read properly.</returns>
     public static bool TryReadChunk(ref this SequenceReader<byte> reader, World world, out Chunk? chunk)
     {
         chunk = null;
         if (!reader.TryReadChunkMeta(out var chunkPos, out bool isProtected) ||
-            !reader.TryReadChunkAmount(out int length) ||
-            !reader.TryReadChunkAmount(out int segments))
+            !reader.TryReadChunkNumber(out int length) ||
+            !reader.TryReadChunkNumber(out int segments))
         {
             return false;
         }
@@ -110,7 +141,7 @@ public static class OwopProtocol
         int[] repeatLocations = new int[segments];
         for (int i = 0; i < segments; i++)
         {
-            if (reader.TryReadChunkAmount(out int location))
+            if (reader.TryReadChunkNumber(out int location))
             {
                 repeatLocations[i] = location + repeatOffset;
             }
@@ -122,7 +153,7 @@ public static class OwopProtocol
             {
                 writer.Write(fillData.ToArray());
             }
-            if (!reader.TryReadChunkAmount(out int times) ||
+            if (!reader.TryReadChunkNumber(out int times) ||
                 !reader.TryReadExact(3, out var colorData))
             {
                 return false;
@@ -148,6 +179,9 @@ public static class OwopProtocol
         return true;
     }
 
+    /// <summary>Encodes a generic <see cref="Position"/>.</summary>
+    /// <param name="pos">The position.</param>
+    /// <returns>The position byte array.</returns>
     public static byte[] EncodePos(Position pos)
     {
         MemoryStream stream = new();
@@ -157,16 +191,38 @@ public static class OwopProtocol
         return stream.ToArray();
     }
 
+    /// <summary>Encodes a <see cref="Color"/>.</summary>
+    /// <param name="color">The color.</param>
+    /// <returns>The color byte array.</returns>
     public static byte[] EncodeColor(Color color) => [color.R, color.G, color.B];
 
+    /// <summary>Encodes a pixel's position and color.</summary>
+    /// <param name="pos">The pixel position.</param>
+    /// <param name="color">The pixel color.</param>
+    /// <returns>The pixel byte array.</returns>
     public static byte[] EncodePixel(Position pos, Color color) => [.. EncodePos(pos), .. EncodeColor(color)];
 
-    public static byte[] EncodePlayer(Player data) => [.. EncodePixel(data.Pos, data.Color), (byte)data.Tool];
+    /// <summary>Encodes a <see cref="Player"/>'s data.</summary>
+    /// <param name="player">The player.</param>
+    /// <returns>The player data byte array.</returns>
+    public static byte[] EncodePlayer(Player player) => [.. EncodePixel(player.Pos, player.Color), (byte)player.Tool];
 
+    /// <summary>Encodes a chunk protection message.</summary>
+    /// <param name="chunkPos">The chunk position.</param>
+    /// <param name="protect">Whether to protect the chunk.</param>
+    /// <returns>The chunk protection message.</returns>
     public static byte[] EncodeChunkProtect(Position chunkPos, bool protect) => [.. EncodePos(chunkPos), (byte)(protect ? 1 : 0), 0];
 
+    /// <summary>Encodes a chunk fill message.</summary>
+    /// <param name="chunkPos">The chunk position.</param>
+    /// <param name="color">The color to fill the chunk with.</param>
+    /// <returns>The chunk fill message.</returns>
     public static byte[] EncodeChunkFill(Position chunkPos, Color color) => [.. EncodePixel(chunkPos, color), 0, 0];
 
+    /// <summary>Encodes complete outbound chunk data.</summary>
+    /// <param name="chunkPos">The chunk position.</param>
+    /// <param name="data">A pixel color byte array.</param>
+    /// <returns>The chunk data byte array.</returns>
     public static byte[] EncodeChunkData(Position chunkPos, byte[] data)
     {
         var pos = EncodePos(chunkPos);
