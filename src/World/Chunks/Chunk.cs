@@ -10,9 +10,13 @@ using Owop.Util;
 
 namespace Owop.Game;
 
+/// <summary>An <see cref="IChunk"/> implementation.</summary>
 public class Chunk : IChunk
 {
+    /// <summary>The internal world instance.</summary>
     private readonly World _world;
+
+    /// <summary>The internal pixel grid.</summary>
     public readonly Memory2D<Color> _memory = new(new Color[IChunk.Width, IChunk.Width]);
 
     public ReadOnlyMemory2D<Color> Pixels => _memory;
@@ -23,6 +27,10 @@ public class Chunk : IChunk
     public Position WorldPos { get; }
     public Position ChunkPos { get; }
 
+    /// <summary>Constructs a <see cref="Chunk"/>.</summary>
+    /// <param name="world">The world instance.</param>
+    /// <param name="chunkPos">The chunk position.</param>
+    /// <param name="isProtected">Whether the chunk is protected.</param>
     public Chunk(World world, Position chunkPos, bool isProtected)
     {
         _world = world;
@@ -33,8 +41,14 @@ public class Chunk : IChunk
     }
 
     // TODO: Bounds-check these?
+    /// <summary>Returns the pixel position relative to the chunk position.</summary>
+    /// <param name="worldPos">The pixel position.</param>
     public Position GetPosInChunk(Position worldPos) => worldPos - WorldPos;
 
+    /// <summary>Sets a pixel color within this chunk.</summary>
+    /// <param name="worldPos">The pixel position.</param>
+    /// <param name="color">The new pixel color.</param>
+    /// <returns>The previous pixel color.</returns>
     public Color SetPixel(Position worldPos, Color color)
     {
         var pos = GetPosInChunk(worldPos);

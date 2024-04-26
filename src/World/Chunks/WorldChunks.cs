@@ -11,11 +11,19 @@ using Owop.Util;
 
 namespace Owop.Game;
 
+/// <summary>An <see cref="IWorldChunks"/> implementation.</summary>
+/// <param name="world">The corresponding world.</param>
 public class WorldChunks(World world) : Dictionary<Position, IChunk>, IWorldChunks
 {
+    /// <summary>The internal world instance.</summary>
     private readonly World _world = world;
+
+    /// <summary>An interaction queue for chunk queries.</summary>
     public ConcurrentDictionary<Position, TaskCompletionSource<IChunk>> ChunkQueue = [];
 
+    /// <summary>Gets or creates a chunk at the specified chunk position.</summary>
+    /// <param name="chunkPos">The chunk position.</param>
+    /// <returns>The chunk at the position.</returns>
     public Chunk GetOrCreate(Position chunkPos)
     {
         if (TryGetValue(chunkPos, out var chunk) && chunk is Chunk existing)
@@ -27,6 +35,10 @@ public class WorldChunks(World world) : Dictionary<Position, IChunk>, IWorldChun
         return newChunk;
     }
 
+    /// <summary>Sets the pixel color at a world position.</summary>
+    /// <param name="worldPos">The pixel position.</param>
+    /// <param name="color">The new pixel color.</param>
+    /// <returns>A tuple of the corresponding chunk and the previous pixel color.</returns>
     public (Chunk, Color) SetPixel(Position worldPos, Color color)
     {
         var chunk = GetOrCreate(worldPos.ToChunkPos());
@@ -34,14 +46,7 @@ public class WorldChunks(World world) : Dictionary<Position, IChunk>, IWorldChun
         return (chunk, prev);
     }
 
-    public Color? GetPixel(Position worldPos)
-    {
-        if (!TryGetValue(worldPos.ToChunkPos(), out var chunk))
-        {
-            return null;
-        }
-        return chunk.GetPixel(worldPos);
-    }
+    public Color? GetPixel(Position worldPos) => TryGetValue(worldPos.ToChunkPos(), out var chunk) ? chunk.GetPixel(worldPos) : null;
 
     public async Task<Color> QueryPixel(Position worldPos)
     {
