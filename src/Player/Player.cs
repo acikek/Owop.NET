@@ -4,8 +4,11 @@ using Owop.Util;
 
 namespace Owop.Game;
 
+/// <summary>An <see cref="IPlayer"/> implementation.</summary>
+/// <param name="world">The player's connected world.</param>
 public class Player(World world) : PlayerData, IPlayer
 {
+    /// <summary>The internal world instance.</summary>
     protected World _world = world;
 
     public IWorld World => _world;

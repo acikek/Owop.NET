@@ -9,16 +9,28 @@ using Owop;
 
 namespace Owop.Game;
 
+/// <summary>Represents internal player data.</summary>
 public class PlayerData
 {
+    /// <summary>The player's selected tool.</summary>
     public PlayerTool Tool { get; set; } = PlayerTool.Cursor;
+
+    /// <summary>The player's ID.</summary>
     public int Id { get; set; } = 0;
+
+    /// <summary>The player's selected color.</summary>
     public Color Color { get; set; } = Color.Black;
 
+    /// <summary>The internal raw position within the world.</summary>
     private Position _pos = Position.Origin;
+
+    /// <summary>The internal pixel position within the world.</summary>
     private Position _worldPos = Position.Origin;
+
+    /// <summary>The internal chunk position within the world.</summary>
     private Position _chunkPos = Position.Origin;
 
+    /// <summary>Gets or sets the raw position.</summary>
     public Position Pos
     {
         get => _pos;
@@ -34,6 +46,7 @@ public class PlayerData
         }
     }
 
+    /// <summary>Gets or sets the pixel position.</summary>
     public Position WorldPos
     {
         get => _worldPos;
@@ -49,6 +62,7 @@ public class PlayerData
         }
     }
 
+    /// <summary>Gets or sets the chunk position.</summary>
     public Position ChunkPos
     {
         get => _chunkPos;
