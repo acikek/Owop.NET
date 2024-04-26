@@ -2,6 +2,7 @@
 
 namespace Owop.Client;
 
+/// <summary>Core implementation of an <see cref="IOwopClient"/>.</summary>
 public partial class OwopClient : IOwopClient
 {
     public const int MaxWorldNameLength = 24;
