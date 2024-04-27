@@ -23,10 +23,10 @@ public partial class World : IWorld
     public readonly WorldConnection _connection;
 
     /// <summary>An interaction queue for the <see cref="ClientPlayer.ChatBucket"/>.</summary>
-    public readonly BucketQueue<string> ChatQueue;
+    public readonly BucketQueue<string, object?> ChatQueue;
 
     /// <summary>An interaction queue for the <see cref="ClientPlayer.PixelBucket"/>. </summary>
-    public readonly BucketQueue<(Position?, Color?, bool)> PixelQueue;
+    public readonly BucketQueue<(Position?, Color?, bool), Color> PixelQueue;
 
     /// <summary>An interaction queue for <see cref="ServerMessageType.Whois"/> messages.</summary>
     public ConcurrentDictionary<int, TaskCompletionSource<WhoisData>> WhoisQueue = [];

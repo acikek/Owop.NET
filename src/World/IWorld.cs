@@ -111,7 +111,8 @@ public interface IWorld
     /// <param name="color">The pixel color. Defaults to the client player color.</param>
     /// <param name="lazy">Whether to only move the cursor if necessary.</param>
     /// <param name="queue">Whether to queue the pixel placement and complete the task immediately.</param>
-    Task PlacePixel(Position? worldPos = null, Color? color = null, bool lazy = false, bool queue = false);
+    /// <returns>The previous pixel color.</returns>
+    Task<Color> PlacePixel(Position? worldPos = null, Color? color = null, bool lazy = false, bool queue = false);
 
     /// <summary>Disconnects from the world.</summary>
     Task Disconnect();

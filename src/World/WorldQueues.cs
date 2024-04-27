@@ -13,12 +13,13 @@ public partial class World
 
     /// <summary>Sends a chat message.</summary>
     /// <param name="message">The chat message to send.</param>
-    public async Task SendChatMessageInternal(string message)
+    public async Task<object?> SendChatMessageInternal(string message)
     {
         _connection.CheckInteraction();
         int length = ClientPlayer.Rank.GetMaxMessageLength();
         string data = message[0..Math.Min(message.Length, length)] + ChatVerification;
         await Connection.Send(data);
+        return null;
     }
 
     public async Task SendChatMessage(string message, bool queue)
@@ -48,7 +49,7 @@ public partial class World
     /// <summary>Places a pixel at a world position.</summary>
     /// <param name="obj">The pixel queue entry.</param>
     /// <seealso cref="PlacePixel"/>
-    public async Task PlacePixelInternal((Position? worldPos, Color? color, bool lazy) obj)
+    public async Task<Color> PlacePixelInternal((Position? worldPos, Color? color, bool lazy) obj)
     {
         _connection.CheckInteraction(PlayerRank.Player);
         if (GetPlaceDestination(obj.worldPos, obj.lazy) is Position destPos)
@@ -59,12 +60,12 @@ public partial class World
         var pixelColor = obj.color ?? ClientPlayer.Color;
         byte[] pixel = OwopProtocol.EncodePixel(pixelPos, pixelColor);
         await Connection.Send(pixel);
-        _chunks.SetPixel(pixelPos, pixelColor);
+        return _chunks.SetPixel(pixelPos, pixelColor).Item2;
     }
 
-    public async Task PlacePixel(Position? worldPos, Color? color, bool lazy, bool queue)
+    public async Task<Color> PlacePixel(Position? worldPos, Color? color, bool lazy, bool queue)
     {
         var source = PixelQueue.Add((worldPos, color, lazy));
-        await (queue ? Task.CompletedTask : source.Task);
+        return await (Task<Color>)(queue ? Task.CompletedTask : source.Task);
     }
 }
