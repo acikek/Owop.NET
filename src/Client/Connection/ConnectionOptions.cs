@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace Owop.Client;
 
 /// <summary>Represents options for an individual <see cref="IWorldConnection"/>.</summary>
-public class ConnectionOptions()
+public record ConnectionOptions()
 {
     /// <summary>A password to log in with when the client is ready.</summary>
     public string? Password;

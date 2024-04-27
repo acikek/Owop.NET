@@ -5,16 +5,25 @@ namespace Owop.Client;
 /// <summary>Core implementation of an <see cref="IOwopClient"/>.</summary>
 public partial class OwopClient : IOwopClient
 {
+    /// <summary>The length cap for world names.</summary>
     public const int MaxWorldNameLength = 24;
 
+    /// <summary>Internal world connections.</summary>
     private readonly Dictionary<string, IReadOnlySet<IWorldConnection>> _connections = [];
+
+    /// <summary>Internal world connection count tracker.</summary>
     private readonly Dictionary<string, int> _connectionCounts = [];
 
+    /// <summary>The client logger factory.</summary>
     public readonly ILoggerFactory LoggerFactory;
+
     public ClientOptions Options { get; }
     public IReadOnlyDictionary<string, IReadOnlySet<IWorldConnection>> Connections => _connections;
     public ILogger Logger { get; }
 
+    /// <summary>Constructs an <see cref="OwopClient"/>.</summary>
+    /// <param name="options">The client options.</param>
+    /// <param name="loggerFactory">The client logger factory.</param>
     public OwopClient(ClientOptions? options, ILoggerFactory? loggerFactory)
     {
         Options = options ?? new();
@@ -24,7 +33,10 @@ public partial class OwopClient : IOwopClient
         _messageBuffer = [];
     }
 
-    private static string CleanWorldId(string world)
+    /// <summary>Cleans a world name to be OWOP-safe.</summary>
+    /// <param name="world">The input name.</param>
+    /// <returns>The cleaned name.</returns>
+    private static string CleanWorldName(string world)
     {
         string fixedLength = world[..Math.Min(world.Length, MaxWorldNameLength)];
         string lower = fixedLength.ToLower();
@@ -39,7 +51,7 @@ public partial class OwopClient : IOwopClient
         {
             return false;
         }
-        string clean = CleanWorldId(world);
+        string clean = CleanWorldName(world);
         Logger.LogDebug($"Connecting to world '{clean}'...");
         int index = _connectionCounts.GetValueOrDefault(clean, -1) + 1;
         WorldConnection connection = new(clean, options, this, index);
@@ -56,6 +68,9 @@ public partial class OwopClient : IOwopClient
         return true;
     }
 
+    /// <summary>Terminates all connections to a world with the given name.</summary>
+    /// <param name="world">The world name.</param>
+    /// <returns>Whether there were any terminated connections.</returns>
     public async Task<bool> DisconnectAllInternal(string world)
     {
         if (!_connections.Remove(world, out var connections))
@@ -72,7 +87,7 @@ public partial class OwopClient : IOwopClient
         return true;
     }
 
-    public async Task<bool> DisconnectAll(string world = "main") => await DisconnectAllInternal(CleanWorldId(world));
+    public async Task<bool> DisconnectAll(string world = "main") => await DisconnectAllInternal(CleanWorldName(world));
 
     public async Task Destroy()
     {

@@ -48,7 +48,8 @@ public record TellEventArgs(IWorld World, IPlayer Player, string Content);
 /// <summary>Arguments for the <see cref="IOwopClient.Teleported"/> event.</summary>
 /// <param name="World">The world the client player was teleported in.</param>
 /// <param name="Pos">The raw position the client player was teleported to.</param>
-public record TeleportEventArgs(IWorld World, Position Pos);
+/// <param name="PreviousPos">The previous position of the client player.</param>
+public record TeleportEventArgs(IWorld World, Position Pos, Position PreviousPos);
 
 /// <summary>Arguments for the <see cref="IOwopClient.Whois"/> event.</summary>
 /// <param name="World">The world the data was received in.</param>

@@ -12,6 +12,9 @@ namespace Owop.Client;
 /// <summary>Represents the main client interface to OWOP world connections.</summary>
 public interface IOwopClient : IDisposable
 {
+    /// <summary>The client options.</summary>
+    ClientOptions Options { get; }
+
     /// <summary>The server API values. Re-fetched on each <see cref="Connect"/> call. </summary>
     ServerInfo? ServerInfo { get; }
 

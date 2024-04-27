@@ -10,14 +10,22 @@ using Owop.Network;
 
 namespace Owop.Client;
 
+/// <summary>Handles messages from the server.</summary>
 public partial class OwopClient
 {
+    /// <summary>A regex pattern to match <see cref="ServerMessageType.TellClient"/> messages.</summary>
     [GeneratedRegex(@"-> (\d+) tells you: (.*)")]
     private static partial Regex TellClientPattern();
 
+    /// <summary>Whether a whois message is currently being built.</summary>
     private bool _whois = false;
+
+    /// <summary>A buffer to use when constructing multiline messages.</summary>
     private readonly List<string> _messageBuffer;
 
+    /// <summary>Handles a string message sent from the server.</summary>
+    /// <param name="text">The message content.</param>
+    /// <param name="world">The world the string message was sent from.</param>
     private void HandleTextMessage(string text, World world)
     {
         try
@@ -33,12 +41,20 @@ public partial class OwopClient
         }
     }
 
-    private ServerMessage? PrefixedTextLine(ServerMessageType type, string prefix, string text)
+    /// <summary>Attempts to parse and construct a <see cref="ServerMessage"/> based on a prefix.</summary>
+    /// <param name="type">The server message type.</param>
+    /// <param name="prefix">The corresponding type prefix.</param>
+    /// <param name="text">The message content.</param>
+    /// <returns>The constructed message if the prefix was present, otherwise <c>null</c>.</returns>
+    private static ServerMessage? PrefixedTextLine(ServerMessageType type, string prefix, string text)
     {
         int index = text.IndexOf(prefix, StringComparison.Ordinal);
         return index == 0 ? new(type, [text[prefix.Length..]]) : null;
     }
 
+    /// <summary>Handles a line of text sent from the server.</summary>
+    /// <param name="text">The text line.</param>
+    /// <returns>The text line's corresponding server message, if any.</returns>
     private ServerMessage? HandleTextLine(string text)
     {
         string whoisHeader = "Client information for: ";
@@ -83,10 +99,14 @@ public partial class OwopClient
         return new(ServerMessageType.Info, [text]);
     }
 
+    /// <summary>Handles a constructed server message.</summary>
+    /// <param name="message">The server message object.</param>
+    /// <param name="world">The world the message was sent from.</param>
     private void HandleServerMessage(ServerMessage message, World world)
     {
         var dbugLines = message.Args.Select(line => $"'{line}'");
         world.Logger.LogDebug($"Received server message ({message.Type}): {string.Join(", ", dbugLines)}");
+        // TODO: handle all the message types that should be handled and have events
         switch (message.Type)
         {
             case ServerMessageType.Chat:

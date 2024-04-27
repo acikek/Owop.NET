@@ -18,6 +18,9 @@ public interface IWorldConnection : IDisposable
     /// <summary>The attached client.</summary>
     IOwopClient Client { get; }
 
+    /// <summary>The connection options.</summary>
+    ConnectionOptions? Options { get; }
+
     /// <summary>The connection's world.</summary>
     IWorld World { get; }
 

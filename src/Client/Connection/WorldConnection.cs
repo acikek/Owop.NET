@@ -27,11 +27,9 @@ public class WorldConnection : IWorldConnection
     /// <summary>Connection message to generate and (re)send.</summary>
     public readonly byte[] ConnectionMessage;
 
-    /// <summary>Options passed to this connection.</summary>
-    public ConnectionOptions? Options { get; }
-
     public WebsocketClient Socket { get; }
     public IOwopClient Client => _client;
+    public ConnectionOptions? Options { get; }
     public IWorld World => _world;
     public ILogger Logger { get; }
 
@@ -47,7 +45,7 @@ public class WorldConnection : IWorldConnection
         _client = client;
         _world = new(name, this);
         ConnectionMessage = GetConnectionMessage(name);
-        Logger = client.LoggerFactory.CreateLogger($"Owop.Net.{name}#{index}");
+        Logger = client.LoggerFactory.CreateLogger($"Owop.Net.{name}.{index} ");
     }
 
     /// <summary>Creates a connection message from a world name.</summary>

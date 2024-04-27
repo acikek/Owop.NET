@@ -10,14 +10,19 @@ using Websocket.Client;
 
 namespace Owop.Client;
 
+/// <summary>Performs all websocket message handling for a client as well as <see cref="ServerInfo"/> fetching.</summary>
 public partial class OwopClient
 {
+    /// <summary>JSON serialization options for decoding <see cref="ServerInfo"/>.</summary>
     private static readonly JsonSerializerOptions s_jsonOptions = new() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
 
+    /// <summary>HTTP client for API requests.</summary>
     private readonly HttpClient _httpClient;
 
     public ServerInfo? ServerInfo { get; private set; }
 
+    /// <summary>Fetches server info from the <see cref="ClientOptions.ApiUrl"/>.</summary>
+    /// <returns>The deserialized server info.</returns>
     public async Task<ServerInfo?> FetchServerInfo()
     {
         var json = await _httpClient.GetStringAsync(Options.ApiUrl);
@@ -26,6 +31,9 @@ public partial class OwopClient
         return serverInfo;
     }
 
+    /// <summary>Handles a websocket message.</summary>
+    /// <param name="response">The response message.</param>
+    /// <param name="world">The world the message was sent from.</param>
     public void HandleMessage(ResponseMessage response, World world)
     {
         if (response.Text is string text)
@@ -43,7 +51,10 @@ public partial class OwopClient
         }
     }
 
-    private void HandleSetId(ref SequenceReader<byte> reader, World world)
+    /// <summary>Handles <see cref="Opcode.SetId"/>.</summary>
+    /// <param name="reader">The byte reader.</param>
+    /// <param name="world">The world the opcode was sent from.</param>
+    private static void HandleSetId(ref SequenceReader<byte> reader, World world)
     {
         if (reader.TryReadLittleEndian(out int id))
         {
@@ -53,13 +64,12 @@ public partial class OwopClient
         }
     }
 
+    /// <summary>Initializes connected world data.</summary>
+    /// <param name="world">The connected world.</param>
     private void InitWorld(World world)
     {
         bool reconnect = world.Connected;
-        if (!reconnect)
-        {
-            world.Connected = true;
-        }
+        world.Connected = true;
         world.Logger.LogDebug("World initialized.");
         world.Initialized = true;
         Connected?.Invoke(new(world, reconnect));
@@ -83,6 +93,9 @@ public partial class OwopClient
         });
     }
 
+    /// <summary>Handles <see cref="Opcode.WorldUpdate"/>.</summary>
+    /// <param name="reader">The byte reader.</param>
+    /// <param name="world">The world the opcode was sent from.</param>
     private void HandleWorldUpdate(ref SequenceReader<byte> reader, World world)
     {
         if (reader.TryRead(out byte playerCount))
@@ -152,32 +165,46 @@ public partial class OwopClient
         }
     }
 
+    /// <summary>Handles <see cref="Opcode.SetRank"/>.</summary>
+    /// <param name="reader">The byte reader.</param>
+    /// <param name="world">The world the opcode was sent from.</param>
     private void HandleSetRank(ref SequenceReader<byte> reader, World world)
     {
+        // TODO: Event?
         if (reader.TryRead(out byte rank))
         {
             world._clientPlayer.Rank = (PlayerRank)rank;
         }
     }
 
+    /// <summary>Handles <see cref="Opcode.SetPixelQuota"/>.</summary>
+    /// <param name="reader">The byte reader.</param>
+    /// <param name="world">The world the opcode was sent from.</param>
     private void HandlePixelQuota(ref SequenceReader<byte> reader, World world)
     {
+        // TODO: Event?
         if (reader.TryReadBucket(out Bucket bucket))
         {
             world._clientPlayer._pixelBucket.SetValues(bucket.Capacity, bucket.FillTime);
         }
     }
 
+    /// <summary>Handles <see cref="Opcode.Teleport"/>.</summary>
+    /// <param name="reader">The byte reader.</param>
+    /// <param name="world">The world the opcode was sent from.</param>
     private void HandleTeleport(ref SequenceReader<byte> reader, World world)
     {
         if (reader.TryReadPos(out Position pos))
         {
-            int s = IChunk.Width;
-            world._clientPlayer.Pos = pos * s + (s / 2, s / 2);
-            Teleported?.Invoke(new(world, world.ClientPlayer.Pos, world.ClientPlayer.WorldPos));
+            var prevPos = world._clientPlayer.Pos;
+            world._clientPlayer.Pos = pos * IChunk.Width + (IChunk.Width / 2, IChunk.Width / 2);
+            Teleported?.Invoke(new(world, world.ClientPlayer.Pos, prevPos));
         }
     }
 
+    /// <summary>Handles <see cref="Opcode.ChunkLoad"/>.</summary>
+    /// <param name="reader">The byte reader.</param>
+    /// <param name="world">The world the opcode was sent from.</param>
     private void HandleChunkLoad(ref SequenceReader<byte> reader, World world)
     {
         if (reader.TryReadChunk(world, out var chunk) && chunk is IChunk loaded)
@@ -192,6 +219,9 @@ public partial class OwopClient
         }
     }
 
+    /// <summary>Handles <see cref="Opcode.Captcha"/>.</summary>
+    /// <param name="reader">The byte reader.</param>
+    /// <param name="world">The world the opcode was sent from.</param>
     private void HandleCaptcha(ref SequenceReader<byte> reader, World world)
     {
         if (!reader.TryRead(out byte captchaByte))
@@ -217,6 +247,9 @@ public partial class OwopClient
         // TODO: understand when this opcode is sent
     }
 
+    /// <summary>Handles <see cref="Opcode.ChunkProtect"/>.</summary>
+    /// <param name="reader">The byte reader.</param>
+    /// <param name="world">The world the opcode was sent from.</param>
     private void HandleChunkProtect(ref SequenceReader<byte> reader, World world)
     {
         if (reader.TryReadChunkMeta(out var chunkPos, out bool isProtected))
@@ -227,6 +260,10 @@ public partial class OwopClient
         }
     }
 
+    /// <summary>Handles a server opcode.</summary>
+    /// <param name="opcode">The received opcode.</param>
+    /// <param name="reader">The byte reader.</param>
+    /// <param name="world">The world the opcode was sent from.</param>
     private void HandleOpcode(Opcode opcode, ref SequenceReader<byte> reader, World world)
     {
         world.Logger.LogDebug($"Received opcode: {opcode} ({(byte)opcode})");
@@ -258,6 +295,8 @@ public partial class OwopClient
                 case Opcode.ChunkProtect:
                     HandleChunkProtect(ref reader, world);
                     break;
+                    // TODO: MaxPlayerCount
+                    // TODO: DonationTimer
             }
         }
         catch (Exception ex)
