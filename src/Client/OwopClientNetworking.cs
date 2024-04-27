@@ -145,7 +145,7 @@ public partial class OwopClient
                     continue;
                 }
                 var player = world.Players[data.Id];
-                PixelPlacedEventArgs args = new(world, player, data.Color, prev, data.Pos, chunk);
+                PixelPlaceEventArgs args = new(world, player, data.Color, prev, data.Pos, chunk);
                 PixelPlaced?.Invoke(args);
             }
         }
@@ -170,10 +170,10 @@ public partial class OwopClient
     /// <param name="world">The world the opcode was sent from.</param>
     private void HandleSetRank(ref SequenceReader<byte> reader, World world)
     {
-        // TODO: Event?
         if (reader.TryRead(out byte rank))
         {
-            world._clientPlayer.Rank = (PlayerRank)rank;
+            var prevRank = world._clientPlayer.Rank;
+            RankUpdated?.Invoke(new(world, prevRank, world._clientPlayer.Rank = (PlayerRank)rank));
         }
     }
 

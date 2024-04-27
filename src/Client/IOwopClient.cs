@@ -65,6 +65,8 @@ public interface IOwopClient : IDisposable
     /// <summary>Fires when a player disconnects from a world.</summary>
     event Action<IPlayer>? PlayerDisconnected;
 
+    event Action<RankUpdateEventArgs> RankUpdated;
+
     /// <summary>Fired when the client player is teleported.</summary>
     event Action<TeleportEventArgs>? Teleported;
 
@@ -72,7 +74,7 @@ public interface IOwopClient : IDisposable
     event Action<WhoisEventArgs>? Whois;
 
     /// <summary>Fired when a pixel is placed in the world.</summary>
-    event Action<PixelPlacedEventArgs>? PixelPlaced;
+    event Action<PixelPlaceEventArgs>? PixelPlaced;
 
     /// <summary>Fired when a chunk is loaded.</summary>
     event Action<ChunkEventArgs>? ChunkLoaded;

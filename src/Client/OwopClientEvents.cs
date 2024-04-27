@@ -45,6 +45,12 @@ public record ChatEventArgs(IWorld World, ChatPlayer Player, string Content)
 /// <param name="Content">The private message content.</param>
 public record TellEventArgs(IWorld World, IPlayer Player, string Content);
 
+/// <summary>Arguments for the <see cref="IOwopClient.RankUpdated"/> event. </summary>
+/// <param name="World">The world the client player's rank was updated in.</param>
+/// <param name="Rank">The new player rank.</param>
+/// <param name="PreviousRank">The previous player rank.</param>
+public record RankUpdateEventArgs(IWorld World, PlayerRank Rank, PlayerRank PreviousRank);
+
 /// <summary>Arguments for the <see cref="IOwopClient.Teleported"/> event.</summary>
 /// <param name="World">The world the client player was teleported in.</param>
 /// <param name="Pos">The raw position the client player was teleported to.</param>
@@ -63,7 +69,7 @@ public record WhoisEventArgs(IWorld World, WhoisData Data);
 /// <param name="PreviousColor">The previous pixel color.</param>
 /// <param name="WorldPos">The pixel position.</param>
 /// <param name="Chunk">The chunk the pixel was placed in.</param>
-public record PixelPlacedEventArgs(IWorld World, IPlayer Player, Color Color, Color PreviousColor, Position WorldPos, IChunk Chunk);
+public record PixelPlaceEventArgs(IWorld World, IPlayer Player, Color Color, Color PreviousColor, Position WorldPos, IChunk Chunk);
 
 /// <summary>Arguments for the <see cref="IOwopClient.ChunkLoaded"/> and <see cref="IOwopClient.ChunkProtectionChanged"/> events.</summary>
 /// <param name="World">The chunk's world.</param>
@@ -81,9 +87,10 @@ public partial class OwopClient
     public event Action<ServerMessage>? ServerMessage;
     public event Action<IPlayer>? PlayerConnected;
     public event Action<IPlayer>? PlayerDisconnected;
+    public event Action<RankUpdateEventArgs>? RankUpdated;
     public event Action<TeleportEventArgs>? Teleported;
     public event Action<WhoisEventArgs>? Whois;
-    public event Action<PixelPlacedEventArgs>? PixelPlaced;
+    public event Action<PixelPlaceEventArgs>? PixelPlaced;
     public event Action<ChunkEventArgs>? ChunkLoaded;
     public event Action<ChunkEventArgs>? ChunkProtectionChanged;
     public event Action<IWorld>? Disconnecting;
