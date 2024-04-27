@@ -78,6 +78,7 @@ public partial class OwopClient
     public event Action<IWorld>? ChatReady;
     public event Action<ChatEventArgs>? Chat;
     public event Action<TellEventArgs>? Tell;
+    public event Action<ServerMessage>? ServerMessage;
     public event Action<IPlayer>? PlayerConnected;
     public event Action<IPlayer>? PlayerDisconnected;
     public event Action<TeleportEventArgs>? Teleported;
@@ -93,7 +94,7 @@ public partial class OwopClient
     /// <param name="world">The world the message was received in.</param>
     private void InvokeChat(ServerMessage message, World world)
     {
-        string str = message.Args[0];
+        string str = message.Args[1];
         int sep = str.IndexOf(": ");
         var player = ChatPlayer.ParseHeader(str[0..sep]);
         string content = str[(sep + 2)..];
@@ -105,9 +106,9 @@ public partial class OwopClient
     /// <param name="world">The world the private message was received in.</param>
     private void InvokeTell(ServerMessage message, World world)
     {
-        if (int.TryParse(message.Args[0], out int id))
+        if (int.TryParse(message.Args[1], out int id))
         {
-            Tell?.Invoke(new(world, world.Players[id], message.Args[1]));
+            Tell?.Invoke(new(world, world.Players[id], message.Args[2]));
         }
     }
 

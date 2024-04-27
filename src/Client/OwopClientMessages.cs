@@ -49,7 +49,7 @@ public partial class OwopClient
     private static ServerMessage? PrefixedTextLine(ServerMessageType type, string prefix, string text)
     {
         int index = text.IndexOf(prefix, StringComparison.Ordinal);
-        return index == 0 ? new(type, [text[prefix.Length..]]) : null;
+        return index == 0 ? new(type, [text, text[prefix.Length..]]) : null;
     }
 
     /// <summary>Handles a line of text sent from the server.</summary>
@@ -93,10 +93,10 @@ public partial class OwopClient
         var tellClient = TellClientPattern().Matches(text);
         if (tellClient.Count > 0)
         {
-            var args = tellClient[0].Groups.Cast<Group>().Skip(1).Select(g => g.Value).ToList();
+            var args = tellClient[0].Groups.Cast<Group>().Select(g => g.Value).ToList();
             return new(ServerMessageType.TellClient, args);
         }
-        return new(ServerMessageType.Info, [text]);
+        return new(ServerMessageType.Info, [text, text]);
     }
 
     /// <summary>Handles a constructed server message.</summary>
@@ -104,9 +104,8 @@ public partial class OwopClient
     /// <param name="world">The world the message was sent from.</param>
     private void HandleServerMessage(ServerMessage message, World world)
     {
-        var dbugLines = message.Args.Select(line => $"'{line}'");
-        world.Logger.LogDebug($"Received server message ({message.Type}): {string.Join(", ", dbugLines)}");
-        // TODO: handle all the message types that should be handled and have events
+        world.Logger.LogDebug($"Received server message ({message.Type}): '{message.Args[0]}'");
+        ServerMessage?.Invoke(message);
         switch (message.Type)
         {
             case ServerMessageType.Chat:
@@ -119,7 +118,7 @@ public partial class OwopClient
                 InvokeWhois(message, world);
                 break;
             case ServerMessageType.Info:
-                if (message.Args[0].StartsWith("This world has a password set"))
+                if (message.Args[1].StartsWith("This world has a password set"))
                 {
                     world.IsPasswordProtected = true;
                 }

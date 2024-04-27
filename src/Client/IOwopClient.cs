@@ -56,6 +56,9 @@ public interface IOwopClient : IDisposable
     /// <summary>Fires when a player sends a private message to the client.</summary>
     event Action<TellEventArgs>? Tell;
 
+    /// <summary>Fires when the client receives a generic server message.</summary>
+    event Action<ServerMessage>? ServerMessage;
+
     /// <summary>Fires when a player connects to a world.</summary>
     event Action<IPlayer>? PlayerConnected;
 
