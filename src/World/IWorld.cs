@@ -9,6 +9,9 @@ namespace Owop.Game;
 /// <summary>Represents a world that a client has connected to.</summary>
 public interface IWorld
 {
+    /// <summary>The radius of a world, or the width and height, in chunks, of its quadrants.</summary>
+    const int Radius = 0xFFFFF;
+
     /// <summary>The world's name.</summary>
     string Name { get; }
 

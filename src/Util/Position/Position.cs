@@ -80,8 +80,14 @@ public struct Position(int x, int y) : IEquatable<Position>
 
     /// <summary>Converts a pixel-based world position to its chunk's position.</summary>
     /// <returns>The chunk position.</returns>
-    public readonly Position ToChunkPos()
-        => ((int)Math.Floor((decimal)X / IChunk.Width), (int)Math.Floor((decimal)Y / IChunk.Width));
+    public readonly Position ToChunkPos() => ((int)Math.Floor((decimal)X / IChunk.Width), (int)Math.Floor((decimal)Y / IChunk.Width));
+
+    /// <summary>Whether a <b>chunk</b> position is within the world border.</summary>
+    public readonly bool IsWithinBorder => X <= IWorld.Radius && Y <= IWorld.Radius && X >= ~IWorld.Radius && Y >= ~IWorld.Radius;
+
+    /// <summary>Clamps a <b>chunk</b> position to be within the world border.</summary>
+    /// <returns>The clamped position.</returns>
+    public readonly Position ClampToBorder() => new(Math.Clamp(X, ~IWorld.Radius, IWorld.Radius), Math.Clamp(Y, ~IWorld.Radius, IWorld.Radius));
 
     /// <summary>Gets a simple string of the position.</summary>
     /// <returns>The string.</returns>

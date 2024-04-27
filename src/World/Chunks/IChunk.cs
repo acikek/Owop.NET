@@ -12,7 +12,7 @@ namespace Owop.Game;
 /// <summary>Represents a square chunk of pixels within an <see cref="IWorld">.</summary>
 public interface IChunk : IPositioned
 {
-    /// <summary>The width and height of a chunk.</summary>
+    /// <summary>The width and height, in pixels, of a chunk.</summary>
     const int Width = 16;
 
     /// <summary>The number of bytes needed to store one chunk.</summary>

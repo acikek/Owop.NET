@@ -69,12 +69,12 @@ public class WorldChunks(World world) : Dictionary<Position, IChunk>, IWorldChun
 
     public async Task Request(Position chunkPos, bool force = false)
     {
+        chunkPos = chunkPos.ClampToBorder();
         if (!force && IsChunkLoaded(chunkPos))
         {
             await Task.CompletedTask;
             return;
         }
-        // TODO: Check for world border
         await _world._connection.Send(OwopProtocol.EncodePos(chunkPos));
     }
 
@@ -123,7 +123,7 @@ public class WorldChunks(World world) : Dictionary<Position, IChunk>, IWorldChun
         await _world._connection.Send(OwopProtocol.EncodeChunkData(chunkPos, data));
     }
 
-    // TODO: Find a better way to do this
+    // TODO: (post-release) Is there a better way to do this?
     public async Task SetChunkData(Position chunkPos, Color[] data)
     {
         byte[] result = new byte[IChunk.DataSize];
