@@ -112,7 +112,7 @@ public class Bucket : IBucket
         }
         Update();
         return FillInterval * Math.Min(amount, Capacity)
-            //+ GetNextTimeToFill() TODO: Fix
+            //+ GetNextTimeToFill() TODO: (never) fix
             + SafetyDelay;
     }
 

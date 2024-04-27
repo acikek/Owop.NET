@@ -138,7 +138,7 @@ public partial class OwopClient
                 {
                     break;
                 }
-                // data.Pos is actually the world pos in this case. TODO: Fix?
+                // In this case, data.Pos is actually the world position
                 var (chunk, prev) = world._chunks.SetPixel(data.Pos, data.Color);
                 if (data.Id == world.ClientPlayer.Id)
                 {

@@ -226,7 +226,6 @@ public static class OwopProtocol
     public static byte[] EncodeChunkData(Position chunkPos, byte[] data)
     {
         var pos = EncodePos(chunkPos);
-        // TODO: set remaining data to white instead?
         MemoryStream stream = new(new byte[IChunk.DataSize + pos.Length]);
         BinaryWriter writer = new(stream);
         writer.Write(pos);

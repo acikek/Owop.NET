@@ -40,7 +40,6 @@ public class Chunk : IChunk
         IsProtected = isProtected;
     }
 
-    // TODO: Bounds-check these?
     /// <summary>Returns the pixel position relative to the chunk position.</summary>
     /// <param name="worldPos">The pixel position.</param>
     public Position GetPosInChunk(Position worldPos) => worldPos - WorldPos;
