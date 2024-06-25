@@ -173,7 +173,8 @@ public partial class OwopClient
         if (reader.TryRead(out byte rank))
         {
             var prevRank = world._clientPlayer.Rank;
-            RankUpdated?.Invoke(new(world, world._clientPlayer.Rank = (PlayerRank)rank, prevRank));
+            world._clientPlayer.Rank = (PlayerRank)rank;
+            RankUpdated?.Invoke(new(world, world._clientPlayer.Rank, prevRank));
         }
     }
 
