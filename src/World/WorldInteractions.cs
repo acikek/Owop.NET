@@ -14,8 +14,7 @@ public partial class World
         await SendChatMessage(message, false);
     }
 
-    public async Task TellPlayer(int id, string message)
-        => await RunCommand("tell", id, message);
+    public async Task TellPlayer(int id, string message) => await RunCommand("tell", id, message);
 
     public async Task LogIn(string password) => await RunCommand("pass", password);
 

@@ -63,9 +63,9 @@ public partial class World
         return _chunks.SetPixel(pixelPos, pixelColor).Item2;
     }
 
-    public async Task<Color> PlacePixel(Position? worldPos, Color? color, bool lazy, bool queue)
+    public async Task<Color?> PlacePixel(Position? worldPos, Color? color, bool lazy, bool queue)
     {
         var source = PixelQueue.Add((worldPos, color, lazy));
-        return await (Task<Color>)(queue ? Task.CompletedTask : source.Task);
+        return queue ? null : await source.Task;
     }
 }

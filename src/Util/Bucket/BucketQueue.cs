@@ -56,6 +56,7 @@ public record BucketQueue<Obj, Res>(Bucket Bucket, string Name, World World, Fun
                 }
                 World.Logger.LogDebug($"Processing {Name} object: '{obj}'");
                 task.SetResult(await Processor(obj));
+                count++;
             }
             _task = null;
             World.Logger.LogDebug($"Completed {Name} task with {count} object(s) sent.");
