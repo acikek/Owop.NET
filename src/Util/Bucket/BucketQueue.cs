@@ -43,7 +43,7 @@ public record BucketQueue<Obj, Res>(Bucket Bucket, string Name, World World, Fun
             int count = 0;
             while (!_buffer.IsEmpty)
             {
-                if (!_buffer.TryDequeue(out var pair))
+                if (!_buffer.TryPeek(out var pair))
                 {
                     continue;
                 }
@@ -56,10 +56,23 @@ public record BucketQueue<Obj, Res>(Bucket Bucket, string Name, World World, Fun
                 }
                 World.Logger.LogDebug($"Processing {Name} object: '{obj}'");
                 task.SetResult(await Processor(obj));
+                if (!_buffer.TryDequeue(out _))
+                {
+                    World.Logger.LogError($"Failed to dequeue {Name} '{obj}'");
+                }
                 count++;
             }
-            _task = null;
             World.Logger.LogDebug($"Completed {Name} task with {count} object(s) sent.");
+        }).ContinueWith(task =>
+        {
+            if (task.IsFaulted)
+            {
+                foreach (var (_, source) in _buffer)
+                {
+                    source.TrySetException(task.Exception);
+                }
+            }
+            _task = null;
         });
     }
 }
