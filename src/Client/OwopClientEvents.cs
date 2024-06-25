@@ -51,6 +51,13 @@ public record TellEventArgs(IWorld World, IPlayer Player, string Content);
 /// <param name="PreviousRank">The previous player rank.</param>
 public record RankUpdateEventArgs(IWorld World, PlayerRank Rank, PlayerRank PreviousRank);
 
+/// <summary>Arguments for the </summary>
+/// <param name="PreviousCapacity">The previous bucket capacity.</param>
+/// <param name="PreviousFillTime">The previous bucket fill time.</param>
+/// <param name="Capacity">The new bucket capacity.</param>
+/// <param name="FillTime">The new bucket fill time.</param>
+public record PixelQuotaUpdateEventArgs(IWorld World, int PreviousCapacity, int PreviousFillTime, int Capacity, int FillTime);
+
 /// <summary>Arguments for the <see cref="IOwopClient.Teleported"/> event.</summary>
 /// <param name="World">The world the client player was teleported in.</param>
 /// <param name="Pos">The raw position the client player was teleported to.</param>
@@ -88,6 +95,7 @@ public partial class OwopClient
     public event Action<IPlayer>? PlayerConnected;
     public event Action<IPlayer>? PlayerDisconnected;
     public event Action<RankUpdateEventArgs>? RankUpdated;
+    public event Action<PixelQuotaUpdateEventArgs>? PixelQuotaUpdated;
     public event Action<TeleportEventArgs>? Teleported;
     public event Action<WhoisEventArgs>? Whois;
     public event Action<PixelPlaceEventArgs>? PixelPlaced;

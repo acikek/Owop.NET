@@ -3,7 +3,7 @@ namespace Owop.Util;
 /// <summary>Represents a refilling container with some spendable interaction <see cref="Allowance"/>.</summary>
 // TODO: Multiplier (doesn't actually affect calculations, just a visual thing)
 public interface IBucket
-{ 
+{
     /// <summary>The bucket's total capacity to refill towards.</summary>
     int Capacity { get; }
 

@@ -183,10 +183,12 @@ public partial class OwopClient
     /// <param name="world">The world the opcode was sent from.</param>
     private void HandlePixelQuota(ref SequenceReader<byte> reader, World world)
     {
-        // TODO: Event?
         if (reader.TryReadBucket(out Bucket bucket))
         {
+            int prevCapacity = world._clientPlayer._pixelBucket.Capacity;
+            int prevFillTime = world._clientPlayer._pixelBucket.FillTime;
             world._clientPlayer._pixelBucket.SetValues(bucket.Capacity, bucket.FillTime);
+            PixelQuotaUpdated?.Invoke(new(world, prevCapacity, prevFillTime, bucket.Capacity, bucket.FillTime));
         }
     }
 

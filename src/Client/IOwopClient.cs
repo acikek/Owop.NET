@@ -65,27 +65,31 @@ public interface IOwopClient : IDisposable
     /// <summary>Fires when a player disconnects from a world.</summary>
     event Action<IPlayer>? PlayerDisconnected;
 
+    /// <summary>Fires when the client's rank is updated by the server.</summary>
     event Action<RankUpdateEventArgs> RankUpdated;
 
-    /// <summary>Fired when the client player is teleported.</summary>
+    /// <summary>Fires when the client's pixel bucket values are updated by the server.</summary>
+    event Action<PixelQuotaUpdateEventArgs>? PixelQuotaUpdated;
+
+    /// <summary>Fires when the client player is teleported.</summary>
     event Action<TeleportEventArgs>? Teleported;
 
-    /// <summary>Fired when a '/whois' command is processed.</summary>
+    /// <summary>Fires when a '/whois' command is processed.</summary>
     event Action<WhoisEventArgs>? Whois;
 
-    /// <summary>Fired when a pixel is placed in the world.</summary>
+    /// <summary>Fires when a pixel is placed in the world.</summary>
     event Action<PixelPlaceEventArgs>? PixelPlaced;
 
-    /// <summary>Fired when a chunk is loaded.</summary>
+    /// <summary>Fires when a chunk is loaded.</summary>
     event Action<ChunkEventArgs>? ChunkLoaded;
 
-    /// <summary>Fired when a chunk's protection state changes.</summary>
+    /// <summary>Fires when a chunk's protection state changes.</summary>
     event Action<ChunkEventArgs>? ChunkProtectionChanged;
 
-    /// <summary>Fired when the client disconnects from a world.</summary>
+    /// <summary>Fires when the client disconnects from a world.</summary>
     event Action<IWorld>? Disconnecting;
 
-    /// <summary>Fired when the client is destroyed.</summary>
+    /// <summary>Fires when the client is destroyed.</summary>
     event Action? Destroying;
 
     /// <summary>Creates an OWOP client.</summary>

@@ -39,14 +39,7 @@ public struct Position(int x, int y) : IEquatable<Position>
     /// <summary>Compares equality between this and another position.</summary>
     /// <param name="other">The other position.</param>
     /// <returns>Whether they are equal.</returns>
-    public override readonly bool Equals(object? other)
-    {
-        if (other is not Position pos)
-        {
-            return false;
-        }
-        return Equals(pos);
-    }
+    public override readonly bool Equals(object? other) => other is Position pos && Equals(pos);
 
     /// <summary>Compares equality between this and another position.</summary>
     /// <param name="other">The other position.</param>
