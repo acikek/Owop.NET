@@ -6,6 +6,7 @@ namespace Owop.Util;
 
 /// <summary>Represents a queue processed according to a <see cref="Util.Bucket"/>.</summary>
 /// <typeparam name="Obj">The queue object type.</typeparam>
+/// <typeparam name="Res">The queue result type.</typeparam>
 /// <param name="Bucket">The bucket to wait for.</param>
 /// <param name="Name">The debug name of this queue.</param>
 /// <param name="World">The attached world (for debug logging).</param>

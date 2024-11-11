@@ -46,14 +46,17 @@ public class WorldChunks(World world) : Dictionary<Position, IChunk>, IWorldChun
         return (chunk, prev);
     }
 
+    /// <inheritdoc/>
     public Color? GetPixel(Position worldPos) => TryGetValue(worldPos.ToChunkPos(), out var chunk) ? chunk.GetPixel(worldPos) : null;
 
+    /// <inheritdoc/>
     public async Task<Color> QueryPixel(Position worldPos)
     {
         var chunk = await Query(worldPos.ToChunkPos());
         return chunk.GetPixel(worldPos);
     }
 
+    /// <inheritdoc/>
     public bool IsChunkLoaded(Position chunkPos, out IChunk? chunk)
     {
         if (TryGetValue(chunkPos, out var existing) && existing.IsLoaded)
@@ -65,8 +68,10 @@ public class WorldChunks(World world) : Dictionary<Position, IChunk>, IWorldChun
         return false;
     }
 
+    /// <inheritdoc/>
     public bool IsChunkLoaded(Position chunkPos) => IsChunkLoaded(chunkPos, out _);
 
+    /// <inheritdoc/>
     public async Task Request(Position chunkPos, bool force = false)
     {
         chunkPos = chunkPos.ClampToBorder();
@@ -78,6 +83,7 @@ public class WorldChunks(World world) : Dictionary<Position, IChunk>, IWorldChun
         await _world._connection.Send(OwopProtocol.EncodePos(chunkPos));
     }
 
+    /// <inheritdoc/>
     public async Task<IChunk> Query(Position chunkPos, bool force = false)
     {
         if (!force && IsChunkLoaded(chunkPos, out var chunk) && chunk is not null)
@@ -94,16 +100,20 @@ public class WorldChunks(World world) : Dictionary<Position, IChunk>, IWorldChun
         return await source.Task;
     }
 
+    /// <inheritdoc/>
     public async Task SetChunkProtected(Position chunkPos, bool protect)
     {
         _world._connection.CheckInteraction(PlayerRank.Moderator);
         await _world._connection.Send(OwopProtocol.EncodeChunkProtect(chunkPos, protect));
     }
 
+    /// <inheritdoc/>
     public async Task Protect(Position chunkPos) => await SetChunkProtected(chunkPos, true);
 
+    /// <inheritdoc/>
     public async Task Unprotect(Position chunkPos) => await SetChunkProtected(chunkPos, false);
 
+    /// <inheritdoc/>
     public async Task Fill(Position chunkPos, Color? color = null)
     {
         _world._connection.CheckInteraction(PlayerRank.Moderator);
@@ -115,14 +125,17 @@ public class WorldChunks(World world) : Dictionary<Position, IChunk>, IWorldChun
         await _world._connection.Send(OwopProtocol.EncodeChunkFill(chunkPos, fillColor));
     }
 
+    /// <inheritdoc/>
     public async Task Erase(Position chunkPos) => await Fill(chunkPos, OwopColors.White);
 
+    /// <inheritdoc/>
     public async Task SetChunkData(Position chunkPos, byte[] data)
     {
         _world._connection.CheckInteraction(PlayerRank.Moderator);
         await _world._connection.Send(OwopProtocol.EncodeChunkData(chunkPos, data));
     }
 
+    /// <inheritdoc/>
     // TODO: (post-release) Is there a better way to do this?
     public async Task SetChunkData(Position chunkPos, Color[] data)
     {

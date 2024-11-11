@@ -16,11 +16,19 @@ public partial class ClientPlayer(World world) : Player(world), IClientPlayer
     /// <summary>The internal chat bucket.</summary>
     public Bucket _chatBucket = new(4, 6, false, true);
 
+    /// <inheritdoc/>
     public string? Nickname { get; set; }
+
+    /// <inheritdoc/>
     public IBucket PixelBucket => _pixelBucket;
+
+    /// <inheritdoc/>
     public IBucket ChatBucket => _chatBucket;
+
+    /// <inheritdoc/>
     public override bool IsClient => true;
 
+    /// <inheritdoc/>
     public PlayerRank Rank
     {
         get => _rank;

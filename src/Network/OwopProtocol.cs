@@ -122,6 +122,7 @@ public static class OwopProtocol
 
     /// <summary>Tries to read a <see cref="Chunk"/>.</summary>
     /// <param name="reader">The byte reader.</param>
+    /// <param name="world">The world the chunk is being read from.</param>
     /// <param name="chunk">The decoded chunk, if any.</param>
     /// <returns>Whether the chunk was read properly.</returns>
     public static bool TryReadChunk(ref this SequenceReader<byte> reader, World world, out Chunk? chunk)

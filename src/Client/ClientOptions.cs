@@ -1,5 +1,7 @@
 namespace Owop.Client;
 
+using Owop.Network;
+
 /// <summary>Represents individual options for an individual <see cref="IOwopClient"/>.</summary>
 public record ClientOptions()
 {

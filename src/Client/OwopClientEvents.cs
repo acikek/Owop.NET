@@ -45,13 +45,14 @@ public record ChatEventArgs(IWorld World, ChatPlayer Player, string Content)
 /// <param name="Content">The private message content.</param>
 public record TellEventArgs(IWorld World, IPlayer Player, string Content);
 
-/// <summary>Arguments for the <see cref="IOwopClient.RankUpdated"/> event. </summary>
+/// <summary>Arguments for the <see cref="IOwopClient.RankUpdated"/> event.</summary>
 /// <param name="World">The world the client player's rank was updated in.</param>
 /// <param name="Rank">The new player rank.</param>
 /// <param name="PreviousRank">The previous player rank.</param>
 public record RankUpdateEventArgs(IWorld World, PlayerRank Rank, PlayerRank PreviousRank);
 
-/// <summary>Arguments for the </summary>
+/// <summary>Arguments for the <see cref="IOwopClient.PixelQuotaUpdated"/> event.</summary>
+/// <param name="World">The world the pixel quota was updated in.</param>
 /// <param name="PreviousCapacity">The previous bucket capacity.</param>
 /// <param name="PreviousFillTime">The previous bucket fill time.</param>
 /// <param name="Capacity">The new bucket capacity.</param>
@@ -86,22 +87,55 @@ public record ChunkEventArgs(IWorld World, IChunk Chunk);
 /// <summary>Handles all events for the client.</summary>
 public partial class OwopClient
 {
+    /// <inheritdoc/>
     public event Action<ConnectEventArgs>? Connected;
+
+    /// <inheritdoc/>
     public event Action<IWorld>? Ready;
+
+    /// <inheritdoc/>
     public event Action<IWorld>? ChatReady;
+
+    /// <inheritdoc/>
     public event Action<ChatEventArgs>? Chat;
+
+    /// <inheritdoc/>
     public event Action<TellEventArgs>? Tell;
+
+    /// <inheritdoc/>
     public event Action<ServerMessage>? ServerMessage;
+
+    /// <inheritdoc/>
     public event Action<IPlayer>? PlayerConnected;
+
+    /// <inheritdoc/>
     public event Action<IPlayer>? PlayerDisconnected;
+
+    /// <inheritdoc/>
     public event Action<RankUpdateEventArgs>? RankUpdated;
+
+    /// <inheritdoc/>
     public event Action<PixelQuotaUpdateEventArgs>? PixelQuotaUpdated;
+
+    /// <inheritdoc/>
     public event Action<TeleportEventArgs>? Teleported;
+
+    /// <inheritdoc/>
     public event Action<WhoisEventArgs>? Whois;
+
+    /// <inheritdoc/>
     public event Action<PixelPlaceEventArgs>? PixelPlaced;
+
+    /// <inheritdoc/>
     public event Action<ChunkEventArgs>? ChunkLoaded;
+
+    /// <inheritdoc/>
     public event Action<ChunkEventArgs>? ChunkProtectionChanged;
+
+    /// <inheritdoc/>
     public event Action<IWorld>? Disconnecting;
+
+    /// <inheritdoc/>
     public event Action? Destroying;
 
     /// <summary>Fires <see cref="Chat"/>.</summary>

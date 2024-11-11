@@ -9,7 +9,7 @@ using Owop.Util;
 
 namespace Owop.Game;
 
-/// <summary>Represents a square chunk of pixels within an <see cref="IWorld">.</summary>
+/// <summary>Represents a square chunk of pixels within an <see cref="IWorld"/>.</summary>
 public interface IChunk : IPositioned
 {
     /// <summary>The width and height, in pixels, of a chunk.</summary>

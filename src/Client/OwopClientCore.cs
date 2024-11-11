@@ -17,8 +17,13 @@ public partial class OwopClient : IOwopClient
     /// <summary>The client logger factory.</summary>
     public readonly ILoggerFactory LoggerFactory;
 
+    /// <inheritdoc/>
     public ClientOptions Options { get; }
+
+    /// <inheritdoc/>
     public IReadOnlyDictionary<string, IReadOnlySet<IWorldConnection>> Connections => _connections;
+
+    /// <inheritdoc/>
     public ILogger Logger { get; }
 
     /// <summary>Constructs an <see cref="OwopClient"/>.</summary>
@@ -44,6 +49,7 @@ public partial class OwopClient : IOwopClient
         return new(span.ToArray());
     }
 
+    /// <inheritdoc/>
     public async Task<bool> Connect(string world = "main", ConnectionOptions? options = null)
     {
         var serverInfo = await FetchServerInfo();
@@ -87,8 +93,10 @@ public partial class OwopClient : IOwopClient
         return true;
     }
 
+    /// <inheritdoc/>
     public async Task<bool> DisconnectAll(string world = "main") => await DisconnectAllInternal(CleanWorldName(world));
 
+    /// <inheritdoc/>
     public async Task Destroy()
     {
         Destroying?.Invoke();
@@ -98,6 +106,7 @@ public partial class OwopClient : IOwopClient
         }
     }
 
+    /// <inheritdoc/>
     public void Dispose()
     {
         Destroying?.Invoke();

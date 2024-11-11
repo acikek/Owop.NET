@@ -19,6 +19,7 @@ public partial class OwopClient
     /// <summary>HTTP client for API requests.</summary>
     private readonly HttpClient _httpClient;
 
+    /// <inheritdoc/>
     public ServerInfo? ServerInfo { get; private set; }
 
     /// <summary>Fetches server info from the <see cref="ClientOptions.ApiUrl"/>.</summary>

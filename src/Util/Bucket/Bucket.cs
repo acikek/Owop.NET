@@ -24,15 +24,28 @@ public class Bucket : IBucket
     /// <summary>The last time <see cref="Update"/> was called.</summary>
     private DateTime _lastUpdate;
 
+    /// <inheritdoc/>
     public int Capacity { get; set; }
+
+    /// <inheritdoc/>
     public int FillTime { get; set; }
+
+    /// <inheritdoc/>
     public bool Infinite { get; set; }
 
+    /// <inheritdoc/>
     public double FillRate => (double)Capacity / FillTime;
+
+    /// <inheritdoc/>
     public TimeSpan FillInterval => TimeSpan.FromSeconds(1.0 / FillRate);
+
+    /// <inheritdoc/>
     public bool IsFull => Allowance >= Capacity;
+
+    /// <inheritdoc/>
     public bool IsEmpty => Allowance <= 0.0;
 
+    /// <inheritdoc/>
     public double Allowance
     {
         get
@@ -79,6 +92,7 @@ public class Bucket : IBucket
         _lastUpdate = DateTime.Now;
     }
 
+    /// <inheritdoc/>
     public bool CanSpend(double amount) => Infinite || amount <= Allowance;
 
     /// <summary>Tries to spend the specified amount from the bucket's allowance.</summary>
@@ -104,6 +118,7 @@ public class Bucket : IBucket
     /// </summary>
     private TimeSpan GetNextTimeToFill() => FillInterval * (1.0 - (_allowance % 1.0));
 
+    /// <inheritdoc/>
     public TimeSpan GetTimeToFill(double amount)
     {
         if (Infinite || amount <= 0.0)
@@ -116,15 +131,21 @@ public class Bucket : IBucket
             + SafetyDelay;
     }
 
+    /// <inheritdoc/>
     public async Task DelayUntilFill(double amount) => await Task.Delay(GetTimeToFill(amount));
 
+    /// <inheritdoc/>
     public async Task DelayUntilHas(double allowance) => await DelayUntilFill(allowance - _allowance);
 
+    /// <inheritdoc/>
     public async Task DelayUntilRestore() => await DelayUntilFill(Capacity - _allowance);
 
+    /// <inheritdoc/>
     public async Task DelayOne() => await DelayUntilFill(1.0);
 
+    /// <inheritdoc/>
     public async Task DelayAny() => await DelayUntilHas(1.0);
 
+    /// <inheritdoc/>
     public override string ToString() => $"[{Allowance:0.00}/{Capacity}] @{FillRate:0.00}a/s";
 }

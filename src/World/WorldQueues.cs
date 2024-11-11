@@ -22,6 +22,7 @@ public partial class World
         return null;
     }
 
+    /// <inheritdoc/>
     public async Task SendChatMessage(string message, bool queue)
     {
         var source = ChatQueue.Add(message);
@@ -63,6 +64,8 @@ public partial class World
         return _chunks.SetPixel(pixelPos, pixelColor).Item2;
     }
 
+
+    /// <inheritdoc/>
     public async Task<Color?> PlacePixel(Position? worldPos, Color? color, bool lazy, bool queue)
     {
         var source = PixelQueue.Add((worldPos, color, lazy));

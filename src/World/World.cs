@@ -31,13 +31,28 @@ public partial class World : IWorld
     /// <summary>An interaction queue for <see cref="ServerMessageType.Whois"/> messages.</summary>
     public ConcurrentDictionary<int, TaskCompletionSource<WhoisData>> WhoisQueue = [];
 
+    /// <inheritdoc/>
     public string Name { get; }
+
+    /// <inheritdoc/>
     public IReadOnlyDictionary<int, IPlayer> Players => _players;
+
+    /// <inheritdoc/>
     public IWorldChunks Chunks => _chunks;
+
+    /// <inheritdoc/>
     public IClientPlayer ClientPlayer => _clientPlayer;
+
+    /// <inheritdoc/>
     public bool IsChatReady { get; set; }
+
+    /// <inheritdoc/>
     public bool IsPasswordProtected { get; set; }
+
+    /// <inheritdoc/>
     public IWorldConnection Connection => _connection;
+
+    /// <inheritdoc/>
     public ILogger Logger => Connection.Logger;
 
     /// <summary>Whether the client has made any connection to this world.</summary>

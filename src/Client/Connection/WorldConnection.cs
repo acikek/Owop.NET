@@ -27,10 +27,19 @@ public class WorldConnection : IWorldConnection
     /// <summary>Connection message to generate and (re)send.</summary>
     public readonly byte[] ConnectionMessage;
 
+    /// <inheritdoc/>
     public WebsocketClient Socket { get; }
+
+    /// <inheritdoc/>
     public IOwopClient Client => _client;
+
+    /// <inheritdoc/>
     public ConnectionOptions? Options { get; }
+
+    /// <inheritdoc/>
     public IWorld World => _world;
+
+    /// <inheritdoc/>
     public ILogger Logger { get; }
 
     /// <summary>Constructs a new <see cref="WorldConnection"/>.</summary>
@@ -60,7 +69,10 @@ public class WorldConnection : IWorldConnection
         return [.. list];
     }
 
+    /// <inheritdoc/>
     public async Task Send(byte[] message) => await Task.Run(() => Socket.Send(message));
+
+    /// <inheritdoc/>
     public async Task Send(string message) => await Task.Run(() => Socket.Send(message));
 
     /// <summary>Connects to the world, handling reconnects when necessary.</summary>
@@ -115,6 +127,7 @@ public class WorldConnection : IWorldConnection
         _exitEvent.Set();
     }
 
+    /// <inheritdoc/>
     public async Task Disconnect()
     {
         await DisconnectInternal();
@@ -124,6 +137,7 @@ public class WorldConnection : IWorldConnection
         }
     }
 
+    /// <inheritdoc/>
     public void Dispose()
     {
         Socket.Dispose();

@@ -7,7 +7,7 @@ public interface IBucket
     /// <summary>The bucket's total capacity to refill towards.</summary>
     int Capacity { get; }
 
-    /// <summary>How long, in seconds, it takes to refill an empty bucket to the <see cref="Capacity">.</summary>
+    /// <summary>How long, in seconds, it takes to refill an empty bucket to the <see cref="Capacity"/>.</summary>
     int FillTime { get; }
 
     /// <summary>The bucket's current spendable allowance.</summary>
@@ -53,7 +53,7 @@ public interface IBucket
     /// </summary>
     /// <param name="amount">The amount to refill to.</param>
     /// <returns>A task that represents the time delay.</returns>
-    Task DelayUntilHas(double allowance);
+    Task DelayUntilHas(double amount);
 
     /// <summary>Creates a task that completes after the bucket has completely refilled.</summary>
     /// <returns>A task that represents the time delay.</returns>

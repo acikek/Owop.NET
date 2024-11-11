@@ -19,12 +19,25 @@ public class Chunk : IChunk
     /// <summary>The internal pixel grid.</summary>
     public readonly Memory2D<Color> _memory = new(new Color[IChunk.Width, IChunk.Width]);
 
+    /// <inheritdoc/>
     public ReadOnlyMemory2D<Color> Pixels => _memory;
+
+    /// <inheritdoc/>
     public bool IsProtected { get; set; }
+
+    /// <inheritdoc/>
     public DateTime? LastLoad { get; set; }
+
+    /// <inheritdoc/>
     public bool IsLoaded { get; set; }
+
+    /// <inheritdoc/>
     public Position Pos { get; }
+
+    /// <inheritdoc/>
     public Position WorldPos { get; }
+
+    /// <inheritdoc/>
     public Position ChunkPos { get; }
 
     /// <summary>Constructs a <see cref="Chunk"/>.</summary>
@@ -56,18 +69,21 @@ public class Chunk : IChunk
         return prev;
     }
 
+    /// <inheritdoc/>
     public Color GetPixel(Position worldPos)
     {
         var pos = GetPosInChunk(worldPos);
         return _memory.Span[pos.X, pos.Y];
     }
 
+    /// <inheritdoc/>
     public Color this[int x, int y]
     {
         get => _memory.Span[x, y];
         set => _memory.Span[x, y] = value;
     }
 
+    /// <inheritdoc/>
     public Color this[int index]
     {
         set
@@ -78,21 +94,30 @@ public class Chunk : IChunk
         }
     }
 
+    /// <inheritdoc/>
     public async Task Request() => await _world.Chunks.Request(ChunkPos, true);
 
+    /// <inheritdoc/>
     public async Task<IChunk> Query() => await _world.Chunks.Query(ChunkPos, true);
 
+    /// <inheritdoc/>
     public async Task SetProtected(bool protect) => await _world.Chunks.SetChunkProtected(ChunkPos, protect);
 
+    /// <inheritdoc/>
     public async Task Protect() => await _world.Chunks.Protect(ChunkPos);
 
+    /// <inheritdoc/>
     public async Task Unprotect() => await _world.Chunks.Unprotect(ChunkPos);
 
+    /// <inheritdoc/>
     public async Task Fill(Color? color = null) => await _world.Chunks.Fill(ChunkPos, color);
 
+    /// <inheritdoc/>
     public async Task Erase() => await _world.Chunks.Erase(ChunkPos);
 
+    /// <inheritdoc/>
     public async Task SetData(byte[] data) => await _world.Chunks.SetChunkData(ChunkPos, data);
 
+    /// <inheritdoc/>
     public async Task SetData(Color[] data) => await _world.Chunks.SetChunkData(ChunkPos, data);
 }

@@ -1,5 +1,7 @@
 namespace Owop.Network;
 
+using Owop.Game;
+
 /// <summary>OWOP Websocket protocol opcode.</summary>
 public enum Opcode
 {

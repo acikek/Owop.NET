@@ -12,44 +12,52 @@ namespace Owop.Game;
 /// <remarks><see cref="IPlayer"/> method implementations for <see cref="ClientPlayer"/>.</remarks>
 public partial class ClientPlayer
 {
+    /// <inheritdoc/>
     public override async Task Move(Position pos)
     {
         Pos = pos;
         await Send();
     }
 
+    /// <inheritdoc/>
     public override async Task MoveWorld(Position worldPos)
     {
         WorldPos = worldPos;
         await Send();
     }
 
+    /// <inheritdoc/>
     public async Task SetTool(PlayerTool tool)
     {
         Tool = tool;
         await Send();
     }
 
+    /// <inheritdoc/>
     public async Task SetColor(Color color)
     {
         Color = color;
         await Send();
     }
 
+    /// <inheritdoc/>
     public async Task SetNickname(string nickname)
     {
         Nickname = nickname;
         await World.RunCommand("nick", nickname);
     }
 
+    /// <inheritdoc/>
     public async Task ResetNickname()
     {
         Nickname = null;
         await World.RunCommand("nick");
     }
 
+    /// <inheritdoc/>
     public override async Task TeleportTo() => await Task.CompletedTask;
 
+    /// <inheritdoc/>
     public async Task TeleportToPlayer(int id)
     {
         if (Rank >= PlayerRank.Moderator)
@@ -69,5 +77,6 @@ public partial class ClientPlayer
     /// <exception cref="InvalidOperationException">This operation cannot be performed on a <see cref="ClientPlayer"/>.</exception>
     public override Task Unmute() => throw new InvalidOperationException("Cannot unmute self");
 
+    /// <inheritdoc/>
     public override Task Kick() => _world.Connection.Disconnect();
 }
