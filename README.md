@@ -1,6 +1,6 @@
-# Owop.Net
+# Owop.NET
 
-Owop.Net is an asynchronous .NET library for interfacing with [OurWorldOfPixels](https://ourworldofpixels.com/) (OWOP). It follows in the footsteps of projects such as [OWOP.js](https://github.com/dimdenGD/OWOP.js_v2) and is designed for easily creating OWOP bots.
+Owop.NET is an asynchronous .NET library for interfacing with [OurWorldOfPixels](https://ourworldofpixels.com/) (OWOP). It follows in the footsteps of projects such as [OWOP.js](https://github.com/dimdenGD/OWOP.js_v2) and is designed for easily creating OWOP bots.
 
 ## Example
 

@@ -14,6 +14,12 @@
   </ItemGroup>
 
   <PropertyGroup>
+    <PackageId>OwopDotNet</PackageId>
+    <Authors>acikek</Authors>
+    <PackageTags>owop;bot;api</PackageTags>
+    <Description>Unofficial .NET wrapper and extreme convenience library for OWOP (https://ourworldofpixels.com/)</Description>
+    <RepositoryUrl>https://github.com/acikek/Owop.NET.git</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
   </PropertyGroup>
