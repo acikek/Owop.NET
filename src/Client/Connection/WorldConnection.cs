@@ -54,7 +54,7 @@ public class WorldConnection : IWorldConnection
         _client = client;
         _world = new(name, this);
         ConnectionMessage = GetConnectionMessage(name);
-        Logger = client.LoggerFactory.CreateLogger($"Owop.Net.{name}.{index} ");
+        Logger = client.LoggerFactory.CreateLogger($"Owop.NET.{name}.{index} ");
     }
 
     /// <summary>Creates a connection message from a world name.</summary>

@@ -143,7 +143,7 @@ public partial class OwopClient
     /// <param name="world">The world the message was received in.</param>
     private void InvokeChat(ServerMessage message, World world)
     {
-        string str = message.Args[1];
+        string str = message.Args[0];
         int sep = str.IndexOf(": ");
         var player = ChatPlayer.ParseHeader(str[0..sep]);
         string content = str[(sep + 2)..];

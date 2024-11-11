@@ -33,7 +33,7 @@ public partial class OwopClient : IOwopClient
     {
         Options = options ?? new();
         LoggerFactory = loggerFactory ?? Microsoft.Extensions.Logging.LoggerFactory.Create(builder => builder.AddConsole());
-        Logger = LoggerFactory.CreateLogger("Owop.Net");
+        Logger = LoggerFactory.CreateLogger("Owop.NET");
         _httpClient = new();
         _messageBuffer = [];
     }
